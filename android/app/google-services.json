@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "875483519236",
+    "project_id": "samaufr-965c4",
+    "storage_bucket": "samaufr-965c4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875483519236:android:fbd923688f3dd9d3845851",
+        "android_client_info": {
+          "package_name": "sn.ugb.eTontee"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv0oCqGakseWmJzoUGqP4fR3iKGfeMVr4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875483519236:android:e77203d4fbcfc4c8845851",
+        "android_client_info": {
+          "package_name": "sn.ugb.eTontee.sama_ufr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv0oCqGakseWmJzoUGqP4fR3iKGfeMVr4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

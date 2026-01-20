@@ -1,0 +1,60 @@
+# =========================
+# Global
+# =========================
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+
+# =========================
+# IDEs
+# =========================
+.idea/
+*.iml
+*.ipr
+*.iws
+.atom/
+.vscode/
+
+# =========================
+# Flutter / Dart
+# =========================
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+coverage/
+
+# =========================
+# Build outputs (CRITICAL)
+# =========================
+build/
+**/build/
+android/**/build/
+android/**/intermediates/
+android/**/merged_native_libs/
+android/**/outputs/
+
+# =========================
+# Android artifacts (CRITICAL)
+# =========================
+*.apk
+*.aab
+*.so
+*.jar
+
+# =========================
+# iOS
+# =========================
+ios/Flutter/.last_build_id
+ios/Pods/
+ios/.symlinks/
+
+# =========================
+# Obfuscation / symbols
+# =========================
+app.*.symbols
+app.*.map.json
