@@ -71,7 +71,7 @@ class _ArticleState extends State<Article> {
         .listen(
           (articles) {
             if (mounted) {
-              print('✅ Articles reçus: ${articles.length}');
+              print('Articles reçus: ${articles.length}');
               setState(() => _articles = articles);
             }
           },
@@ -253,7 +253,6 @@ class _ArticleState extends State<Article> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(90),
         child: AppBar(
@@ -277,14 +276,13 @@ class _ArticleState extends State<Article> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color.fromARGB(255, 132, 69, 150),
-            Color.fromARGB(255, 53, 120, 186),
-          ],
+          colors: AppColors.gradientBlueGreen
+              .map((c) => Color(c.value))
+              .toList(),
         ),
       ),
       child: Stack(
@@ -296,7 +294,7 @@ class _ArticleState extends State<Article> {
               Text(
                 'Espace Étudiant',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white.withOpacity(0.95),
                 ),
@@ -305,7 +303,7 @@ class _ArticleState extends State<Article> {
               Text(
                 'Bienvenue ${widget.userProfile?.firstName ?? 'Étudiant'}',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 14,
                   color: Colors.white.withOpacity(0.8),
                 ),
               ),
@@ -314,10 +312,10 @@ class _ArticleState extends State<Article> {
           Positioned(
             right: 0,
             child: IconButton(
-              icon: const Icon(Icons.logout, color: Colors.white, size: 22),
+              icon: Icon(Icons.logout, color: Colors.white, size: 22),
               onPressed: () {
                 Auth().signOut();
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => LoginPage()),
                 );
@@ -411,34 +409,27 @@ class _ArticleState extends State<Article> {
     );
   }
 
+  /// Contenu de l'onglet Accueil
   Widget _buildHomeTab() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Titre
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: EdgeInsets.symmetric(vertical: 10),
           child: Text(
             "Tableau de bord",
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: const Color.fromARGB(255, 54, 53, 53),
             ),
           ),
         ),
 
         // Événements
         _buildEventsSection(),
-        SizedBox(height: 10),
-
-        // Emploi du temps
-        _buildScheduleSection(),
-        SizedBox(height: 10),
-
-        // Favoris
-        _buildFavoritesSection(),
-        SizedBox(height: 10),
+        SizedBox(height: 20),
 
         // Articles récents
         _buildArticlesHomeSection(),
@@ -533,35 +524,35 @@ class _ArticleState extends State<Article> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               "Articles Récents",
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
                 color: Color(0xFF2C3E50),
               ),
             ),
             GestureDetector(
               onTap: () => setState(() => _currentTabIndex = 2),
-              child: const Text(
+              child: Text(
                 "Voir plus",
                 style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFF9B59B6),
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         if (_articles.isEmpty)
-          const Center(child: Text("Aucun article disponible"))
+          Center(child: Text("Aucun article disponible"))
         else
           Column(
             children: _articles.take(3).map((article) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: EdgeInsets.only(bottom: 10),
                 child: GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
@@ -572,30 +563,38 @@ class _ArticleState extends State<Article> {
                     );
                   },
                   child: Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 245, 242, 242),
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withOpacity(0.1),
                           blurRadius: 5,
-                          offset: const Offset(0, 2),
+                          offset: Offset(0, 2),
                         ),
                       ],
                     ),
                     child: Row(
                       children: [
                         Container(
-                          width: 50,
-                          height: 50,
+                          width: 60,
+                          height: 60,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF9B59B6).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            gradient: LinearGradient(
+                              colors: AppColors.gradientBlueGreen
+                                  .map((c) => Color(c.value))
+                                  .toList(),
+                            ),
+                            borderRadius: BorderRadius.circular(6),
                           ),
-                          child: const Icon(Icons.article, color: Color(0xFF9B59B6)),
+                          child: Icon(Icons.article, color: Colors.white),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 10),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -604,18 +603,18 @@ class _ArticleState extends State<Article> {
                                 article.title,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 14,
+                                style: TextStyle(
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.black87,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: 4),
                               Text(
                                 article.author,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
                                   color: Colors.grey,
                                 ),
@@ -623,7 +622,6 @@ class _ArticleState extends State<Article> {
                             ],
                           ),
                         ),
-                        const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
                       ],
                     ),
                   ),
@@ -790,20 +788,20 @@ class _ArticleState extends State<Article> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 20),
-        const Padding(
+        SizedBox(height: 20),
+        Padding(
           padding: EdgeInsets.symmetric(vertical: 10),
           child: Text(
             "Événements à l'UFR",
             style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
               color: Colors.black,
             ),
           ),
         ),
         if (_events.isEmpty)
-          const Center(
+          Center(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 20),
               child: Text(
@@ -851,56 +849,56 @@ class _ArticleState extends State<Article> {
       {
         'title': "Résultats",
         'icon': Icons.access_alarm,
-        'color': const Color(0xFF3498DB),
+        'color': Color(0xFF3498DB),
       },
       {
         'title': "Emploi du temps",
         'icon': Icons.schedule,
-        'color': const Color(0xFF3498DB),
+        'color': Color(0xFF3498DB),
       },
       {
         'title': "Document",
         'icon': Icons.document_scanner,
-        'color': const Color(0xFF3498DB),
+        'color': Color(0xFF3498DB),
       },
       {
         'title': "Ressources",
         'icon': Icons.library_add_check,
-        'color': const Color(0xFF3498DB),
+        'color': Color(0xFF3498DB),
       },
       {
         'title': "Actualités",
         'icon': Icons.alarm_rounded,
-        'color': const Color(0xFF3498DB),
+        'color': Color(0xFF3498DB),
       },
       {
         'title': "Message",
         'icon': Icons.messenger_sharp,
-        'color': const Color(0xFF3498DB),
+        'color': Color(0xFF3498DB),
       },
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 20),
-        const Padding(
+        SizedBox(height: 20),
+        Padding(
           padding: EdgeInsets.symmetric(vertical: 10),
           child: Text(
             "Accès rapide",
             style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
               color: Colors.black,
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         GridView.builder(
           itemCount: quickAccess.length,
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
@@ -929,14 +927,14 @@ class _ArticleState extends State<Article> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 20),
-        const Padding(
+        SizedBox(height: 20),
+        Padding(
           padding: EdgeInsets.symmetric(vertical: 10),
           child: Text(
             "Mes résultats",
             style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
               color: Colors.black,
             ),
           ),
@@ -944,19 +942,19 @@ class _ArticleState extends State<Article> {
         if (_results.isEmpty)
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withOpacity(0.2),
                   blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
-            child: const Center(
+            child: Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: Text(
@@ -969,15 +967,15 @@ class _ArticleState extends State<Article> {
         else
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withOpacity(0.2),
                   blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
@@ -985,19 +983,19 @@ class _ArticleState extends State<Article> {
               children: [
                 iconColorText(
                   "Résultats Semestre 1",
-                  const Color(0xFF3498DB),
+                  Color(0xFF3498DB),
                   Icons.height,
                 ),
-                const SizedBox(height: 15),
+                SizedBox(height: 15),
                 tableau(_results),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Container(
                   alignment: Alignment.bottomRight,
                   height: 28,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      backgroundColor: const Color(0xFF3498DB),
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      backgroundColor: Color(0xFF3498DB),
                     ),
                     onPressed: () {
                       Navigator.of(context).push(
@@ -1006,7 +1004,7 @@ class _ArticleState extends State<Article> {
                         ),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       "Voir tous les résultats",
                       style: TextStyle(
                         fontSize: 13,
@@ -1084,34 +1082,34 @@ class _ArticleState extends State<Article> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 20),
-        const Padding(
+        SizedBox(height: 20),
+        Padding(
           padding: EdgeInsets.symmetric(vertical: 10),
           child: Text(
             "Mon emploi du temps",
             style: TextStyle(
               fontSize: 16,
               color: Colors.black,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
         if (_schedules.isEmpty)
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withOpacity(0.2),
                   blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
-            child: const Center(
+            child: Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: Text(
@@ -1124,15 +1122,15 @@ class _ArticleState extends State<Article> {
         else
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withOpacity(0.2),
                   blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
@@ -1141,20 +1139,17 @@ class _ArticleState extends State<Article> {
               children: [
                 iconColorText(
                   "Semaine du ${_schedules.isNotEmpty ? _schedules.first.day : 'lundi'}",
-                  const Color(0xFF9B59B6),
+                  Color(0xFF9B59B6),
                   Icons.calendar_month,
                 ),
-                const SizedBox(height: 15),
+                SizedBox(height: 15),
                 emploiTemps(schedulesForTable),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Container(
                   alignment: Alignment.center,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF9B59B6),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                      backgroundColor: Color(0xFF9B59B6),
                     ),
                     onPressed: () {
                       Navigator.of(context).push(
@@ -1164,7 +1159,7 @@ class _ArticleState extends State<Article> {
                         ),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       'Voir l\'emploi du temps complet',
                       style: TextStyle(color: Colors.white),
                     ),
@@ -1378,105 +1373,40 @@ class _ArticleState extends State<Article> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 20),
-        const Padding(
+        SizedBox(height: 20),
+        Padding(
           padding: EdgeInsets.symmetric(vertical: 10),
           child: Text(
             "Mes Favoris",
             style: TextStyle(
               fontSize: 16,
               color: Colors.black,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              _buildFavoriteItem(
-                "Introduction à Flutter",
-                "Guide complet pour débuter",
-                Icons.favorite,
-                const Color(0xFFE74C3C),
-              ),
-              const Divider(height: 24),
-              _buildFavoriteItem(
-                "Programmation Dart",
-                "Les bases et fonctionnalités avancées",
-                Icons.favorite,
-                const Color(0xFF3498DB),
-              ),
-              const Divider(height: 24),
-              _buildFavoriteItem(
-                "Firebase pour Mobile",
-                "Intégration avec Flutter",
-                Icons.favorite,
-                const Color(0xFFF39C12),
-              ),
-            ],
-          ),
+        favoris(
+          "Introduction à Flutter",
+          "Guide complet pour débuter",
+          Icons.favorite,
+          Color(0xFFE74C3C),
+          "Lire",
         ),
-      ],
-    );
-  }
-
-  Widget _buildFavoriteItem(
-      String title, String subtitle, IconData icon, Color color) {
-    return Row(
-      children: [
-        Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: color, size: 22),
+        Divider(color: const Color.fromARGB(78, 158, 158, 158), thickness: 1),
+        favoris(
+          "Programmation Dart",
+          "Les bases et fonctionnalités avancées",
+          Icons.favorite,
+          Color(0xFF3498DB),
+          "Lire",
         ),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-        ),
-        TextButton(
-          onPressed: () {},
-          style: TextButton.styleFrom(
-            foregroundColor: const Color(0xFF9B59B6),
-            textStyle: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          child: const Text("Lire"),
+        Divider(color: const Color.fromARGB(78, 158, 158, 158), thickness: 1),
+        favoris(
+          "Firebase pour Mobile",
+          "Intégration avec Flutter",
+          Icons.favorite,
+          Color(0xFFF39C12),
+          "Lire",
         ),
       ],
     );

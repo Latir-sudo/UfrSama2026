@@ -165,13 +165,19 @@ class TeacherService {
         .collection('results')
         .where('courseId', isEqualTo: courseId)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => {
-          'id': doc.id,
-          'studentName': doc['studentName'] ?? 'Sans nom',
-          'studentId': doc['studentId'] ?? '',
-          'grade': doc['grade'],
-          'status': doc['status'] ?? 'N/A',
-        }).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => {
+                  'id': doc.id,
+                  'studentName': doc['studentName'] ?? 'Sans nom',
+                  'studentId': doc['studentId'] ?? '',
+                  'grade': doc['grade'],
+                  'status': doc['status'] ?? 'N/A',
+                },
+              )
+              .toList(),
+        );
   }
 
   // Update student grade
@@ -185,7 +191,7 @@ class TeacherService {
       print('✅ Note mise à jour: $resultId -> $newGrade');
     } catch (e) {
       print('❌ Erreur mise à jour note: $e');
-      throw e;
+      rethrow;
     }
   }
 

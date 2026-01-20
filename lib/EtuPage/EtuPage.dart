@@ -1,9 +1,7 @@
 // EtuPage/EtuPage.dart
 import 'package:flutter/material.dart';
 import 'package:sama_ufr/EtuPage/article.dart';
-import 'package:sama_ufr/service/auth.dart';
 import 'package:sama_ufr/service/student_service.dart';
-import 'package:sama_ufr/login_page.dart';
 import 'package:sama_ufr/EtuPage/models.dart';
 
 class EtuPage extends StatefulWidget {

@@ -11,8 +11,6 @@ class NotesPage extends StatefulWidget {
 class _NotesPageState extends State<NotesPage> {
   late final TeacherService _teacherService;
   late Stream<List<Map<String, dynamic>>> _coursesStream;
-  String? _selectedCourseId;
-  String? _selectedCourseName;
 
   @override
   void initState() {
@@ -23,10 +21,8 @@ class _NotesPageState extends State<NotesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -53,34 +49,7 @@ class _NotesPageState extends State<NotesPage> {
               }
 
               final courses = snapshot.data!;
-              
-              return Column(
-                children: [
-                  _TabNote(
-                    courses: courses, 
-                    onCourseSelected: (id, name) {
-                      setState(() {
-                        _selectedCourseId = id;
-                        _selectedCourseName = name;
-                      });
-                    },
-                    selectedCourseId: _selectedCourseId,
-                  ),
-                  if (_selectedCourseId != null) ...[
-                    const SizedBox(height: 24),
-                    Text(
-                      'Étudiants - $_selectedCourseName',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildStudentsList(_selectedCourseId!),
-                  ],
-                ],
-              );
+              return _TabNote(courses: courses);
             },
           ),
           const SizedBox(height: 32),
@@ -99,103 +68,12 @@ class _NotesPageState extends State<NotesPage> {
       ),
     );
   }
-
-  Widget _buildStudentsList(String courseId) {
-    return StreamBuilder<List<Map<String, dynamic>>>(
-      stream: _teacherService.getCourseStudentsStream(courseId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Card(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text('Aucun étudiant inscrit à ce cours.'),
-            ),
-          );
-        }
-
-        final students = snapshot.data!;
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: students.length,
-            separatorBuilder: (context, index) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              final student = students[index];
-              final TextEditingController controller = TextEditingController(
-                text: student['grade']?.toString() ?? '',
-              );
-
-              return ListTile(
-                title: Text(student['studentName'] ?? 'Étudiant'),
-                subtitle: Text('Statut: ${student['status']}'),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 60,
-                      child: TextField(
-                        controller: controller,
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        decoration: const InputDecoration(
-                          hintText: '--',
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.save, color: Colors.blue),
-                      onPressed: () async {
-                        final grade = double.tryParse(controller.text);
-                        if (grade != null) {
-                          try {
-                            await _teacherService.updateStudentGrade(
-                              student['id'],
-                              grade,
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Note enregistrée !')),
-                            );
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Erreur: $e')),
-                            );
-                          }
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
 }
 
-Widget _TabNote({
-  required List<Map<String, dynamic>> courses,
-  required Function(String, String) onCourseSelected,
-  String? selectedCourseId,
-}) {
+Widget _TabNote({required List<Map<String, dynamic>> courses}) {
+  // Afficher le premier cours disponible
+  final firstCourse = courses.isNotEmpty ? courses.first : null;
+
   return Container(
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
@@ -223,14 +101,17 @@ Widget _TabNote({
               child: Icon(Icons.edit, color: Colors.green.shade700, size: 20),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Text(
-                'Sélectionnez un cours pour saisir les notes',
-                style: TextStyle(
+                firstCourse != null
+                    ? '${firstCourse['name'] ?? 'Cours'} - ${firstCourse['level'] ?? 'N/A'}'
+                    : 'Aucun cours',
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -241,63 +122,51 @@ Widget _TabNote({
           children: [
             Expanded(flex: 2, child: _enteteTab('Cours')),
             Expanded(child: _enteteTab('Code')),
-            Expanded(child: _enteteTab('Action')),
+            Expanded(child: _enteteTab('Étudiants')),
           ],
         ),
         const Divider(height: 24),
         // Table rows
-        ...courses.map((course) {
-          final bool isSelected = selectedCourseId == course['id'];
+        ...courses.take(3).map((course) {
           return Column(
             children: [
-              InkWell(
-                onTap: () => onCourseSelected(course['id'], course['name']),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        course['name'] ?? 'Sans nom',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                          color: isSelected ? Colors.blue : Colors.black87,
-                        ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      course['name'] ?? 'Sans nom',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
                       ),
                     ),
-                    Expanded(
-                      child: Text(
-                        course['code'] ?? 'N/A',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade700,
-                        ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      course['code'] ?? 'N/A',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade700,
                       ),
                     ),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: isSelected ? Colors.blue : Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          isSelected ? 'Sélectionné' : 'Saisir',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: isSelected ? Colors.white : Colors.black,
-                          ),
-                        ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      '${course['studentCount'] ?? 0}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade700,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               const Divider(height: 12),
             ],
           );
-        }).toList(),
+        }),
       ],
     ),
   );

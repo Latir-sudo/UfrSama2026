@@ -21,42 +21,39 @@ class _ResourcesPageState extends State<ResourcesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _Resources(),
-            const SizedBox(height: 32),
-            // Mes ressources
-            const Text(
-              'Mes ressources',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _Resources(),
+          const SizedBox(height: 32),
+          // Mes ressources
+          const Text(
+            'Mes ressources',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
             ),
-            const SizedBox(height: 16),
-            // Affichage dynamique des ressources
-            FutureBuilder<List<Map<String, dynamic>>>(
-              future: _resourcesFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+          ),
+          const SizedBox(height: 16),
+          // Affichage dynamique des ressources
+          FutureBuilder<List<Map<String, dynamic>>>(
+            future: _resourcesFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return _listesResourcesVide();
-                }
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return _listesResourcesVide();
+              }
 
-                return _listesResources(resources: snapshot.data!);
-              },
-            ),
-          ],
-        ),
+              return _listesResources(resources: snapshot.data!);
+            },
+          ),
+        ],
       ),
     );
   }
@@ -158,7 +155,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.grey.shade50,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.grey.shade300),
           ),
@@ -198,7 +195,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.grey.shade50,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: Colors.grey.shade300,
@@ -276,7 +273,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
             courseId: resource['courseId'] ?? '',
             uploadDate: resource['uploadDate'] ?? '',
           );
-        }).toList(),
+        }),
       ],
     );
   }
