@@ -63,7 +63,7 @@ class _ArticleState extends State<Article> {
   void _initData() {
     setState(() => _isLoading = true);
 
-    print('🔄 Initialisation des données...');
+    print(' Initialisation des données...');
 
     // Articles
     _articlesSubscription = widget.studentService
@@ -930,38 +930,60 @@ class _ArticleState extends State<Article> {
         SizedBox(height: 20),
         Padding(
           padding: EdgeInsets.symmetric(vertical: 10),
-          child: Text(
-            "Mes résultats",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
+          child: Row(
+            children: [
+              Icon(Icons.grade, color: Color(0xFF3498DB), size: 24),
+              SizedBox(width: 8),
+              Text(
+                "Mes résultats",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
           ),
         ),
         if (_results.isEmpty)
           Container(
             width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+            padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 6,
+                  offset: Offset(0, 2),
                 ),
               ],
             ),
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Text(
-                  'Aucun résultat disponible',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.grade_outlined,
+                  size: 48,
+                  color: Colors.grey.shade400,
                 ),
-              ),
+                SizedBox(height: 16),
+                Text(
+                  'Aucun résultat disponible',
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Vos résultats apparaîtront ici une fois publiés',
+                  style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           )
         else
@@ -982,9 +1004,9 @@ class _ArticleState extends State<Article> {
             child: Column(
               children: [
                 iconColorText(
-                  "Résultats Semestre 1",
+                  "📚 Résultats Semestre 1",
                   Color(0xFF3498DB),
-                  Icons.height,
+                  Icons.school,
                 ),
                 SizedBox(height: 15),
                 tableau(_results),
@@ -2261,92 +2283,79 @@ class _ArticleState extends State<Article> {
   // tableau
 
   Widget tableau(final result) {
-    return Table(
-      border: TableBorder(
-        horizontalInside: BorderSide(color: Color(0xFFEEEEEE), width: 1),
-        top: BorderSide(color: Color(0xFFEEEEEE)),
-        bottom: BorderSide(color: Color(0xFFEEEEEE)),
-      ),
-      columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth(1)},
-      children: [
-        TableRow(
-          decoration: BoxDecoration(color: Color(0xFFEEEEEE)),
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-              child: Text(
-                "Matière",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
-                ),
+    return Column(
+      children: result.map<Widget>((r) {
+        Color gradeColor;
+        if (r.grade >= 16) {
+          gradeColor = Colors.green;
+        } else if (r.grade >= 12) {
+          gradeColor = Colors.blue;
+        } else if (r.grade >= 10) {
+          gradeColor = Colors.orange;
+        } else {
+          gradeColor = Colors.red;
+        }
+
+        return Container(
+          margin: EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 6,
+                offset: Offset(0, 2),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-              child: Text(
-                "Note",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-              child: Text(
-                "Statut",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ],
-        ),
-        for (final r in result)
-          TableRow(
-            decoration: BoxDecoration(color: Colors.white),
+            ],
+            border: Border.all(color: gradeColor.withOpacity(0.3), width: 2),
+          ),
+          child: Row(
             children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-                child: Text(
-                  r.courseName,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      r.courseName,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Statut: ${r.status}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: gradeColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: gradeColor, width: 1),
+                ),
                 child: Text(
                   r.grade.toStringAsFixed(2),
                   style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                child: Text(
-                  r.status,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: gradeColor,
                   ),
                 ),
               ),
             ],
           ),
-      ],
+        );
+      }).toList(),
     );
   }
 

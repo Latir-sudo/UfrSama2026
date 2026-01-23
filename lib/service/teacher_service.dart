@@ -19,7 +19,7 @@ class TeacherService {
           .limit(20)
           .get();
 
-      print('✅ Cours professeur reçus: ${snapshot.docs.length}');
+      print(' Cours professeur reçus: ${snapshot.docs.length}');
       return snapshot.docs
           .map(
             (doc) => {
@@ -33,7 +33,7 @@ class TeacherService {
           )
           .toList();
     } catch (e) {
-      print('❌ Erreur récupération cours: $e');
+      print(' Erreur récupération cours: $e');
       return [];
     }
   }
@@ -47,7 +47,7 @@ class TeacherService {
           .limit(100)
           .get();
 
-      print('✅ Notes récues pour cours $courseId: ${snapshot.docs.length}');
+      print(' Notes récues pour cours $courseId: ${snapshot.docs.length}');
       return snapshot.docs
           .map(
             (doc) => {
@@ -59,7 +59,7 @@ class TeacherService {
           )
           .toList();
     } catch (e) {
-      print('❌ Erreur récupération notes: $e');
+      print(' Erreur récupération notes: $e');
       return [];
     }
   }
@@ -76,7 +76,7 @@ class TeacherService {
           .limit(50)
           .get();
 
-      print('✅ Ressources pédagogiques reçues: ${snapshot.docs.length}');
+      print(' Ressources pédagogiques reçues: ${snapshot.docs.length}');
       return snapshot.docs
           .map(
             (doc) => {
@@ -89,7 +89,7 @@ class TeacherService {
           )
           .toList();
     } catch (e) {
-      print('❌ Erreur récupération ressources: $e');
+      print(' Erreur récupération ressources: $e');
       return [];
     }
   }
@@ -121,7 +121,7 @@ class TeacherService {
               .toList(),
         )
         .handleError((e) {
-          print('❌ Erreur flux cours: $e');
+          print(' Erreur flux cours: $e');
           return [];
         });
   }
@@ -152,7 +152,7 @@ class TeacherService {
               .toList(),
         )
         .handleError((e) {
-          print('❌ Erreur flux requêtes étudiants: $e');
+          print(' Erreur flux requêtes étudiants: $e');
           return [];
         });
   }
@@ -188,9 +188,9 @@ class TeacherService {
         'status': 'Validé',
         'updatedAt': FieldValue.serverTimestamp(),
       });
-      print('✅ Note mise à jour: $resultId -> $newGrade');
+      print(' Note mise à jour: $resultId -> $newGrade');
     } catch (e) {
-      print('❌ Erreur mise à jour note: $e');
+      print(' Erreur mise à jour note: $e');
       rethrow;
     }
   }
@@ -219,12 +219,42 @@ class TeacherService {
         'averageStudentsPerCourse': 25,
       };
     } catch (e) {
-      print('❌ Erreur stats professeur: $e');
+      print(' Erreur stats professeur: $e');
       return {
         'totalCourses': 0,
         'totalGradesSubmitted': 0,
         'averageStudentsPerCourse': 0,
       };
+    }
+  }
+
+  // Get available documents from Firestore (official documents)
+  Future<List<Map<String, dynamic>>> getAvailableDocuments() async {
+    try {
+      final userId = currentUserId;
+
+      final snapshot = await _firestore
+          .collection('documents')
+          .where('uploadedBy', isNotEqualTo: userId ?? '')
+          .limit(50)
+          .get();
+
+      print(' Documents disponibles reçus: ${snapshot.docs.length}');
+      return snapshot.docs
+          .map(
+            (doc) => {
+              'id': doc.id,
+              'title': doc['title'] ?? 'Sans titre',
+              'type': doc['type'] ?? 'PDF',
+              'description': doc['description'] ?? '',
+              'uploadDate': doc['uploadDate']?.toString() ?? '',
+              'category': doc['category'] ?? 'Général',
+            },
+          )
+          .toList();
+    } catch (e) {
+      print(' Erreur récupération documents disponibles: $e');
+      return [];
     }
   }
 
@@ -252,7 +282,7 @@ class TeacherService {
         'email': _auth.currentUser?.email ?? '',
       };
     } catch (e) {
-      print('❌ Erreur récupération profil: $e');
+      print(' Erreur récupération profil: $e');
       return {
         'firstName': 'Enseignant',
         'lastName': '',
@@ -294,7 +324,7 @@ class TeacherService {
           };
         })
         .handleError((e) {
-          print('❌ Erreur flux profil: $e');
+          print(' Erreur flux profil: $e');
           return {'firstName': 'Enseignant', 'lastName': '', 'email': ''};
         });
   }

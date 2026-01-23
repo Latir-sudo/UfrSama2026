@@ -10,24 +10,24 @@ class TestDataInitializer {
   static Future<void> initializeTestData() async {
     final user = _auth.currentUser;
     if (user == null) {
-      print('❌ Utilisateur non authentifié');
+      print(' Utilisateur non authentifié');
       return;
     }
 
-    print('🚀 Initialisation des données de test pour: ${user.uid}');
+    print(' Initialisation des données de test pour: ${user.uid}');
 
     try {
       await _addTestResults(user.uid);
       await _addTestSchedules(user.uid);
-      print('✅ Données de test ajoutées avec succès!');
+      print(' Données de test ajoutées avec succès!');
     } catch (e) {
-      print('❌ Erreur initialisation: $e');
+      print(' Erreur initialisation: $e');
     }
   }
 
   /// Ajoute des résultats de test
   static Future<void> _addTestResults(String studentId) async {
-    print('📊 Ajout des résultats de test...');
+    print(' Ajout des résultats de test...');
 
     final results = [
       {
@@ -76,20 +76,20 @@ class TestDataInitializer {
     for (var doc in oldResults.docs) {
       await doc.reference.delete();
     }
-    print('🗑️  Anciens résultats supprimés');
+    print('  Anciens résultats supprimés');
 
     // Ajouter les nouveaux
     for (var result in results) {
       await _firestore.collection('results').add(result);
-      print('  ✅ ${result['courseName']} (${result['grade']})');
+      print('   ${result['courseName']} (${result['grade']})');
     }
 
-    print('✅ ${results.length} résultats ajoutés');
+    print(' ${results.length} résultats ajoutés');
   }
 
   /// Ajoute l'emploi du temps de test
   static Future<void> _addTestSchedules(String studentId) async {
-    print('📅 Ajout de l\'emploi du temps de test...');
+    print(' Ajout de l\'emploi du temps de test...');
 
     final weekStart = _getWeekStartDate();
 
@@ -162,18 +162,18 @@ class TestDataInitializer {
     for (var doc in oldSchedules.docs) {
       await doc.reference.delete();
     }
-    print('🗑️  Anciens schedules supprimés');
+    print('  Anciens schedules supprimés');
 
     // Ajouter les nouveaux
     for (var schedule in schedules) {
       await _firestore.collection('schedules').add(schedule);
       print(
-        '  ✅ ${schedule['day']} - ${schedule['course']} (${schedule['time']})',
+        '   ${schedule['day']} - ${schedule['course']} (${schedule['time']})',
       );
     }
 
     print(
-      '✅ ${schedules.length} schedules ajoutés pour la semaine du $weekStart',
+      ' ${schedules.length} schedules ajoutés pour la semaine du $weekStart',
     );
   }
 

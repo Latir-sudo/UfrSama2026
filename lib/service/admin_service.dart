@@ -22,7 +22,7 @@ class AdminService {
         'students': studentsSnapshot.docs.length,
       };
     } catch (e) {
-      print('❌ Erreur stats utilisateurs: $e');
+      print(' Erreur stats utilisateurs: $e');
       return {'totalUsers': 0, 'teachers': 0, 'students': 0};
     }
   }
@@ -31,7 +31,7 @@ class AdminService {
   Future<List<Map<String, dynamic>>> getFormations() async {
     try {
       final snapshot = await _firestore.collection('courses').limit(20).get();
-      print('✅ Formations reçues: ${snapshot.docs.length}');
+      print(' Formations reçues: ${snapshot.docs.length}');
       return snapshot.docs
           .map(
             (doc) => {
@@ -45,7 +45,7 @@ class AdminService {
           )
           .toList();
     } catch (e) {
-      print('❌ Erreur récupération formations: $e');
+      print(' Erreur récupération formations: $e');
       return [];
     }
   }
@@ -54,7 +54,7 @@ class AdminService {
   Future<List<Map<String, dynamic>>> getUsersList() async {
     try {
       final snapshot = await _firestore.collection('users').limit(50).get();
-      print('✅ Utilisateurs reçus: ${snapshot.docs.length}');
+      print(' Utilisateurs reçus: ${snapshot.docs.length}');
       return snapshot.docs
           .map(
             (doc) => {
@@ -67,7 +67,7 @@ class AdminService {
           )
           .toList();
     } catch (e) {
-      print('❌ Erreur récupération utilisateurs: $e');
+      print(' Erreur récupération utilisateurs: $e');
       return [];
     }
   }
@@ -76,7 +76,7 @@ class AdminService {
   Future<List<Map<String, dynamic>>> getOfficialDocuments() async {
     try {
       final snapshot = await _firestore.collection('documents').limit(30).get();
-      print('✅ Documents officiels reçus: ${snapshot.docs.length}');
+      print(' Documents officiels reçus: ${snapshot.docs.length}');
       return snapshot.docs
           .map(
             (doc) => {
@@ -89,7 +89,7 @@ class AdminService {
           )
           .toList();
     } catch (e) {
-      print('❌ Erreur récupération documents: $e');
+      print(' Erreur récupération documents: $e');
       return [];
     }
   }

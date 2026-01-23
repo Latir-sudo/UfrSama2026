@@ -140,6 +140,7 @@ class _InscriptionPageState extends State<InscriptionPage> {
 
   @override
   Widget build(BuildContext context) {
+    print('Building InscriptionPage');
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
