@@ -201,14 +201,14 @@ class _ArticleState extends State<Article> {
         );
         break;
       case "Actualités":
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Section Actualités en construction')),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (context) => const NewsPage()));
         break;
       case "Message":
-        ScaffoldMessenger.of(
+        Navigator.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Messagerie en construction')));
+        ).push(MaterialPageRoute(builder: (context) => const MessagingPage()));
         break;
       default:
         break;
