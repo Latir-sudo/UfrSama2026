@@ -72,7 +72,7 @@ Chaque collection contient des documents avec des champs appropriés selon le ty
 Le projet est organisé selon cette architecture :
 
 lib/
-|-- main.dart                     Point d'entrée de l'application
+|-- accueilpricipale.dart         Point d'entrée de l'application
 |-- firebase_options.dart         Configuration Firebase
 |-- constant.dart                 Constantes globales
 |-- LandingPage.dart              Page de redirection selon le rôle
