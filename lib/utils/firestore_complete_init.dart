@@ -10,11 +10,11 @@ class FirestoreCompleteInit {
   static Future<void> initializeAllCollections() async {
     final user = _auth.currentUser;
     if (user == null) {
-      print('❌ Utilisateur non authentifié');
+      print(' Utilisateur non authentifié');
       return;
     }
 
-    print('🚀 Initialisation complète de Firestore pour: ${user.uid}');
+    print(' Initialisation complète de Firestore pour: ${user.uid}');
     print('═' * 60);
 
     try {
@@ -34,16 +34,16 @@ class FirestoreCompleteInit {
       await _initNotifications(user.uid);
 
       print('═' * 60);
-      print('✅ INITIALISATION COMPLÈTE RÉUSSIE!');
-      print('📊 Toutes les collections ont été créées et peuplées');
+      print(' INITIALISATION COMPLÈTE RÉUSSIE!');
+      print(' Toutes les collections ont été créées et peuplées');
     } catch (e) {
-      print('❌ Erreur initialisation: $e');
+      print(' Erreur initialisation: $e');
     }
   }
 
   /// 1. COLLECTION 'articles' - Articles et ressources éducatives
   static Future<void> _initArticles(String userId) async {
-    print('\n📚 Initialisation des ARTICLES...');
+    print('\n Initialisation des ARTICLES...');
     final articles = [
       {
         'title': 'Introduction à Flutter',
@@ -96,12 +96,12 @@ class FirestoreCompleteInit {
     ];
 
     await _addCollectionData('articles', articles);
-    print('  ✅ ${articles.length} articles ajoutés');
+    print('   ${articles.length} articles ajoutés');
   }
 
   /// 2. COLLECTION 'events' - Événements universitaires
   static Future<void> _initEvents(String userId) async {
-    print('\n🎉 Initialisation des ÉVÉNEMENTS...');
+    print('\n Initialisation des ÉVÉNEMENTS...');
     final events = [
       {
         'title': 'Session de Tutorat Mathématiques',
@@ -151,12 +151,12 @@ class FirestoreCompleteInit {
     ];
 
     await _addCollectionData('events', events);
-    print('  ✅ ${events.length} événements ajoutés');
+    print('   ${events.length} événements ajoutés');
   }
 
   /// 3. COLLECTION 'results' - Résultats académiques
   static Future<void> _initResults(String userId) async {
-    print('\n📊 Initialisation des RÉSULTATS...');
+    print('\n Initialisation des RÉSULTATS...');
     final results = [
       {
         'studentId': userId,
@@ -206,12 +206,12 @@ class FirestoreCompleteInit {
     ];
 
     await _addCollectionData('results', results);
-    print('  ✅ ${results.length} résultats ajoutés');
+    print('   ${results.length} résultats ajoutés');
   }
 
   /// 4. COLLECTION 'schedules' - Emploi du temps
   static Future<void> _initSchedules(String userId) async {
-    print('\n📅 Initialisation des SCHEDULES...');
+    print('\n Initialisation des SCHEDULES...');
     final weekStart = _getWeekStartDate();
     final schedules = [
       {
@@ -288,13 +288,13 @@ class FirestoreCompleteInit {
 
     await _addCollectionData('schedules', schedules);
     print(
-      '  ✅ ${schedules.length} schedules ajoutés pour la semaine du $weekStart',
+      '   ${schedules.length} schedules ajoutés pour la semaine du $weekStart',
     );
   }
 
   /// 5. COLLECTION 'documents' - Documents étudiants
   static Future<void> _initDocuments(String userId) async {
-    print('\n📄 Initialisation des DOCUMENTS...');
+    print('\ Initialisation des DOCUMENTS...');
     final documents = [
       {
         'studentId': userId,
@@ -338,7 +338,7 @@ class FirestoreCompleteInit {
     ];
 
     await _addCollectionData('documents', documents);
-    print('  ✅ ${documents.length} documents ajoutés');
+    print('   ${documents.length} documents ajoutés');
   }
 
   /// 6. COLLECTION 'users' - Profils utilisateurs
@@ -366,12 +366,12 @@ class FirestoreCompleteInit {
     ];
 
     await _addCollectionData('users', users);
-    print('  ✅ ${users.length} profil utilisateur créé');
+    print('   ${users.length} profil utilisateur créé');
   }
 
   /// 7. COLLECTION 'exams' - Examens
   static Future<void> _initExams(String userId) async {
-    print('\n✏️  Initialisation des EXAMENS...');
+    print('\n  Initialisation des EXAMENS...');
     final exams = [
       {
         'title': 'Examen Mathématiques S1',
@@ -414,12 +414,12 @@ class FirestoreCompleteInit {
     ];
 
     await _addCollectionData('exams', exams);
-    print('  ✅ ${exams.length} examens ajoutés');
+    print('   ${exams.length} examens ajoutés');
   }
 
   /// 8. COLLECTION 'requests' - Demandes administratives
   static Future<void> _initRequests(String userId) async {
-    print('\n📋 Initialisation des DEMANDES ADMINISTRATIVES...');
+    print('\n Initialisation des DEMANDES ADMINISTRATIVES...');
     final requests = [
       {
         'studentId': userId,
@@ -448,12 +448,12 @@ class FirestoreCompleteInit {
     ];
 
     await _addCollectionData('requests', requests);
-    print('  ✅ ${requests.length} demandes ajoutées');
+    print('   ${requests.length} demandes ajoutées');
   }
 
   /// 9. COLLECTION 'news' - Actualités universitaires
   static Future<void> _initNews(String userId) async {
-    print('\n📰 Initialisation des ACTUALITÉS...');
+    print('\n Initialisation des ACTUALITÉS...');
     final news = [
       {
         'title': 'Ouverture des inscriptions administratives',
@@ -486,12 +486,12 @@ class FirestoreCompleteInit {
     ];
 
     await _addCollectionData('news', news);
-    print('  ✅ ${news.length} actualités ajoutées');
+    print('   ${news.length} actualités ajoutées');
   }
 
   /// 10. COLLECTION 'courses' - Cours/Unités d'enseignement
   static Future<void> _initCourses(String userId) async {
-    print('\n📚 Initialisation des COURS...');
+    print('\n Initialisation des COURS...');
     final courses = [
       {
         'courseId': 'INF301',
@@ -539,12 +539,12 @@ class FirestoreCompleteInit {
     ];
 
     await _addCollectionData('courses', courses);
-    print('  ✅ ${courses.length} cours ajoutés');
+    print('   ${courses.length} cours ajoutés');
   }
 
   /// 11. COLLECTION 'notifications' - Notifications utilisateurs
   static Future<void> _initNotifications(String userId) async {
-    print('\n🔔 Initialisation des NOTIFICATIONS...');
+    print('\n Initialisation des NOTIFICATIONS...');
     final notifications = [
       {
         'userId': userId,
@@ -576,7 +576,7 @@ class FirestoreCompleteInit {
     ];
 
     await _addCollectionData('notifications', notifications);
-    print('  ✅ ${notifications.length} notifications ajoutées');
+    print('   ${notifications.length} notifications ajoutées');
   }
 
   /// Fonction utilitaire pour ajouter les données d'une collection
@@ -599,7 +599,7 @@ class FirestoreCompleteInit {
       }
       await batch.commit();
     } catch (e) {
-      print('  ⚠️  Erreur lors de l\'ajout à $collectionName: $e');
+      print('    Erreur lors de l\'ajout à $collectionName: $e');
     }
   }
 

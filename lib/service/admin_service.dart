@@ -22,7 +22,7 @@ class AdminService {
         'students': studentsSnapshot.docs.length,
       };
     } catch (e) {
-      print('❌ Erreur stats utilisateurs: $e');
+      print(' Erreur stats utilisateurs: $e');
       return {'totalUsers': 0, 'teachers': 0, 'students': 0};
     }
   }
@@ -31,6 +31,7 @@ class AdminService {
   Future<List<Map<String, dynamic>>> getFormations() async {
     try {
       final snapshot = await _firestore.collection('courses').limit(20).get();
+<<<<<<< HEAD
       print('✅ Formations reçues: ${snapshot.docs.length}');
       return snapshot.docs.map((doc) {
         final data = doc.data();
@@ -47,8 +48,23 @@ class AdminService {
           'status': data['status'] ?? 'Active',
         };
       }).toList();
+=======
+      print(' Formations reçues: ${snapshot.docs.length}');
+      return snapshot.docs
+          .map(
+            (doc) => {
+              'id': doc.id,
+              'name': doc['name'] ?? 'Sans nom',
+              'ufr': doc['ufr'] ?? 'Sans UFR',
+              'level': doc['level'] ?? 'N/A',
+              'studentCount': doc['studentCount'] ?? 0,
+              'status': doc['status'] ?? 'Active',
+            },
+          )
+          .toList();
+>>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
     } catch (e) {
-      print('❌ Erreur récupération formations: $e');
+      print(' Erreur récupération formations: $e');
       return [];
     }
   }
@@ -57,6 +73,7 @@ class AdminService {
   Future<List<Map<String, dynamic>>> getUsersList() async {
     try {
       final snapshot = await _firestore.collection('users').limit(50).get();
+<<<<<<< HEAD
       print('✅ Utilisateurs reçus: ${snapshot.docs.length}');
       return snapshot.docs.map((doc) {
         final data = doc.data();
@@ -74,8 +91,22 @@ class AdminService {
           'status': data['status'] ?? 'Active',
         };
       }).toList();
+=======
+      print(' Utilisateurs reçus: ${snapshot.docs.length}');
+      return snapshot.docs
+          .map(
+            (doc) => {
+              'id': doc.id,
+              'name': doc['name'] ?? 'Sans nom',
+              'email': doc['email'] ?? 'Sans email',
+              'role': doc['role'] ?? 'etudiant',
+              'status': doc['status'] ?? 'Active',
+            },
+          )
+          .toList();
+>>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
     } catch (e) {
-      print('❌ Erreur récupération utilisateurs: $e');
+      print(' Erreur récupération utilisateurs: $e');
       return [];
     }
   }
@@ -84,6 +115,7 @@ class AdminService {
   Future<List<Map<String, dynamic>>> getOfficialDocuments() async {
     try {
       final snapshot = await _firestore.collection('documents').limit(30).get();
+<<<<<<< HEAD
       print('✅ Documents officiels reçus: ${snapshot.docs.length}');
       return snapshot.docs.map((doc) {
         final data = doc.data();
@@ -95,8 +127,22 @@ class AdminService {
           'size': data['size'] ?? 0,
         };
       }).toList();
+=======
+      print(' Documents officiels reçus: ${snapshot.docs.length}');
+      return snapshot.docs
+          .map(
+            (doc) => {
+              'id': doc.id,
+              'title': doc['title'] ?? 'Sans titre',
+              'type': doc['type'] ?? 'PDF',
+              'uploadDate': doc['uploadDate']?.toString() ?? '',
+              'size': doc['size'] ?? 0,
+            },
+          )
+          .toList();
+>>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
     } catch (e) {
-      print('❌ Erreur récupération documents: $e');
+      print(' Erreur récupération documents: $e');
       return [];
     }
   }

@@ -7,7 +7,7 @@ class FirestoreInitializer {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  static const String TAG = '🔄 FirestoreInit';
+  static const String TAG = ' FirestoreInit';
 
   /// Initialiser toutes les collections
   Future<void> initializeAllCollections() async {
@@ -62,9 +62,9 @@ class FirestoreInitializer {
       // Créer les données spécifiques aux enseignants
       await _initializeTeacherData();
 
-      print('$TAG: ✅ Initialisation complète réussie!');
+      print('$TAG:  Initialisation complète réussie!');
     } catch (e) {
-      print('$TAG: ❌ Erreur lors de l\'initialisation: $e');
+      print('$TAG:  Erreur lors de l\'initialisation: $e');
     }
   }
 
@@ -209,7 +209,7 @@ class FirestoreInitializer {
       // Vérifier si les utilisateurs existent déjà
       final existingUsers = await usersRef.limit(1).get();
       if (existingUsers.docs.isNotEmpty) {
-        print('$TAG: ⏭️  Les utilisateurs existent déjà');
+        print('$TAG:   Les utilisateurs existent déjà');
         return;
       }
 
@@ -238,6 +238,14 @@ class FirestoreInitializer {
         },
         {
           'name': 'Fatou Sarr',
+          'email': 'adminfatou@gmail.com',
+          'role': 'admin',
+          'status': 'Active',
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+
+        {
+          'name': 'Fatou Sarr',
           'email': 'fatou.sarr@uadb.edu.sn',
           'role': 'etudiant',
           'status': 'Active',
@@ -258,9 +266,9 @@ class FirestoreInitializer {
       }
 
       await batch.commit();
-      print('$TAG: ✅ ${users.length} utilisateurs créés');
+      print('$TAG:  ${users.length} utilisateurs créés');
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation utilisateurs: $e');
+      print('$TAG:  Erreur initialisation utilisateurs: $e');
     }
   }
 
@@ -277,7 +285,7 @@ class FirestoreInitializer {
           .limit(1)
           .get();
       if (existingTeachers.docs.isNotEmpty) {
-        print('$TAG: ⏭️ Des enseignants existent déjà');
+        print('$TAG: Des enseignants existent déjà');
         return;
       }
 
@@ -315,10 +323,14 @@ class FirestoreInitializer {
 
       await batch.commit();
       print(
+<<<<<<< HEAD
         '$TAG: ✅ ${teachers.length} enseignants créés (Mot de passe par défaut: Passer123)',
+=======
+        '$TAG:  ${teachers.length} enseignants créés (Mot de passe par défaut: Passer123)',
+>>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
       );
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation enseignants: $e');
+      print('$TAG:  Erreur initialisation enseignants: $e');
     }
   }
 
@@ -331,7 +343,7 @@ class FirestoreInitializer {
 
       final existing = await coursesRef.limit(1).get();
       if (existing.docs.isNotEmpty) {
-        print('$TAG: ⏭️  Les formations existent déjà');
+        print('$TAG:  Les formations existent déjà');
         return;
       }
 
@@ -384,9 +396,9 @@ class FirestoreInitializer {
       }
 
       await batch.commit();
-      print('$TAG: ✅ ${courses.length} formations créées');
+      print('$TAG:  ${courses.length} formations créées');
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation formations: $e');
+      print('$TAG:  Erreur initialisation formations: $e');
     }
   }
 
@@ -399,7 +411,7 @@ class FirestoreInitializer {
 
       final existing = await articlesRef.limit(1).get();
       if (existing.docs.isNotEmpty) {
-        print('$TAG: ⏭️  Les articles existent déjà');
+        print('$TAG:   Les articles existent déjà');
         return;
       }
 
@@ -442,9 +454,9 @@ class FirestoreInitializer {
       }
 
       await batch.commit();
-      print('$TAG: ✅ ${articles.length} articles créés');
+      print('$TAG:  ${articles.length} articles créés');
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation articles: $e');
+      print('$TAG:  Erreur initialisation articles: $e');
     }
   }
 
@@ -457,7 +469,7 @@ class FirestoreInitializer {
 
       final existing = await eventsRef.limit(1).get();
       if (existing.docs.isNotEmpty) {
-        print('$TAG: ⏭️  Les événements existent déjà');
+        print('$TAG:   Les événements existent déjà');
         return;
       }
 
@@ -499,9 +511,9 @@ class FirestoreInitializer {
       }
 
       await batch.commit();
-      print('$TAG: ✅ ${events.length} événements créés');
+      print('$TAG:  ${events.length} événements créés');
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation événements: $e');
+      print('$TAG:  Erreur initialisation événements: $e');
     }
   }
 
@@ -511,7 +523,7 @@ class FirestoreInitializer {
       print('$TAG: Initialisation des résultats...');
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
-        print('$TAG: ⚠️  Pas d\'utilisateur connecté, résultats non créés');
+        print('$TAG:   Pas d\'utilisateur connecté, résultats non créés');
         return;
       }
 
@@ -581,10 +593,10 @@ class FirestoreInitializer {
 
       await batch.commit();
       print(
-        '$TAG: ✅ ${results.length} résultats créés pour utilisateur $userId',
+        '$TAG:  ${results.length} résultats créés pour utilisateur $userId',
       );
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation résultats: $e');
+      print('$TAG:  Erreur initialisation résultats: $e');
     }
   }
 
@@ -595,7 +607,7 @@ class FirestoreInitializer {
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
         print(
-          '$TAG: ⚠️  Pas d\'utilisateur connecté, emploi du temps non créé',
+          '$TAG:   Pas d\'utilisateur connecté, emploi du temps non créé',
         );
         return;
       }
@@ -681,10 +693,10 @@ class FirestoreInitializer {
 
       await batch.commit();
       print(
-        '$TAG: ✅ ${schedules.length} créneaux créés pour utilisateur $userId',
+        '$TAG:  ${schedules.length} créneaux créés pour utilisateur $userId',
       );
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation emploi du temps: $e');
+      print('$TAG:  Erreur initialisation emploi du temps: $e');
     }
   }
 
@@ -697,7 +709,7 @@ class FirestoreInitializer {
 
       final existing = await docsRef.limit(1).get();
       if (existing.docs.isNotEmpty) {
-        print('$TAG: ⏭️  Les documents existent déjà');
+        print('$TAG:   Les documents existent déjà');
         return;
       }
 
@@ -734,9 +746,9 @@ class FirestoreInitializer {
       }
 
       await batch.commit();
-      print('$TAG: ✅ ${documents.length} documents créés');
+      print('$TAG:  ${documents.length} documents créés');
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation documents: $e');
+      print('$TAG:  Erreur initialisation documents: $e');
     }
   }
 
@@ -749,7 +761,7 @@ class FirestoreInitializer {
 
       final existing = await examsRef.limit(1).get();
       if (existing.docs.isNotEmpty) {
-        print('$TAG: ⏭️  Les examens existent déjà');
+        print('$TAG:   Les examens existent déjà');
         return;
       }
 
@@ -790,9 +802,9 @@ class FirestoreInitializer {
       }
 
       await batch.commit();
-      print('$TAG: ✅ ${exams.length} examens créés');
+      print('$TAG:  ${exams.length} examens créés');
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation examens: $e');
+      print('$TAG:  Erreur initialisation examens: $e');
     }
   }
 
@@ -805,7 +817,7 @@ class FirestoreInitializer {
 
       final existing = await requestsRef.limit(1).get();
       if (existing.docs.isNotEmpty) {
-        print('$TAG: ⏭️  Les demandes existent déjà');
+        print('$TAG:   Les demandes existent déjà');
         return;
       }
 
@@ -842,9 +854,9 @@ class FirestoreInitializer {
       }
 
       await batch.commit();
-      print('$TAG: ✅ ${requests.length} demandes créées');
+      print('$TAG:  ${requests.length} demandes créées');
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation demandes: $e');
+      print('$TAG:  Erreur initialisation demandes: $e');
     }
   }
 
@@ -857,7 +869,7 @@ class FirestoreInitializer {
 
       final existing = await newsRef.limit(1).get();
       if (existing.docs.isNotEmpty) {
-        print('$TAG: ⏭️  Les actualités existent déjà');
+        print('$TAG:   Les actualités existent déjà');
         return;
       }
 
@@ -893,9 +905,9 @@ class FirestoreInitializer {
       }
 
       await batch.commit();
-      print('$TAG: ✅ ${news.length} actualités créées');
+      print('$TAG:  ${news.length} actualités créées');
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation actualités: $e');
+      print('$TAG:  Erreur initialisation actualités: $e');
     }
   }
 
@@ -906,7 +918,7 @@ class FirestoreInitializer {
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
         print(
-          '$TAG: ⚠️  Pas d\'utilisateur connecté, notifications non créées',
+          '$TAG:   Pas d\'utilisateur connecté, notifications non créées',
         );
         return;
       }
@@ -948,10 +960,10 @@ class FirestoreInitializer {
 
       await batch.commit();
       print(
-        '$TAG: ✅ ${notifications.length} notifications créées pour utilisateur $userId',
+        '$TAG:  ${notifications.length} notifications créées pour utilisateur $userId',
       );
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation notifications: $e');
+      print('$TAG:  Erreur initialisation notifications: $e');
     }
   }
 
@@ -976,11 +988,11 @@ class FirestoreInitializer {
               'Firebase pour Mobile',
             ],
           });
-          print('$TAG: ✅ Favoris mis à jour pour $userId');
+          print('$TAG: Favoris mis à jour pour $userId');
         }
       }
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation favoris: $e');
+      print('$TAG:  Erreur initialisation favoris: $e');
     }
   }
 
@@ -991,7 +1003,11 @@ class FirestoreInitializer {
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
         print(
+<<<<<<< HEAD
           '$TAG: ⚠️ Pas d\'utilisateur connecté pour les données enseignant',
+=======
+          '$TAG:  Pas d\'utilisateur connecté pour les données enseignant',
+>>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
         );
         return;
       }
@@ -1135,9 +1151,9 @@ class FirestoreInitializer {
       }
 
       await batch.commit();
-      print('$TAG: ✅ Données enseignant initialisées pour $userId');
+      print('$TAG:  Données enseignant initialisées pour $userId');
     } catch (e) {
-      print('$TAG: ❌ Erreur initialisation données enseignant: $e');
+      print('$TAG:  Erreur initialisation données enseignant: $e');
     }
   }
 }

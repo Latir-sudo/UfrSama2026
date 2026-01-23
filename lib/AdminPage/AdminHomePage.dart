@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:sama_ufr/AdminPage/admin.dart';
 import 'package:sama_ufr/login_page.dart';
 import 'package:sama_ufr/service/auth.dart';
+<<<<<<< HEAD
 import 'package:sama_ufr/Accueil/accueilPrincipal.dart';
+=======
+import 'package:google_fonts/google_fonts.dart';
+>>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({super.key});
@@ -23,14 +27,18 @@ class _AdminHomePageState extends State<AdminHomePage> {
           centerTitle: true,
           flexibleSpace: entete(
             titre: 'Espace Administrateur',
-            sousTitre: 'Bienvenue ,Admin',
-            couleurs: [Color(0xFFE74C3C), Color(0xFFF39C12)],
+            sousTitre: 'Bienvenue, Admin',
+            couleurs: [const Color(0xFFE74C3C), const Color(0xFFF39C12)],
             icon: Icons.logout,
             onIconPressed: () {
               Auth().signOut();
               Navigator.push(
                 context,
+<<<<<<< HEAD
                 MaterialPageRoute(builder: (context) => Accueilprincipal()),
+=======
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+>>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
               );
             },
           ),
@@ -67,7 +75,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
             children: [
               Text(
                 titre,
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white.withOpacity(0.9),
@@ -76,7 +84,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
               const SizedBox(height: 4),
               Text(
                 sousTitre,
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   fontSize: 16,
                   color: Colors.white.withOpacity(0.8),
                 ),

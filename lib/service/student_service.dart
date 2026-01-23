@@ -77,7 +77,7 @@ class StudentService {
   Future<List<CourseResult>> getStudentResults() async {
     final user = _auth.currentUser;
     if (user == null) {
-      print('⚠️ Utilisateur non authentifié pour résultats');
+      print(' Utilisateur non authentifié pour résultats');
       return [];
     }
 
@@ -88,9 +88,9 @@ class StudentService {
           .where('studentId', isEqualTo: user.uid)
           .get();
 
-      print('📊 Nombre de résultats trouvés: ${query.docs.length}');
+      print(' Nombre de résultats trouvés: ${query.docs.length}');
       for (var doc in query.docs) {
-        print('📄 Résultat: ${doc.data()}');
+        print(' Résultat: ${doc.data()}');
       }
 
       final results = query.docs.map((doc) {
@@ -98,7 +98,7 @@ class StudentService {
       }).toList();
       return results;
     } catch (e) {
-      print('❌ Erreur récupération résultats: $e');
+      print(' Erreur récupération résultats: $e');
       return [];
     }
   }
@@ -107,7 +107,7 @@ class StudentService {
   Stream<List<Schedule>> getScheduleStream(String weekStart) {
     final user = _auth.currentUser;
     if (user == null) {
-      print('⚠️ Utilisateur non authentifié pour schedules');
+      print(' Utilisateur non authentifié pour schedules');
       return Stream.value([]);
     }
 
@@ -119,17 +119,17 @@ class StudentService {
         .snapshots()
         .map((snapshot) {
           print(
-            '📅 Schedules snapshot reçu: ${snapshot.docs.length} documents',
+            ' Schedules snapshot reçu: ${snapshot.docs.length} documents',
           );
           for (var doc in snapshot.docs) {
-            print('📄 Schedule: ${doc.data()}');
+            print(' Schedule: ${doc.data()}');
           }
           return snapshot.docs.map((doc) {
             return Schedule.fromFirestore(doc);
           }).toList();
         })
         .handleError((error) {
-          print('❌ Erreur emploi du temps: $error');
+          print(' Erreur emploi du temps: $error');
           return <Schedule>[];
         });
   }

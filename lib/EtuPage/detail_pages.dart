@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sama_ufr/EtuPage/models.dart';
 import 'package:sama_ufr/service/student_service.dart';
 import 'package:sama_ufr/utils/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// Page détaillée pour les événements
 class EventDetailPage extends StatelessWidget {
@@ -35,14 +36,25 @@ class EventDetailPage extends StatelessWidget {
               height: 250,
               width: double.infinity,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: AppColors.gradientPurpleBlue,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                image: DecorationImage(
+                  image: AssetImage('assets/images/livre.jpg'),
+                  fit: BoxFit.cover,
                 ),
               ),
-              child: Center(
-                child: Icon(Icons.event, size: 80, color: Colors.white),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withOpacity(0.3),
+                      Colors.black.withOpacity(0.1),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: Center(
+                  child: Icon(Icons.event, size: 80, color: Colors.white),
+                ),
               ),
             ),
 
@@ -207,9 +219,16 @@ class ResultsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: Text('Mes Résultats'),
+        title: Text(
+          'Mes Résultats',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -220,67 +239,345 @@ class ResultsPage extends StatelessWidget {
           ),
         ),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_list, color: Colors.white),
+            onPressed: () {
+              // : Implémenter le filtrage
+            },
+          ),
+        ],
       ),
-      body: results.isEmpty
-          ? Center(child: Text('Aucun résultat disponible'))
-          : ListView.builder(
-              itemCount: results.length,
-              padding: EdgeInsets.all(16),
-              itemBuilder: (context, index) {
-                final result = results[index];
-                final isValid = result.status.toLowerCase() == 'valid';
+      body: results.isEmpty ? _buildEmptyState() : _buildResultsList(),
+    );
+  }
 
-                return Card(
-                  margin: EdgeInsets.only(bottom: 12),
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              result.courseName,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isValid ? Colors.green : Colors.red,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                result.grade.toString(),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.school_outlined,
+              size: 64,
+              color: AppColors.secondary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Aucun résultat disponible',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[700],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Vos résultats apparaîtront ici une fois publiés',
+            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[500]),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResultsList() {
+    // Calculer les statistiques
+    final validResults = results
+        .where((r) => r.status.toLowerCase() == 'valid')
+        .toList();
+    final average = validResults.isNotEmpty
+        ? validResults.map((r) => r.grade).reduce((a, b) => a + b) /
+              validResults.length
+        : 0.0;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Statistiques générales
+          _buildStatisticsCard(average, validResults.length, results.length),
+          const SizedBox(height: 24),
+
+          // Titre des résultats
+          Text(
+            'Détail des résultats',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Liste des résultats
+          ...results.map((result) => _buildResultCard(result)).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatisticsCard(double average, int validCount, int totalCount) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: AppColors.gradientGreenTurquoise,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.secondary.withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildStatItem(
+            'Moyenne',
+            '${average.toStringAsFixed(1)}/20',
+            Icons.grade,
+          ),
+          Container(height: 40, width: 1, color: Colors.white.withOpacity(0.3)),
+          _buildStatItem(
+            'Validés',
+            '$validCount/$totalCount',
+            Icons.check_circle,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String label, String value, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, color: Colors.white, size: 24),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontSize: 12,
+            color: Colors.white.withOpacity(0.8),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResultCard(CourseResult result) {
+    final grade = result.grade;
+    final isValid = result.status.toLowerCase() == 'valid';
+
+    // Déterminer la couleur basée sur la note
+    Color gradeColor;
+    Color backgroundColor;
+    IconData gradeIcon;
+    String gradeText;
+
+    if (grade >= 16) {
+      gradeColor = const Color(0xFF4CAF50); // Vert
+      backgroundColor = const Color(0xFFE8F5E8);
+      gradeIcon = Icons.star;
+      gradeText = 'Excellent';
+    } else if (grade >= 14) {
+      gradeColor = const Color(0xFF2196F3); // Bleu
+      backgroundColor = const Color(0xFFE3F2FD);
+      gradeIcon = Icons.thumb_up;
+      gradeText = 'Très bien';
+    } else if (grade >= 12) {
+      gradeColor = const Color(0xFF009688); // Turquoise
+      backgroundColor = const Color(0xFFE0F2F1);
+      gradeIcon = Icons.check_circle;
+      gradeText = 'Bien';
+    } else if (grade >= 10) {
+      gradeColor = const Color(0xFFFF9800); // Orange
+      backgroundColor = const Color(0xFFFFF3E0);
+      gradeIcon = Icons.warning;
+      gradeText = 'Passable';
+    } else {
+      gradeColor = const Color(0xFFF44336); // Rouge
+      backgroundColor = const Color(0xFFFFEBEE);
+      gradeIcon = Icons.error;
+      gradeText = 'Insuffisant';
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                // Icône du cours
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    _getCourseIcon(result.courseName),
+                    color: gradeColor,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Informations du cours
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        result.courseName,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Statut: ${result.status}',
-                          style: TextStyle(
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isValid ? Colors.green[50] : Colors.red[50],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          result.status,
+                          style: GoogleFonts.poppins(
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: isValid
+                                ? Colors.green[700]
+                                : Colors.red[700],
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ],
+                      ),
+                    ],
+                  ),
+                ),
+                // Note
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: gradeColor,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: gradeColor.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    grade.toStringAsFixed(1),
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                );
-              },
+                ),
+              ],
             ),
+            const SizedBox(height: 16),
+            // Barre de progression et appréciation
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        gradeText,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: gradeColor,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(
+                        value: grade / 20,
+                        backgroundColor: Colors.grey[200],
+                        valueColor: AlwaysStoppedAnimation<Color>(gradeColor),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Icon(gradeIcon, color: gradeColor, size: 28),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
+  }
+
+  IconData _getCourseIcon(String courseName) {
+    final name = courseName.toLowerCase();
+    if (name.contains('math') || name.contains('algèbre')) {
+      return Icons.calculate;
+    } else if (name.contains('physique')) {
+      return Icons.science;
+    } else if (name.contains('info') || name.contains('programmation')) {
+      return Icons.computer;
+    } else if (name.contains('anglais') || name.contains('langue')) {
+      return Icons.language;
+    } else if (name.contains('base') || name.contains('donnée')) {
+      return Icons.storage;
+    } else {
+      return Icons.school;
+    }
   }
 }
 

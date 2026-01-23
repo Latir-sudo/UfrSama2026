@@ -14,6 +14,7 @@ class Landingpage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firestoreService = FirestoreService();
+    print('Building LandingPage');
 
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
