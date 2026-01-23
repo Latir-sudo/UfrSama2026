@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sama_ufr/login_page.dart';
+import 'package:sama_ufr/InscriptionPage.dart';
 
 class Accueilprincipal extends StatefulWidget {
   const Accueilprincipal({super.key});
