@@ -50,7 +50,7 @@ class FirestoreInitializer {
 
       // Créer les notifications
       await _initializeNotifications();
-      
+
       // Ajouter des favoris par défaut pour l'utilisateur actuel
       await _initializeFavorites();
 
@@ -102,6 +102,14 @@ class FirestoreInitializer {
         },
         {
           'name': 'Fatou Sarr',
+          'email': 'adminfatou@gmail.com',
+          'role': 'admin',
+          'status': 'Active',
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+
+        {
+          'name': 'Fatou Sarr',
           'email': 'fatou.sarr@uadb.edu.sn',
           'role': 'etudiant',
           'status': 'Active',
@@ -136,7 +144,10 @@ class FirestoreInitializer {
       final usersRef = _firestore.collection('users');
 
       // On vérifie s'il y a déjà des enseignants
-      final existingTeachers = await usersRef.where('role', isEqualTo: 'enseignant').limit(1).get();
+      final existingTeachers = await usersRef
+          .where('role', isEqualTo: 'enseignant')
+          .limit(1)
+          .get();
       if (existingTeachers.docs.isNotEmpty) {
         print('$TAG: ⏭️ Des enseignants existent déjà');
         return;
@@ -175,7 +186,9 @@ class FirestoreInitializer {
       }
 
       await batch.commit();
-      print('$TAG: ✅ ${teachers.length} enseignants créés (Mot de passe par défaut: Passer123)');
+      print(
+        '$TAG: ✅ ${teachers.length} enseignants créés (Mot de passe par défaut: Passer123)',
+      );
     } catch (e) {
       print('$TAG: ❌ Erreur initialisation enseignants: $e');
     }
@@ -821,10 +834,10 @@ class FirestoreInitializer {
       if (userId == null) return;
 
       print('$TAG: Initialisation des favoris pour $userId...');
-      
+
       final userRef = _firestore.collection('users').doc(userId);
       final userDoc = await userRef.get();
-      
+
       if (userDoc.exists) {
         final data = userDoc.data() as Map<String, dynamic>;
         if (data['favorites'] == null || (data['favorites'] as List).isEmpty) {
@@ -832,8 +845,8 @@ class FirestoreInitializer {
             'favorites': [
               'Introduction à Flutter',
               'Programmation Dart',
-              'Firebase pour Mobile'
-            ]
+              'Firebase pour Mobile',
+            ],
           });
           print('$TAG: ✅ Favoris mis à jour pour $userId');
         }
@@ -849,7 +862,9 @@ class FirestoreInitializer {
       print('$TAG: Initialisation des données enseignant...');
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
-        print('$TAG: ⚠️ Pas d\'utilisateur connecté pour les données enseignant');
+        print(
+          '$TAG: ⚠️ Pas d\'utilisateur connecté pour les données enseignant',
+        );
         return;
       }
 
@@ -871,7 +886,10 @@ class FirestoreInitializer {
 
       // 2. Créer des cours assignés à cet enseignant
       final coursesRef = _firestore.collection('courses');
-      final existingTeacherCourses = await coursesRef.where('teacherId', isEqualTo: userId).limit(1).get();
+      final existingTeacherCourses = await coursesRef
+          .where('teacherId', isEqualTo: userId)
+          .limit(1)
+          .get();
 
       if (existingTeacherCourses.docs.isEmpty) {
         List<Map<String, dynamic>> teacherCourses = [
@@ -904,7 +922,7 @@ class FirestoreInitializer {
         for (var course in teacherCourses) {
           final docRef = coursesRef.doc();
           batch.set(docRef, course);
-          
+
           // 3. Ajouter quelques notes pour ce cours
           final resultsRef = _firestore.collection('results');
           batch.set(resultsRef.doc(), {
@@ -928,7 +946,10 @@ class FirestoreInitializer {
 
       // 4. Créer des documents pédagogiques
       final docsRef = _firestore.collection('documents');
-      final existingDocs = await docsRef.where('uploadedBy', isEqualTo: userId).limit(1).get();
+      final existingDocs = await docsRef
+          .where('uploadedBy', isEqualTo: userId)
+          .limit(1)
+          .get();
       if (existingDocs.docs.isEmpty) {
         batch.set(docsRef.doc(), {
           'title': 'Support de cours Flutter - Introduction',
@@ -942,7 +963,10 @@ class FirestoreInitializer {
 
       // 5. Créer des requêtes assignées à l'enseignant
       final requestsRef = _firestore.collection('requests');
-      final existingRequests = await requestsRef.where('assignedTo', isEqualTo: userId).limit(1).get();
+      final existingRequests = await requestsRef
+          .where('assignedTo', isEqualTo: userId)
+          .limit(1)
+          .get();
       if (existingRequests.docs.isEmpty) {
         batch.set(requestsRef.doc(), {
           'studentName': 'Karim Ndiaye',

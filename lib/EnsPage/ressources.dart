@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sama_ufr/service/teacher_service.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'resource_detail.dart';
 
 class ResourcesPage extends StatefulWidget {
   const ResourcesPage({super.key});
@@ -16,45 +18,66 @@ class _ResourcesPageState extends State<ResourcesPage> {
   void initState() {
     super.initState();
     _teacherService = TeacherService();
+    _loadResources();
+  }
+
+  void _loadResources() {
     _resourcesFuture = _teacherService.getTeachingResources();
+  }
+
+  void _updateResource(Map<String, dynamic> updatedResource) {
+    // Ici, vous pouvez implémenter la mise à jour dans Firestore
+    // Pour l'instant, on recharge la liste
+    setState(() {
+      _loadResources();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _Resources(),
-          const SizedBox(height: 32),
-          // Mes ressources
-          const Text(
-            'Mes ressources',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Resources(),
+                  const SizedBox(height: 32),
+                  // Mes ressources
+                  Text(
+                    'Mes ressources',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Affichage dynamique des ressources
+                  FutureBuilder<List<Map<String, dynamic>>>(
+                    future: _resourcesFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return _listesResourcesVide();
+                      }
+
+                      return _listesResources(resources: snapshot.data!);
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 16),
-          // Affichage dynamique des ressources
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: _resourcesFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return _listesResourcesVide();
-              }
-
-              return _listesResources(resources: snapshot.data!);
-            },
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -81,7 +104,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 193, 75, 214),
+                  color: const Color.fromARGB(255, 132, 69, 150),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -91,9 +114,9 @@ class _ResourcesPageState extends State<ResourcesPage> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
+              Text(
                 'Déposer une ressource',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -123,9 +146,9 @@ class _ResourcesPageState extends State<ResourcesPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'Déposer',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -145,7 +168,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: Colors.grey.shade700,
@@ -166,7 +189,10 @@ class _ResourcesPageState extends State<ResourcesPage> {
               Expanded(
                 child: Text(
                   value,
-                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
               Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
@@ -183,7 +209,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
       children: [
         Text(
           'Fichier',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: Colors.grey.shade700,
@@ -208,7 +234,10 @@ class _ResourcesPageState extends State<ResourcesPage> {
                 const SizedBox(width: 12),
                 Text(
                   'Sélectionner un fichier',
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
               ],
             ),
@@ -253,9 +282,9 @@ class _ResourcesPageState extends State<ResourcesPage> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
+              Text(
                 'Ressources téléchargées',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -272,6 +301,17 @@ class _ResourcesPageState extends State<ResourcesPage> {
             type: resource['type'] ?? 'PDF',
             courseId: resource['courseId'] ?? '',
             uploadDate: resource['uploadDate'] ?? '',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ResourceDetailPage(
+                    resource: resource,
+                    onUpdate: _updateResource,
+                  ),
+                ),
+              );
+            },
           );
         }),
       ],
@@ -297,7 +337,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Text(
             'Aucune ressource disponible',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               fontSize: 14,
               color: Colors.grey,
               fontWeight: FontWeight.w500,
@@ -314,67 +354,80 @@ class _ResourcesPageState extends State<ResourcesPage> {
     required String type,
     required String courseId,
     required String uploadDate,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey.shade200)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(color: iconColor, shape: BoxShape.circle),
-            child: Center(
-              child: Text(
-                type.length > 3 ? type.substring(0, 3) : type,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Colors.grey.shade200)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: iconColor,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  type.length > 3 ? type.substring(0, 3) : type,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Type: $type | Cours: ${courseId.isNotEmpty ? courseId : 'N/A'}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Téléchargé: $uploadDate',
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    'Type: $type | Cours: ${courseId.isNotEmpty ? courseId : 'N/A'}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Téléchargé: $uploadDate',
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Icon(Icons.download, color: Colors.grey.shade400, size: 20),
-        ],
+            Icon(Icons.download, color: Colors.grey.shade400, size: 20),
+          ],
+        ),
       ),
     );
   }

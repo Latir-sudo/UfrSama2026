@@ -8,12 +8,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  print('Initializing Firebase...');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  print('Firebase initialized');
 
   // Initialiser TOUTES les collections Firestore avec données de test
   // Cette fonction vérifie d'abord si les collections existent avant de créer
-  await FirestoreInitializer().initializeAllCollections();
+  // await FirestoreInitializer().initializeAllCollections();
 
+  print('Running app...');
   runApp(const MyApp());
 }
 
@@ -31,5 +34,6 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: Landingpage(),
-    );  }
+    );
+  }
 }
