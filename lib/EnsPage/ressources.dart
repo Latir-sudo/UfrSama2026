@@ -10,13 +10,185 @@ class ResourcesPage extends StatefulWidget {
 
 class _ResourcesPageState extends State<ResourcesPage> {
   late final TeacherService _teacherService;
-  late Future<List<Map<String, dynamic>>> _resourcesFuture;
+  late Stream<List<Map<String, dynamic>>> _resourcesStream;
+
+  final _titleController = TextEditingController();
+  String? _selectedCourseId;
+  String _selectedType = 'PDF';
+  bool _isUploading = false;
+
+  final List<String> _resourceTypes = [
+    'PDF',
+    'Vidéo',
+    'Lien',
+    'Exercice',
+    'Cours',
+  ];
 
   @override
   void initState() {
     super.initState();
     _teacherService = TeacherService();
-    _resourcesFuture = _teacherService.getTeachingResources();
+    _resourcesStream = _teacherService.getTeachingResourcesStream();
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _uploadResource() async {
+    if (_titleController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Veuillez saisir un titre')));
+      return;
+    }
+    if (_selectedCourseId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Veuillez sélectionner un cours')),
+      );
+      return;
+    }
+
+    setState(() => _isUploading = true);
+
+    try {
+      await _teacherService.addTeachingResource(
+        title: _titleController.text.trim(),
+        type: _selectedType,
+        courseId: _selectedCourseId!,
+      );
+
+      _titleController.clear();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ressource déposée avec succès !'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur : $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
+  }
+
+  Widget _Resources() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 10,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Ajouter une ressource',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+            ),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _titleController,
+            decoration: InputDecoration(
+              labelText: 'Titre de la ressource',
+              prefixIcon: const Icon(Icons.title),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Sélection du cours
+          FutureBuilder<List<Map<String, dynamic>>>(
+            future: _teacherService.getTeacherCourses(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+              final courses = snapshot.data ?? [];
+              return DropdownButtonFormField<String>(
+                initialValue: _selectedCourseId,
+                hint: const Text('Sélectionner un cours'),
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.book),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                items: courses.map((course) {
+                  return DropdownMenuItem<String>(
+                    value: course['id'],
+                    child: Text(course['name']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() => _selectedCourseId = value);
+                },
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          // Type de ressource
+          DropdownButtonFormField<String>(
+            initialValue: _selectedType,
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.category),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            items: _resourceTypes.map((type) {
+              return DropdownMenuItem<String>(value: type, child: Text(type));
+            }).toList(),
+            onChanged: (value) {
+              if (value != null) {
+                setState(() => _selectedType = value);
+              }
+            },
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: _isUploading ? null : _uploadResource,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: _isUploading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text(
+                      'Déposer la ressource',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -39,8 +211,8 @@ class _ResourcesPageState extends State<ResourcesPage> {
           ),
           const SizedBox(height: 16),
           // Affichage dynamique des ressources
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: _resourcesFuture,
+          StreamBuilder<List<Map<String, dynamic>>>(
+            stream: _resourcesStream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -55,166 +227,6 @@ class _ResourcesPageState extends State<ResourcesPage> {
           ),
         ],
       ),
-    );
-  }
-
-  //ressource
-  Widget _Resources() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 193, 75, 214),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.folder,
-                  color: const Color.fromARGB(255, 250, 249, 251),
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Déposer une ressource',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          _forme(
-            'Sélectionner un cours',
-            'Algorithmique - L2 Info',
-            Icons.book,
-          ),
-          const SizedBox(height: 16),
-          _forme('Type de ressource', 'Cours', Icons.category),
-          const SizedBox(height: 16),
-          _fichier(),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 141, 81, 158),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text(
-                'Déposer',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  //forme
-  Widget _forme(String label, String value, IconData icon) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey.shade700,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300),
-          ),
-          child: Row(
-            children: [
-              Icon(icon, color: Colors.grey.shade600, size: 20),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  value,
-                  style: const TextStyle(fontSize: 14, color: Colors.black87),
-                ),
-              ),
-              Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _fichier() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Fichier',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey.shade700,
-          ),
-        ),
-        const SizedBox(height: 8),
-        GestureDetector(
-          onTap: () {},
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: Colors.grey.shade300,
-                style: BorderStyle.solid,
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.attach_file, color: Colors.grey.shade600, size: 20),
-                const SizedBox(width: 12),
-                Text(
-                  'Sélectionner un fichier',
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -243,12 +255,12 @@ class _ResourcesPageState extends State<ResourcesPage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.orange.shade100,
+                  color: Colors.blue.shade50,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
-                  Icons.settings,
-                  color: Colors.orange.shade700,
+                  Icons.description,
+                  color: Colors.blue.shade700,
                   size: 20,
                 ),
               ),
@@ -396,4 +408,4 @@ class _ResourcesPageState extends State<ResourcesPage> {
         return Colors.purple;
     }
   }
-}
+} // Fin de la classe _ResourcesPageState

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sama_ufr/AdminPage/admin.dart';
 import 'package:sama_ufr/login_page.dart';
 import 'package:sama_ufr/service/auth.dart';
+import 'package:sama_ufr/Accueil/accueilPrincipal.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({super.key});
@@ -29,7 +30,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
               Auth().signOut();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
+                MaterialPageRoute(builder: (context) => Accueilprincipal()),
               );
             },
           ),

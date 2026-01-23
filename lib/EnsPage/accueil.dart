@@ -5,6 +5,7 @@ import 'notes.dart';
 import "ressources.dart";
 import 'accueil_page.dart';
 import 'package:sama_ufr/login_page.dart';
+import 'package:sama_ufr/Accueil/accueilPrincipal.dart';
 import 'package:sama_ufr/service/auth.dart';
 
 class EspaceEnseignantPage extends StatefulWidget {
@@ -72,7 +73,7 @@ class _EspaceEnseignantPageState extends State<EspaceEnseignantPage> {
                   Auth().signOut();
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
+                    MaterialPageRoute(builder: (context) => Accueilprincipal()),
                   );
                 },
               );

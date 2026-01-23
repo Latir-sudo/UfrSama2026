@@ -1,6 +1,7 @@
 // Landingpage.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sama_ufr/Accueil/accueilPrincipal.dart';
 import 'package:sama_ufr/InscriptionPage.dart';
 import 'package:sama_ufr/service/firestore_service.dart';
 import 'package:sama_ufr/EtuPage/EtuPage.dart';
@@ -21,7 +22,7 @@ class Landingpage extends StatelessWidget {
           User? user = snapshot.data;
 
           if (user == null) {
-            return InscriptionPage();
+            return Accueilprincipal();
           } else {
             // Si l'utilisateur est connecté, vérifier son rôle et rediriger
             return FutureBuilder<Map<String, dynamic>?>(
@@ -48,7 +49,7 @@ class Landingpage extends StatelessWidget {
                       ),
                     );
                   });
-                  return InscriptionPage();
+                  return Accueilprincipal();
                 }
 
                 final userProfile = profileSnapshot.data!;
@@ -64,7 +65,7 @@ class Landingpage extends StatelessWidget {
                     return AdminHomePage();
                   default:
                     // Rôle inconnu, rediriger vers une page par défaut
-                    return EtuPage();
+                    return Accueilprincipal();
                 }
               },
             );

@@ -189,14 +189,10 @@ Widget _ProchainsCours() {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 197, 41, 202),
+                color: Colors.blue.shade600,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.calendar_today,
-                color: const Color.fromARGB(255, 252, 250, 253),
-                size: 20,
-              ),
+              child: Icon(Icons.calendar_today, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 12),
             const Text(
@@ -213,7 +209,7 @@ Widget _ProchainsCours() {
         _HeureCours('Lundi-', ' Algorithmique (L2 Info)'),
         _HeureCours(
           '10h-12h.',
-          'Amphi A . Chapitre 4: Complxite algorithmique',
+          'Amphi A . Chapitre 4: Complexite algorithmique',
         ),
         const SizedBox(height: 16),
         _HeureCours('Mardi -', ' Base de donnees (L1 Info)'),
@@ -227,25 +223,24 @@ Widget _ProchainsCours() {
 }
 
 Widget _HeureCours(String time, String cours) {
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Expanded(
-        child: Wrap(
-          children: [
-            Text(
-              time,
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              cours,
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
-            ),
-          ],
+  return SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(time, style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
+        const SizedBox(width: 8),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 300),
+          child: Text(
+            cours,
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
         ),
-      ),
-    ],
+      ],
+    ),
   );
 }
 
@@ -276,19 +271,22 @@ Widget _Tableau({
               topRight: Radius.circular(12),
             ),
           ),
-          child: Row(
-            children: [
-              Icon(Icons.assignment, color: Colors.blue.shade700, size: 24),
-              const SizedBox(width: 12),
-              const Text(
-                'Cours assignés (Cliquez pour voir les étudiants)',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                Icon(Icons.assignment, color: Colors.blue.shade700, size: 24),
+                const SizedBox(width: 12),
+                const Text(
+                  'Cours assignés (Cliquez pour voir les étudiants)',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         // Table header
@@ -315,47 +313,59 @@ Widget _Tableau({
               decoration: BoxDecoration(
                 border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      course['name'] ?? 'Sans nom',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Color.fromARGB(255, 140, 133, 133),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 120,
+                      child: Text(
+                        course['name'] ?? 'Sans nom',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Color.fromARGB(255, 140, 133, 133),
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      course['code'] ?? 'N/A',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade700,
+                    const SizedBox(width: 16),
+                    SizedBox(
+                      width: 80,
+                      child: Text(
+                        course['code'] ?? 'N/A',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade700,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      '${course['studentCount'] ?? 0}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade700,
+                    const SizedBox(width: 16),
+                    SizedBox(
+                      width: 80,
+                      child: Text(
+                        '${course['studentCount'] ?? 0}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade700,
+                        ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      course['level'] ?? 'N/A',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade700,
+                    const SizedBox(width: 16),
+                    SizedBox(
+                      width: 80,
+                      child: Text(
+                        course['level'] ?? 'N/A',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade700,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );

@@ -49,7 +49,31 @@ class StudentService {
         });
   }
 
-  // 3. Résultats de l'étudiant
+  // 3. Résultats de l'étudiant (Version Stream pour le temps réel)
+  Stream<List<CourseResult>> getStudentResultsStream() {
+    final user = _auth.currentUser;
+    if (user == null) {
+      print('⚠️ Utilisateur non authentifié pour résultats');
+      return Stream.value([]);
+    }
+
+    return _firestore
+        .collection('results')
+        .where('studentId', isEqualTo: user.uid)
+        .snapshots()
+        .map((snapshot) {
+          print('📊 Nombre de résultats trouvés (Stream): ${snapshot.docs.length}');
+          return snapshot.docs.map((doc) {
+            return CourseResult.fromFirestore(doc);
+          }).toList();
+        })
+        .handleError((error) {
+          print('❌ Erreur flux résultats: $error');
+          return <CourseResult>[];
+        });
+  }
+
+  // 3. Résultats de l'étudiant (Future existant conservé pour compatibilité si nécessaire)
   Future<List<CourseResult>> getStudentResults() async {
     final user = _auth.currentUser;
     if (user == null) {

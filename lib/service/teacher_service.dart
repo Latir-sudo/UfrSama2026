@@ -173,6 +173,8 @@ class TeacherService {
                   'studentName': doc['studentName'] ?? 'Sans nom',
                   'studentId': doc['studentId'] ?? '',
                   'grade': doc['grade'],
+                  'assignmentGrade': doc['assignmentGrade'],
+                  'examGrade': doc['examGrade'],
                   'status': doc['status'] ?? 'N/A',
                 },
               )
@@ -181,16 +183,61 @@ class TeacherService {
   }
 
   // Update student grade
-  Future<void> updateStudentGrade(String resultId, double newGrade) async {
+  Future<void> updateStudentGrade(String resultId, double? grade, {String? type}) async {
     try {
-      await _firestore.collection('results').doc(resultId).update({
-        'grade': newGrade,
-        'status': 'Validé',
+      Map<String, dynamic> updates = {
         'updatedAt': FieldValue.serverTimestamp(),
-      });
-      print('✅ Note mise à jour: $resultId -> $newGrade');
+      };
+
+      if (type == 'assignment') {
+        updates['assignmentGrade'] = grade;
+      } else if (type == 'exam') {
+        updates['examGrade'] = grade;
+      } else {
+        updates['grade'] = grade;
+      }
+
+      // Optionnel: Calculer la note globale si on a les deux
+      // Pour l'instant on garde la logique simple demandée par l'utilisateur
+
+      await _firestore.collection('results').doc(resultId).update(updates);
+      print('✅ Note mise à jour ($type): $resultId -> $grade');
     } catch (e) {
       print('❌ Erreur mise à jour note: $e');
+      rethrow;
+    }
+  }
+
+  // Enroll a student to a course (create a result record)
+  Future<void> enrollStudent(String courseId, String courseName, String studentId, String studentName) async {
+    try {
+      // Check if already enrolled
+      final existing = await _firestore
+          .collection('results')
+          .where('courseId', isEqualTo: courseId)
+          .where('studentId', isEqualTo: studentId)
+          .get();
+
+      if (existing.docs.isEmpty) {
+        await _firestore.collection('results').add({
+          'courseId': courseId,
+          'courseName': courseName,
+          'studentId': studentId,
+          'studentName': studentName,
+          'grade': null,
+          'status': 'En cours',
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+        
+        // Update studentCount in course
+        await _firestore.collection('courses').doc(courseId).update({
+          'studentCount': FieldValue.increment(1),
+        });
+        
+        print('✅ Étudiant $studentName inscrit au cours $courseName');
+      }
+    } catch (e) {
+      print('❌ Erreur inscription étudiant: $e');
       rethrow;
     }
   }
@@ -228,6 +275,61 @@ class TeacherService {
     }
   }
 
+  // Stream of teaching resources (real-time)
+  Stream<List<Map<String, dynamic>>> getTeachingResourcesStream() {
+    final userId = currentUserId;
+    if (userId == null) {
+      return Stream.value([]);
+    }
+
+    return _firestore
+        .collection('documents')
+        .where('uploadedBy', isEqualTo: userId)
+        .orderBy('uploadDate', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => {
+                  'id': doc.id,
+                  'title': doc['title'] ?? 'Sans titre',
+                  'type': doc['type'] ?? 'PDF',
+                  'uploadDate': doc['uploadDate']?.toDate()?.toString() ?? '',
+                  'courseId': doc['courseId'] ?? '',
+                },
+              )
+              .toList(),
+        )
+        .handleError((e) {
+          print('❌ Erreur flux ressources: $e');
+          return [];
+        });
+  }
+
+  // Add teaching resource
+  Future<void> addTeachingResource({
+    required String title,
+    required String type,
+    required String courseId,
+  }) async {
+    try {
+      final userId = currentUserId;
+      if (userId == null) throw Exception('Utilisateur non connecté');
+
+      await _firestore.collection('documents').add({
+        'title': title,
+        'type': type,
+        'courseId': courseId,
+        'uploadedBy': userId,
+        'uploadDate': FieldValue.serverTimestamp(),
+      });
+      print('✅ Ressource ajoutée: $title');
+    } catch (e) {
+      print('❌ Erreur ajout ressource: $e');
+      rethrow;
+    }
+  }
+
   // Get teacher profile information
   Future<Map<String, dynamic>> getTeacherProfile() async {
     try {
@@ -237,13 +339,35 @@ class TeacherService {
       final doc = await _firestore.collection('users').doc(userId).get();
 
       if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        String firstName = data['firstName'] ?? '';
+        String lastName = data['lastName'] ?? '';
+
+        // Si firstName et lastName sont vides, on essaie de parser 'name'
+        if (firstName.isEmpty &&
+            lastName.isEmpty &&
+            data.containsKey('name')) {
+          String name = data['name'] ?? '';
+          if (name.isNotEmpty) {
+            List<String> parts = name.split(' ');
+            if (parts.length > 1) {
+              firstName = parts[0];
+              lastName = parts.sublist(1).join(' ');
+            } else {
+              firstName = name;
+            }
+          }
+        }
+
+        if (firstName.isEmpty) firstName = 'Enseignant';
+
         return {
-          'firstName': doc['firstName'] ?? 'Enseignant',
-          'lastName': doc['lastName'] ?? '',
-          'email': doc['email'] ?? '',
-          'department': doc['department'] ?? '',
-          'phone': doc['phone'] ?? '',
-          'profileImage': doc['profileImage'] ?? '',
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': data['email'] ?? '',
+          'department': data['department'] ?? '',
+          'phone': data['phone'] ?? '',
+          'profileImage': data['profileImage'] ?? '',
         };
       }
       return {
@@ -278,13 +402,33 @@ class TeacherService {
         .snapshots()
         .map((doc) {
           if (doc.exists) {
+            final data = doc.data() as Map<String, dynamic>;
+            String firstName = data['firstName'] ?? '';
+            String lastName = data['lastName'] ?? '';
+            
+            // Si firstName et lastName sont vides, on essaie de parser 'name'
+            if (firstName.isEmpty && lastName.isEmpty && data.containsKey('name')) {
+              String name = data['name'] ?? '';
+              if (name.isNotEmpty) {
+                List<String> parts = name.split(' ');
+                if (parts.length > 1) {
+                  firstName = parts[0];
+                  lastName = parts.sublist(1).join(' ');
+                } else {
+                  firstName = name;
+                }
+              }
+            }
+            
+            if (firstName.isEmpty) firstName = 'Enseignant';
+
             return {
-              'firstName': doc['firstName'] ?? 'Enseignant',
-              'lastName': doc['lastName'] ?? '',
-              'email': doc['email'] ?? '',
-              'department': doc['department'] ?? '',
-              'phone': doc['phone'] ?? '',
-              'profileImage': doc['profileImage'] ?? '',
+              'firstName': firstName,
+              'lastName': lastName,
+              'email': data['email'] ?? '',
+              'department': data['department'] ?? '',
+              'phone': data['phone'] ?? '',
+              'profileImage': data['profileImage'] ?? '',
             };
           }
           return {

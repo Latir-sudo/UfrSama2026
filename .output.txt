@@ -1,0 +1,633 @@
+Analyzing sama_ufr...
+   info - Invalid use of a private type in a public API -
+          lib\Accueil\main.dart:32:3 - library_private_types_in_public_api
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\Accueil\main.dart:681:26 -
+          deprecated_member_use
+   info - The file name 'AdminHomePage.dart' isn't a lower_case_with_underscores
+          identifier - lib\AdminPage\AdminHomePage.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\AdminPage\AdminHomePage.dart:72:39 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\AdminPage\AdminHomePage.dart:80:39 -
+          deprecated_member_use
+   info - The file name 'Event.dart' isn't a lower_case_with_underscores
+          identifier - lib\AdminPage\Event.dart:1:1 - file_names
+warning - The value of the field '_isLoading' isn't used -
+       lib\AdminPage\admin.dart:29:8 - unused_field
+   info - Don't invoke 'print' in production code -
+          lib\AdminPage\admin.dart:64:7 - avoid_print
+   info - Unnecessary instance of 'Container' - lib\AdminPage\admin.dart:369:31
+          - avoid_unnecessary_containers
+   info - Unnecessary instance of 'Container' - lib\AdminPage\admin.dart:386:37
+          - avoid_unnecessary_containers
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\AdminPage\admin.dart:771:33 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\AdminPage\admin.dart:934:33 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\AdminPage\admin.dart:1054:61 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\AdminPage\admin.dart:1329:33 -
+          deprecated_member_use
+   info - The file name 'EnseigantHomePage.dart' isn't a
+          lower_case_with_underscores identifier -
+          lib\EnsPage\EnseigantHomePage.dart:1:1 - file_names
+   info - Don't invoke 'print' in production code -
+          lib\EnsPage\accueil.dart:149:13 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\accueil.dart:222:37 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\accueil.dart:230:37 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\accueil_page.dart:152:48 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\accueil_page.dart:176:46 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\accueil_page.dart:235:56 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\accueil_page.dart:242:54 -
+          deprecated_member_use
+   info - The variable name 'ProchainsCours' isn't a lowerCamelCase identifier -
+          lib\EnsPage\accueil_page.dart:354:10 - non_constant_identifier_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\accueil_page.dart:363:32 -
+          deprecated_member_use
+   info - The variable name 'HeureCours' isn't a lowerCamelCase identifier -
+          lib\EnsPage\accueil_page.dart:408:10 - non_constant_identifier_names
+   info - The variable name 'AlertCard' isn't a lowerCamelCase identifier -
+          lib\EnsPage\accueil_page.dart:436:10 - non_constant_identifier_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\accueil_page.dart:450:32 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\accueil_page.dart:463:32 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\cours.dart:133:36 -
+          deprecated_member_use
+   info - The variable name '_ProchainsCours' isn't a lowerCamelCase identifier
+          - lib\EnsPage\cours.dart:168:8 - non_constant_identifier_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\cours.dart:177:30 -
+          deprecated_member_use
+   info - The variable name '_HeureCours' isn't a lowerCamelCase identifier -
+          lib\EnsPage\cours.dart:225:8 - non_constant_identifier_names
+   info - The variable name '_Tableau' isn't a lowerCamelCase identifier -
+          lib\EnsPage\cours.dart:247:8 - non_constant_identifier_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\cours.dart:257:30 -
+          deprecated_member_use
+   info - The variable name '_TableauVide' isn't a lowerCamelCase identifier -
+          lib\EnsPage\cours.dart:379:8 - non_constant_identifier_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\cours.dart:387:30 -
+          deprecated_member_use
+   info - The variable name '_TabNote' isn't a lowerCamelCase identifier -
+          lib\EnsPage\notes.dart:74:8 - non_constant_identifier_names
+warning - The value of the local variable 'firstCourse' isn't used -
+       lib\EnsPage\notes.dart:76:9 - unused_local_variable
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\notes.dart:85:30 -
+          deprecated_member_use
+   info - The variable name '_TabNoteVide' isn't a lowerCamelCase identifier -
+          lib\EnsPage\notes.dart:203:8 - non_constant_identifier_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\notes.dart:211:30 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\notes.dart:241:30 -
+          deprecated_member_use
+   info - The variable name '_Resources' isn't a lowerCamelCase identifier -
+          lib\EnsPage\ressources.dart:84:10 - non_constant_identifier_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\ressources.dart:92:32 -
+          deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead.
+          This will set the initial value for the form field. This feature was
+          deprecated after v3.33.0-1.0.pre - lib\EnsPage\ressources.dart:130:17
+          - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead.
+          This will set the initial value for the form field. This feature was
+          deprecated after v3.33.0-1.0.pre - lib\EnsPage\ressources.dart:153:13
+          - deprecated_member_use
+  error - The argument type 'BorderRadius' can't be assigned to the parameter
+         type 'OutlinedBorder?'.  - lib\EnsPage\ressources.dart:180:24 -
+         argument_type_not_assignable
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\ressources.dart:252:34 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\ressources.dart:306:30 -
+          deprecated_member_use
+   info - The variable name '_ResourceI' isn't a lowerCamelCase identifier -
+          lib\EnsPage\ressources.dart:328:8 - non_constant_identifier_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EnsPage\ressources.dart:342:30 -
+          deprecated_member_use
+   info - The file name 'EtuPage.dart' isn't a lower_case_with_underscores
+          identifier - lib\EtuPage\EtuPage.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\EtuPage.dart:68:39 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\EtuPage.dart:76:39 -
+          deprecated_member_use
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:68:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:76:15 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:81:13 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:92:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:97:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:105:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:111:15 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:116:13 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:124:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:129:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:134:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:138:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\EtuPage\article.dart:146:9 - avoid_print
+   info - 'value' is deprecated and shouldn't be used. Use component accessors
+          like .r or .g, or toARGB32 for an explicit conversion -
+          lib\EtuPage\article.dart:279:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\article.dart:294:39 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\article.dart:302:39 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\article.dart:571:47 -
+          deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use component accessors
+          like .r or .g, or toARGB32 for an explicit conversion -
+          lib\EtuPage\article.dart:585:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\article.dart:946:39 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\article.dart:971:39 -
+          deprecated_member_use
+warning - The declaration '_buildStatsSection' isn't referenced -
+       lib\EtuPage\article.dart:1019:10 - unused_element
+warning - The declaration '_buildScheduleSection' isn't referenced -
+       lib\EtuPage\article.dart:1065:10 - unused_element
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\article.dart:1101:39 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\article.dart:1126:39 -
+          deprecated_member_use
+warning - The declaration '_buildExamsSection' isn't referenced -
+       lib\EtuPage\article.dart:1170:10 - unused_element
+warning - The declaration '_buildRequestsSection' isn't referenced -
+       lib\EtuPage\article.dart:1303:10 - unused_element
+warning - The declaration '_buildFavoritesSection' isn't referenced -
+       lib\EtuPage\article.dart:1367:10 - unused_element
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\article.dart:1503:33 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\article.dart:1672:33 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\article.dart:2061:33 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\detail_pages.dart:151:53 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\detail_pages.dart:616:22 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\detail_pages.dart:617:41 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\more_detail_pages.dart:64:48 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\more_detail_pages.dart:99:54 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\more_detail_pages.dart:191:45 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\more_detail_pages.dart:192:45 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\more_detail_pages.dart:196:50 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\more_detail_pages.dart:366:45 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\more_detail_pages.dart:367:45 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\more_detail_pages.dart:371:50 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\more_detail_pages.dart:541:45 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\more_detail_pages.dart:542:45 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\more_detail_pages.dart:546:50 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\EtuPage\more_detail_pages.dart:587:64 -
+          deprecated_member_use
+   info - The file name 'HomePage.dart' isn't a lower_case_with_underscores
+          identifier - lib\HomePage.dart:1:1 - file_names
+   info - The file name 'InscriptionPage.dart' isn't a
+          lower_case_with_underscores identifier - lib\InscriptionPage.dart:1:1
+          - file_names
+   info - Don't use 'BuildContext's across async gaps -
+          lib\InscriptionPage.dart:98:11 - use_build_context_synchronously
+   info - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup
+          ancestor to manage group value instead. This feature was deprecated
+          after v3.32.0-0.0.pre - lib\InscriptionPage.dart:266:27 -
+          deprecated_member_use
+   info - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to
+          handle value change instead. This feature was deprecated after
+          v3.32.0-0.0.pre - lib\InscriptionPage.dart:267:27 -
+          deprecated_member_use
+   info - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup
+          ancestor to manage group value instead. This feature was deprecated
+          after v3.32.0-0.0.pre - lib\InscriptionPage.dart:280:27 -
+          deprecated_member_use
+   info - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to
+          handle value change instead. This feature was deprecated after
+          v3.32.0-0.0.pre - lib\InscriptionPage.dart:281:27 -
+          deprecated_member_use
+   info - The file name 'LandingPage.dart' isn't a lower_case_with_underscores
+          identifier - lib\LandingPage.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\login_page.dart:207:45 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\login_page.dart:210:63 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\login_page.dart:212:62 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\login_page.dart:232:45 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\login_page.dart:235:63 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\login_page.dart:237:62 -
+          deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues()
+          to avoid precision loss - lib\ma_transp.dart:29:28 -
+          deprecated_member_use
+   info - Don't invoke 'print' in production code -
+          lib\service\admin_service.dart:25:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\admin_service.dart:34:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\admin_service.dart:48:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\admin_service.dart:57:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\admin_service.dart:70:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\admin_service.dart:79:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\admin_service.dart:92:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\admin_service.dart:118:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\admin_service.dart:148:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\admin_service.dart:173:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\firestore_service.dart:44:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:28:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:47:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:56:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:65:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:71:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:80:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:85:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:91:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:93:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:101:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:110:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:114:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:121:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:125:13 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:132:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:157:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:176:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\student_service.dart:213:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:22:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:36:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:50:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:62:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:79:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:92:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:124:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:155:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:204:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:206:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:237:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:240:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:269:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:304:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:326:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:328:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:379:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\service\teacher_service.dart:441:11 - avoid_print
+   info - Don't use 'BuildContext's across async gaps -
+          lib\utils\data_initializer.dart:29:9 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps -
+          lib\utils\data_initializer.dart:34:20 -
+          use_build_context_synchronously
+   info - Don't invoke 'print' in production code -
+          lib\utils\firebase_init.dart:13:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firebase_init.dart:32:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:13:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:17:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:18:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:36:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:37:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:38:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:40:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:46:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:99:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:104:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:154:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:159:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:209:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:214:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:290:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:297:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:341:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:346:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:369:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:374:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:417:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:422:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:451:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:456:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:489:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:494:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:542:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:547:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:579:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_complete_init.dart:602:7 - avoid_print
+   info - The constant name 'TAG' isn't a lowerCamelCase identifier -
+          lib\utils\firestore_initializer.dart:10:23 - constant_identifier_names
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:15:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:65:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:67:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:84:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:101:13 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:105:13 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:108:13 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:112:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:115:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:122:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:129:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:196:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:198:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:205:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:212:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:261:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:263:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:270:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:280:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:317:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:321:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:328:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:334:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:387:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:389:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:396:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:402:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:445:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:447:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:454:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:460:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:502:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:504:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:511:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:514:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:583:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:587:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:594:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:597:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:683:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:687:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:694:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:700:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:737:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:739:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:746:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:752:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:793:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:795:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:802:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:808:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:845:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:847:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:854:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:860:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:896:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:898:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:905:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:908:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:950:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:954:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:964:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:979:11 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:983:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:990:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:993:9 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:1138:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\firestore_initializer.dart:1140:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\init_test_data.dart:13:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\init_test_data.dart:17:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\init_test_data.dart:22:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\init_test_data.dart:24:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\init_test_data.dart:30:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\init_test_data.dart:79:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\init_test_data.dart:84:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\init_test_data.dart:87:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\init_test_data.dart:92:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\init_test_data.dart:165:5 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\init_test_data.dart:170:7 - avoid_print
+   info - Don't invoke 'print' in production code -
+          lib\utils\init_test_data.dart:175:5 - avoid_print
+276 issues found. (ran in 8.4s)

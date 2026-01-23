@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sama_ufr/EnsPage/course_students_page.dart';
 import 'package:sama_ufr/service/teacher_service.dart';
 
 class NotesPage extends StatefulWidget {
@@ -49,7 +50,7 @@ class _NotesPageState extends State<NotesPage> {
               }
 
               final courses = snapshot.data!;
-              return _TabNote(courses: courses);
+              return _TabNote(context: context, courses: courses);
             },
           ),
           const SizedBox(height: 32),
@@ -70,8 +71,8 @@ class _NotesPageState extends State<NotesPage> {
   }
 }
 
-Widget _TabNote({required List<Map<String, dynamic>> courses}) {
-  // Afficher le premier cours disponible
+Widget _TabNote({required BuildContext context, required List<Map<String, dynamic>> courses}) {
+  // Afficher le premier cours disponible pour l'en-tête informatif
   final firstCourse = courses.isNotEmpty ? courses.first : null;
 
   return Container(
@@ -95,18 +96,16 @@ Widget _TabNote({required List<Map<String, dynamic>> courses}) {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.green.shade100,
+                color: Colors.blue.shade50,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(Icons.edit, color: Colors.green.shade700, size: 20),
+              child: Icon(Icons.edit, color: Colors.blue.shade700, size: 20),
             ),
             const SizedBox(width: 12),
-            Expanded(
+            const Expanded(
               child: Text(
-                firstCourse != null
-                    ? '${firstCourse['name'] ?? 'Cours'} - ${firstCourse['level'] ?? 'N/A'}'
-                    : 'Aucun cours',
-                style: const TextStyle(
+                'Cliquez sur un cours pour saisir les notes',
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -120,51 +119,80 @@ Widget _TabNote({required List<Map<String, dynamic>> courses}) {
         // Table header
         Row(
           children: [
-            Expanded(flex: 2, child: _enteteTab('Cours')),
-            Expanded(child: _enteteTab('Code')),
-            Expanded(child: _enteteTab('Étudiants')),
+            Expanded(flex: 3, child: _enteteTab('Cours')),
+            Expanded(flex: 3, child: _enteteTab('Code')),
+            Expanded(flex: 2, child: _enteteTab('Étudiants')),
+            const SizedBox(width: 40), // Espace pour l'icône de navigation
           ],
         ),
         const Divider(height: 24),
         // Table rows
-        ...courses.take(3).map((course) {
-          return Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      course['name'] ?? 'Sans nom',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                      ),
-                    ),
+        ...courses.map((course) {
+          return InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CourseStudentsPage(
+                    courseId: course['id'],
+                    courseName: course['name'],
                   ),
-                  Expanded(
-                    child: Text(
-                      course['code'] ?? 'N/A',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade700,
+                ),
+              );
+            },
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          course['name'] ?? 'Sans nom',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      '${course['studentCount'] ?? 0}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade700,
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          course['code'] ?? 'N/A',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.blue.shade700,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ),
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${course['studentCount'] ?? 0} élèves',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_ios, size: 16, color: Colors.blue.shade600),
+                    ],
                   ),
-                ],
-              ),
-              const Divider(height: 12),
-            ],
+                ),
+                const Divider(height: 1),
+              ],
+            ),
           );
         }),
       ],
@@ -221,12 +249,12 @@ Widget _noteSaisi() {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.green.shade100,
+            color: Colors.blue.shade50,
             shape: BoxShape.circle,
           ),
           child: Icon(
             Icons.check_circle,
-            color: Colors.green.shade700,
+            color: Colors.blue.shade700,
             size: 24,
           ),
         ),

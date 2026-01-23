@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sama_ufr/AdminPage/carte.dart';
 import 'package:sama_ufr/AdminPage/resultat.dart';
+import 'package:sama_ufr/service/admin_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // AJOUTER CET IMPORT
 
 class Admin extends StatefulWidget {
   const Admin({super.key});
@@ -10,7 +12,78 @@ class Admin extends StatefulWidget {
 }
 
 class _AdminState extends State<Admin> {
-  //boxCard , favoris , card, articleRecent ,
+  final AdminService _adminService = AdminService();
+
+  Map<String, dynamic> _stats = {
+    'totalUsers': '...',
+    'teachers': '...',
+    'students': '...',
+    'documentsPerMonth': '...',
+    'attestationsPerMonth': '...',
+    'diplomasPerMonth': '...',
+    'satisfactionRate': '...',
+    'averageDelay': '...',
+  };
+
+  int _currentMenuIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStats();
+  }
+
+  Future<void> _loadStats() async {
+    try {
+      final userStats = await _adminService.getUsersStatistics();
+      final activityStats = await _adminService.getActivityStatistics();
+      final formations = await _adminService.getFormations();
+
+      if (mounted) {
+        setState(() {
+          _stats = {
+            'totalUsers': userStats['totalUsers'].toString(),
+            'teachers': userStats['teachers'].toString(),
+            'students': userStats['students'].toString(),
+            'documentsPerMonth': activityStats['documentsPerMonth'].toString(),
+            'attestationsPerMonth': activityStats['attestationsPerMonth']
+                .toString(),
+            'diplomasPerMonth': activityStats['diplomasPerMonth'].toString(),
+            'satisfactionRate': activityStats['satisfactionRate'],
+            'averageDelay': activityStats['averageDelay'],
+            'totalCourses': formations.length.toString(),
+          };
+        });
+      }
+    } catch (e) {
+      print('Erreur chargement stats admin: $e');
+    }
+  }
+
+  // AJOUTER CETTE MÉTHODE POUR FORMATER LES DATES
+  String _formatDate(dynamic date) {
+    if (date == null) return 'Date non spécifiée';
+
+    try {
+      if (date is Timestamp) {
+        return _formatDateTime(date.toDate());
+      } else if (date is String) {
+        return date;
+      } else if (date is DateTime) {
+        return _formatDateTime(date);
+      } else {
+        return date.toString();
+      }
+    } catch (e) {
+      return 'Date invalide';
+    }
+  }
+
+  // AJOUTER CETTE MÉTHODE POUR FORMATER DateTime
+  String _formatDateTime(DateTime dateTime) {
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final accesRapide = [
@@ -51,105 +124,61 @@ class _AdminState extends State<Admin> {
         icon: Icons.settings,
       ),
     ];
-    // création d'un tableau pour les évenements
 
     final stat = [
       Carte(
-        titre: "1245",
+        titre: _stats['students'],
         couleur: Colors.black,
         taille: 0.46,
         contenu: "Etudiants",
       ),
       Carte(
-        titre: "87",
+        titre: _stats['teachers'],
         couleur: Colors.black,
         taille: 0.46,
         contenu: "Enseignants",
       ),
       Carte(
-        titre: "24",
+        titre: _stats['totalCourses'] ?? '...',
         couleur: Colors.black,
         taille: 0.46,
         contenu: "Formations",
       ),
       Carte(
         couleur: Colors.black,
-        titre: "342",
+        titre: _stats['documentsPerMonth'],
         taille: 0.46,
         contenu: "Documents/mois",
       ),
     ];
+
     final stat2 = [
       Carte(
-        titre: "156",
+        titre: _stats['attestationsPerMonth'],
         couleur: Colors.black,
         taille: 0.46,
         contenu: "Attestations/mois",
       ),
       Carte(
-        titre: "45",
+        titre: _stats['diplomasPerMonth'],
         couleur: Colors.black,
         taille: 0.46,
         contenu: "Diplomes/mois",
       ),
       Carte(
-        titre: "89%",
+        titre: _stats['satisfactionRate'],
         couleur: Colors.black,
         taille: 0.46,
         contenu: "Taux de satisfaction",
       ),
       Carte(
         couleur: Colors.black,
-        titre: "2.3j",
+        titre: _stats['averageDelay'],
         taille: 0.46,
         contenu: "Délai moyen",
       ),
     ];
-    // tableau pour les résultats matiere note et statut
 
-    final List<Resultat> res = [
-      Resultat(
-        nom: "Francois Diouf",
-        email: "diouf.francois@ugb.edu.sn",
-        type: "Etudiant",
-      ),
-      Resultat(
-        nom: "Fatou Badji",
-        email: "badji.fatou@gmail.com",
-        type: "Enseignant",
-      ),
-      Resultat(
-        nom: "Abdou Ndiaye",
-        email: "ndiaye.abdou@gmail.com",
-        type: "Administration",
-      ),
-    ];
-
-    final List<Formation> formation = [
-      Formation(
-        etudiant: 250,
-        formation: "Licence informatique",
-        ufr: "UFR SAT",
-        niveau: "L1,L2,L3",
-        statut: "Active",
-      ),
-      Formation(
-        formation: "licence mathématique",
-        ufr: "UFR SAT",
-        niveau: "L1,L2,L3",
-        etudiant: 196,
-        statut: "Active",
-      ),
-      Formation(
-        formation: "Licence physique",
-        ufr: "UFR SAT",
-        niveau: "L1,L2,L2",
-        etudiant: 123,
-        statut: "Active",
-      ),
-    ];
-
-    // Note: La liste shedule n'est pas utilisée dans le build actuel
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -171,7 +200,15 @@ class _AdminState extends State<Admin> {
                           {"icon": Icons.book, "label": "Formations"},
                           {"icon": Icons.messenger, "label": "Documents"},
                         ],
-                        iconColor: Color(0xFF7F8C8D),
+                        currentIndex: _currentMenuIndex,
+                        onItemSelected: (index) {
+                          setState(() {
+                            _currentMenuIndex = index;
+                          });
+                        },
+                        iconColor: const Color.fromARGB(255, 82, 87, 96),
+                        textColor: const Color.fromARGB(221, 12, 11, 11),
+                        selectedColor: Colors.blue,
                       ),
                       SizedBox(height: 10),
                       Padding(
@@ -179,8 +216,8 @@ class _AdminState extends State<Admin> {
                         child: Text(
                           "Tableau de bord administratif",
                           style: TextStyle(
-                            fontSize: 19,
-                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                             color: Color(0xFF2C3E50),
                           ),
                         ),
@@ -210,7 +247,8 @@ class _AdminState extends State<Admin> {
                         child: Text(
                           "Statistiques générales",
                           style: TextStyle(
-                            fontSize: 19,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                             color: Color(0xFF2C3E50),
                           ),
                         ),
@@ -243,46 +281,50 @@ class _AdminState extends State<Admin> {
                         child: Text(
                           "Alertes système",
                           style: TextStyle(
-                            fontSize: 19,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                             color: Color(0xFF2C3E50),
-                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
 
-                      Card(
-                        elevation: 2,
-                        color: Colors.white,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 20,
-                          ),
-                          child: Column(
-                            children: [
-                              iconColorText(
-                                "Maintenance programmé",
-                                Color(0xFFF39C12),
-                                Icons.document_scanner,
-                              ),
-                              SizedBox(height: 2),
-                              Container(
-                                alignment: Alignment.topLeft,
-                                padding: EdgeInsets.symmetric(vertical: 6),
+                      StreamBuilder<List<Map<String, dynamic>>>(
+                        stream: _adminService.getSystemAlerts(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Card(
+                              elevation: 2,
+                              color: Colors.white,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 20,
+                                ),
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Padding(
+                                    iconColorText(
+                                      "Aucune alerte",
+                                      Colors.grey,
+                                      Icons.notifications_off,
+                                    ),
+                                    SizedBox(height: 2),
+                                    Container(
+                                      alignment: Alignment.topLeft,
                                       padding: EdgeInsets.symmetric(
-                                        vertical: 4,
+                                        vertical: 6,
                                       ),
                                       child: Text(
-                                        "Une maintenance du systeme est prévue le 15 décembre de 22h à 02h.L'application sera temporairement indisponible",
+                                        "Aucune alerte système en ce moment",
                                         style: TextStyle(
                                           fontSize: 13.6,
                                           color: Color(0xFF7F8C8D),
-
                                           fontWeight: FontWeight.w400,
                                         ),
                                       ),
@@ -290,9 +332,49 @@ class _AdminState extends State<Admin> {
                                   ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
+                            );
+                          }
+
+                          final alerts = snapshot.data!.take(1).toList();
+                          return Column(
+                            children: alerts.map((alert) {
+                              return Card(
+                                elevation: 2,
+                                color: Colors.white,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 20,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      iconColorText(
+                                        alert['title'] ?? 'Alerte système',
+                                        Color(0xFFF39C12),
+                                        Icons.document_scanner,
+                                      ),
+                                      SizedBox(height: 2),
+                                      Container(
+                                        alignment: Alignment.topLeft,
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 6,
+                                        ),
+                                        child: Text(
+                                          alert['message'] ?? 'Aucun message',
+                                          style: TextStyle(
+                                            fontSize: 13.6,
+                                            color: Color(0xFF7F8C8D),
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
                       ),
                       SizedBox(height: 8),
                       Padding(
@@ -300,16 +382,43 @@ class _AdminState extends State<Admin> {
                         child: Text(
                           "Gestion des utilisateurs",
                           style: TextStyle(
-                            fontSize: 19,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                             color: Color(0xFF2C3E50),
-                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
-                      gestionUser(
-                        res,
-                        "Liste des utilisateurs",
-                        "ajouter un utilisateur",
+                      StreamBuilder<List<Map<String, dynamic>>>(
+                        stream: _adminService.getUsersStream(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          final users = snapshot.data ?? [];
+                          final List<Resultat> res = users.map((u) {
+                            final firstName = u['firstName'] ?? '';
+                            final lastName = u['lastName'] ?? '';
+                            final fullName = '$firstName $lastName'.trim();
+
+                            return Resultat(
+                              nom: fullName.isNotEmpty
+                                  ? fullName
+                                  : 'Nom non défini',
+                              email: u['email'] ?? 'Email non défini',
+                              type: u['role'] ?? 'Non défini',
+                            );
+                          }).toList();
+
+                          return gestionUser(
+                            res,
+                            "Liste des utilisateurs",
+                            "ajouter un utilisateur",
+                          );
+                        },
                       ),
                       SizedBox(height: 8),
 
@@ -318,116 +427,223 @@ class _AdminState extends State<Admin> {
                         child: Text(
                           "Demandes d'inscription",
                           style: TextStyle(
-                            fontSize: 19,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                             color: Color(0xFF2C3E50),
-                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
                       SizedBox(height: 6),
-                      Card(
-                        color: Colors.white,
-                        elevation: 2,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 8,
-                          ),
-                          child: Column(
-                            children: [
-                              iconColorText(
-                                "En attente de validation",
-                                Color(0xFFF39C12),
-                                Icons.person,
-                              ),
-                              Container(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                      StreamBuilder<List<Map<String, dynamic>>>(
+                        stream: _adminService.getPendingRegistrationRequests(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Card(
+                              color: Colors.white,
+                              elevation: 2,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 8,
+                                  horizontal: 8,
+                                ),
+                                child: Column(
                                   children: [
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 6,
-                                      ),
-                                      child: Text(
-                                        "Mariama Sow",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black,
-                                        ),
-                                      ),
+                                    iconColorText(
+                                      "Aucune demande en attente",
+                                      Colors.grey,
+                                      Icons.person,
                                     ),
-                                    Container(
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            height: 30,
-                                            margin: EdgeInsets.only(right: 10),
-                                            child: ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Color(
-                                                  0xFF3498DB,
-                                                ),
-                                                padding: EdgeInsets.only(
-                                                  left: 20,
-                                                  right: 40,
-                                                  top: 3,
-                                                  bottom: 3,
-                                                ),
-                                              ),
-                                              onPressed: () {},
-                                              child: Text(
-                                                "valider",
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 30,
-
-                                            child: ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.white,
-                                              ),
-
-                                              onPressed: () {},
-                                              child: Text(
-                                                "Refuser",
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.blue,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                    SizedBox(height: 8),
+                                    Text(
+                                      "Toutes les demandes ont été traitées",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 8),
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 8),
-                                child: Text(
-                                  "Nouvelle inscription  Licence informatique En attente depuis 3jours",
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    color: const Color.fromARGB(
-                                      255,
-                                      111,
-                                      109,
-                                      109,
-                                    ),
+                            );
+                          }
+
+                          final requests = snapshot.data!.take(3).toList();
+                          return Column(
+                            children: requests.map((request) {
+                              return Card(
+                                color: Colors.white,
+                                elevation: 2,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 8,
+                                    horizontal: 8,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      iconColorText(
+                                        "En attente de validation",
+                                        Color(0xFFF39C12),
+                                        Icons.person,
+                                      ),
+                                      Container(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 6,
+                                              ),
+                                              child: Text(
+                                                request['studentName'] ??
+                                                    'Sans nom',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    height: 30,
+                                                    margin: EdgeInsets.only(
+                                                      right: 10,
+                                                    ),
+                                                    child: ElevatedButton(
+                                                      style:
+                                                          ElevatedButton.styleFrom(
+                                                            backgroundColor:
+                                                                Color(
+                                                                  0xFF3498DB,
+                                                                ),
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                  left: 20,
+                                                                  right: 40,
+                                                                  top: 3,
+                                                                  bottom: 3,
+                                                                ),
+                                                          ),
+                                                      onPressed: () async {
+                                                        try {
+                                                          await _adminService
+                                                              .approveRegistrationRequest(
+                                                                request['id'],
+                                                              );
+                                                          ScaffoldMessenger.of(
+                                                            context,
+                                                          ).showSnackBar(
+                                                            SnackBar(
+                                                              content: Text(
+                                                                'Demande approuvée',
+                                                              ),
+                                                            ),
+                                                          );
+                                                        } catch (e) {
+                                                          ScaffoldMessenger.of(
+                                                            context,
+                                                          ).showSnackBar(
+                                                            SnackBar(
+                                                              content: Text(
+                                                                'Erreur: $e',
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }
+                                                      },
+                                                      child: Text(
+                                                        "valider",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 30,
+                                                    child: ElevatedButton(
+                                                      style:
+                                                          ElevatedButton.styleFrom(
+                                                            backgroundColor:
+                                                                Colors.white,
+                                                          ),
+                                                      onPressed: () async {
+                                                        try {
+                                                          await _adminService
+                                                              .rejectRegistrationRequest(
+                                                                request['id'],
+                                                              );
+                                                          ScaffoldMessenger.of(
+                                                            context,
+                                                          ).showSnackBar(
+                                                            SnackBar(
+                                                              content: Text(
+                                                                'Demande rejetée',
+                                                              ),
+                                                            ),
+                                                          );
+                                                        } catch (e) {
+                                                          ScaffoldMessenger.of(
+                                                            context,
+                                                          ).showSnackBar(
+                                                            SnackBar(
+                                                              content: Text(
+                                                                'Erreur: $e',
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }
+                                                      },
+                                                      child: Text(
+                                                        "Refuser",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.blue,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 8),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 8,
+                                        ),
+                                        child: Text(
+                                          "Nouvelle inscription ${request['formation'] ?? 'N/A'} En attente depuis ${request['daysPending'] ?? 0} jour(s)",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: const Color.fromARGB(
+                                              255,
+                                              111,
+                                              109,
+                                              109,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
+                              );
+                            }).toList(),
+                          );
+                        },
                       ),
                       SizedBox(height: 8),
                       Padding(
@@ -435,16 +651,48 @@ class _AdminState extends State<Admin> {
                         child: Text(
                           "Gestion des formations",
                           style: TextStyle(
-                            fontSize: 19,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                             color: Color(0xFF2C3E50),
-                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
-                      gestionFormation(
-                        formation,
-                        "Formations disponilbes",
-                        "Nouvelle formation",
+                      StreamBuilder<List<Map<String, dynamic>>>(
+                        stream: _adminService.getFormationsStream(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          final formations = snapshot.data ?? [];
+                          final List<Formation> formation = formations.map((f) {
+                            return Formation(
+                              etudiant:
+                                  (f['studentCount'] ?? f['studentNumber'] ?? 0)
+                                      .toDouble(),
+                              formation:
+                                  f['name'] ??
+                                  f['title'] ??
+                                  'Formation sans nom',
+                              ufr:
+                                  f['ufr'] ??
+                                  f['faculty'] ??
+                                  f['department'] ??
+                                  'UFR non spécifiée',
+                              niveau: f['level'] ?? f['niveau'] ?? 'N/A',
+                              statut: f['status'] ?? 'Active',
+                            );
+                          }).toList();
+
+                          return gestionFormation(
+                            formation,
+                            "Formations disponibles",
+                            "Nouvelle formation",
+                          );
+                        },
                       ),
                       SizedBox(height: 8),
                       Padding(
@@ -452,111 +700,277 @@ class _AdminState extends State<Admin> {
                         child: Text(
                           "Calendrier académique",
                           style: TextStyle(
-                            fontSize: 19,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                             color: Color(0xFF2C3E50),
-                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
 
-                      Card(
-                        elevation: 2,
-                        color: Colors.white,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 10,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              iconColorText(
-                                "Année 2023-2024",
-                                Color(0xFF2C3E50),
-                                Icons.calendar_view_week_sharp,
-                              ),
-                              SizedBox(height: 10),
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 3),
-                                child: Text(
-                                  "Rentrée universitaires",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                  ),
+                      StreamBuilder<List<Map<String, dynamic>>>(
+                        stream: _adminService.getAcademicCalendar(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Card(
+                              elevation: 2,
+                              color: Colors.white,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 10,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    iconColorText(
+                                      "Aucun événement",
+                                      Colors.grey,
+                                      Icons.calendar_view_week_sharp,
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      "Aucun événement programmé",
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 4),
-                                child: Text(
-                                  "15 octobre 2023",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Color.fromARGB(193, 43, 42, 42),
+                            );
+                          }
+
+                          final events = snapshot.data!.take(3).toList();
+                          return Column(
+                            children: events.map((event) {
+                              return Card(
+                                elevation: 2,
+                                color: Colors.white,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 10,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      iconColorText(
+                                        event['title'] ?? 'Événement',
+                                        Color(0xFF2C3E50),
+                                        Icons.calendar_view_week_sharp,
+                                      ),
+                                      SizedBox(height: 10),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 3,
+                                        ),
+                                        child: Text(
+                                          event['title'] ?? 'Événement',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 4,
+                                        ),
+                                        child: Text(
+                                          _formatDate(
+                                            event['date'],
+                                          ), // CORRECTION ICI
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: Color.fromARGB(
+                                              193,
+                                              43,
+                                              42,
+                                              42,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      if (event['description'] != null &&
+                                          event['description']
+                                              .toString()
+                                              .isNotEmpty)
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 4,
+                                          ),
+                                          child: Text(
+                                            event['description'],
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Color.fromARGB(
+                                                193,
+                                                43,
+                                                42,
+                                                42,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      Divider(
+                                        color: const Color.fromARGB(
+                                          64,
+                                          158,
+                                          158,
+                                          158,
+                                        ),
+                                        thickness: 1,
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                              Divider(
-                                color: const Color.fromARGB(64, 158, 158, 158),
-                                thickness: 1,
-                              ),
-                            ],
-                          ),
-                        ),
+                              );
+                            }).toList(),
+                          );
+                        },
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: Text(
                           "Gestion des documents",
                           style: TextStyle(
-                            fontSize: 19,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                             color: Color(0xFF2C3E50),
-                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
-                      Card(
-                        elevation: 2,
-                        color: Colors.white,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 10,
-                          ),
-                          child: Column(
-                            children: [
-                              iconColorText(
-                                "Documents à valider",
-                                Color(0xFFF39C12),
-                                Icons.edit_document,
+                      StreamBuilder<List<Map<String, dynamic>>>(
+                        stream: _adminService.getPendingDocuments(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Card(
+                              elevation: 2,
+                              color: Colors.white,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 10,
+                                  horizontal: 10,
+                                ),
+                                child: Column(
+                                  children: [
+                                    iconColorText(
+                                      "Aucun document en attente",
+                                      Colors.grey,
+                                      Icons.edit_document,
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      "Tous les documents ont été validés",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              SizedBox(height: 8),
-                              favoris(
-                                "Demande de diplome -Moussa Diop",
-                                "Licence informatique",
-                                Icons.backpack,
-                                Color(0xFF3498DB),
-                                "Valider",
+                            );
+                          }
+
+                          final documents = snapshot.data!.take(5).toList();
+                          return Card(
+                            elevation: 2,
+                            color: Colors.white,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 10,
                               ),
-                              favoris(
-                                "Demande d'attestation -Aminata Fall",
-                                "Attestation de scolarité 2023-2024 . En attente depuis 1jour",
-                                Icons.document_scanner_rounded,
-                                Color(0xFF2ECC71),
-                                "Valider",
+                              child: Column(
+                                children: [
+                                  iconColorText(
+                                    "Documents à valider",
+                                    Color(0xFFF39C12),
+                                    Icons.edit_document,
+                                  ),
+                                  SizedBox(height: 8),
+                                  ...documents.map((doc) {
+                                    final docType =
+                                        doc['type'] ??
+                                        doc['documentType'] ??
+                                        'PDF';
+                                    final icon =
+                                        docType.toLowerCase().contains(
+                                          'diplome',
+                                        )
+                                        ? Icons.backpack
+                                        : Icons.document_scanner_rounded;
+                                    final color =
+                                        docType.toLowerCase().contains(
+                                          'diplome',
+                                        )
+                                        ? Color(0xFF3498DB)
+                                        : Color(0xFF2ECC71);
+
+                                    return favoris(
+                                      "${doc['title'] ?? 'Document'} - ${doc['studentName'] ?? 'Étudiant'}",
+                                      "${doc['formation'] ?? 'N/A'}. En attente depuis ${doc['daysPending'] ?? 0} jour(s)",
+                                      icon,
+                                      color,
+                                      "Valider",
+                                      onPressed: () async {
+                                        try {
+                                          await _adminService.approveDocument(
+                                            doc['id'],
+                                          );
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Document approuvé',
+                                              ),
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text('Erreur: $e'),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    );
+                                  }),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
+                            ),
+                          );
+                        },
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: Text(
                           "Statistiques des documents",
                           style: TextStyle(
-                            fontSize: 19,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                             color: Color(0xFF2C3E50),
-                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
@@ -594,39 +1008,72 @@ class _AdminState extends State<Admin> {
     );
   }
 
-  // widget pour menu d'en haut
-
   Widget menu({
     required List<Map<String, dynamic>> items,
+    int currentIndex = 0,
     Color iconColor = Colors.blueAccent,
     Color textColor = Colors.black87,
+    Color selectedColor = Colors.blue,
+    Function(int)? onItemSelected,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       color: Colors.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: items.map((item) {
+        children: List.generate(items.length, (index) {
+          final item = items[index];
+          final isSelected = index == currentIndex;
+
           return InkWell(
-            onTap: () {},
+            onTap: () {
+              if (onItemSelected != null) {
+                onItemSelected(index);
+              }
+            },
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(item['icon'], color: iconColor, size: 26),
+                Icon(
+                  item['icon'],
+                  color: isSelected ? selectedColor : iconColor,
+                  size: 26,
+                ),
                 const SizedBox(height: 4),
-                Text(
-                  item['label'],
-                  style: TextStyle(fontSize: 12, color: textColor),
+                Stack(
+                  children: [
+                    Text(
+                      item['label'],
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isSelected ? selectedColor : textColor,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                    if (isSelected)
+                      Positioned(
+                        bottom: -6,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          height: 2,
+                          decoration: BoxDecoration(
+                            color: selectedColor,
+                            borderRadius: BorderRadius.circular(1),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),
           );
-        }).toList(),
+        }),
       ),
     );
   }
-
-  // gestion utilisateur
 
   Widget gestionUser(final res, String labelText, String labelButton) {
     return Card(
@@ -721,8 +1168,6 @@ class _AdminState extends State<Admin> {
     );
   }
 
-  // fonction pour le box article
-
   Widget livreBox(
     String titre,
     String auteur,
@@ -770,7 +1215,6 @@ class _AdminState extends State<Admin> {
           SizedBox(
             width: 210,
             child: Column(
-              //text
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -888,8 +1332,6 @@ class _AdminState extends State<Admin> {
     );
   }
 
-  // pour les articles
-
   Widget articleRecent(
     String nomArticle,
     String contenu,
@@ -1005,8 +1447,6 @@ class _AdminState extends State<Admin> {
     );
   }
 
-  // card
-
   Widget carte(
     String titre,
     Color couleur,
@@ -1074,15 +1514,14 @@ class _AdminState extends State<Admin> {
     );
   }
 
-  // favoris
-
   Widget favoris(
     String titre,
     String referencement,
     IconData icon,
     Color couleur,
-    String labelButton,
-  ) {
+    String labelButton, {
+    VoidCallback? onPressed,
+  }) {
     return Container(
       width: MediaQuery.of(context).size.width * 1,
       color: Colors.white,
@@ -1096,7 +1535,7 @@ class _AdminState extends State<Admin> {
             child: SizedBox(
               height: 38,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: onPressed ?? () {},
                 style: ElevatedButton.styleFrom(
                   side: BorderSide(width: 1, color: Colors.blueAccent),
                   backgroundColor: Color(0xFF3498DB),
@@ -1117,8 +1556,6 @@ class _AdminState extends State<Admin> {
       ),
     );
   }
-
-  // iconColorText
 
   Widget iconColorText(
     String titre,
@@ -1176,7 +1613,6 @@ class _AdminState extends State<Admin> {
       ],
     );
   }
-  // boxCard
 
   Widget boxCard(String titre) {
     return ElevatedButton(
@@ -1210,8 +1646,6 @@ class _AdminState extends State<Admin> {
       ),
     );
   }
-
-  //rechercher
 
   Widget recherche() {
     return SizedBox(
@@ -1278,8 +1712,6 @@ class _AdminState extends State<Admin> {
       ),
     );
   }
-
-  // la fonction pour le box evenement
 
   Widget event(
     String date,
@@ -1495,8 +1927,6 @@ class _AdminState extends State<Admin> {
     );
   }
 
-  // tableau
-
   Widget tableau(final result) {
     return Table(
       border: TableBorder(
@@ -1588,6 +2018,20 @@ class _AdminState extends State<Admin> {
   }
 
   Widget tableauFormation(final result) {
+    // Dé-dupliquer par nom de formation
+    final uniqueResults = <Formation>[];
+    final seenNames = <String>{};
+
+    for (final r in result) {
+      if (!seenNames.contains(r.formation)) {
+        seenNames.add(r.formation);
+        uniqueResults.add(r);
+      }
+    }
+
+    // Trier par nom
+    uniqueResults.sort((a, b) => a.formation.compareTo(b.formation));
+
     return Table(
       border: TableBorder(
         horizontalInside: BorderSide(color: Color(0xFFEEEEEE), width: 1),
@@ -1656,7 +2100,7 @@ class _AdminState extends State<Admin> {
             ),
           ],
         ),
-        for (final r in result)
+        for (final r in uniqueResults.take(10)) // Limiter à 10 résultats
           TableRow(
             decoration: BoxDecoration(color: Colors.white),
             children: [
@@ -1832,6 +2276,4 @@ class _AdminState extends State<Admin> {
       ],
     );
   }
-
-  //
 }

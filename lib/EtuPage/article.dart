@@ -6,6 +6,7 @@ import 'package:sama_ufr/EtuPage/detail_pages.dart';
 import 'package:sama_ufr/EtuPage/more_detail_pages.dart';
 import 'package:sama_ufr/utils/app_colors.dart';
 import 'package:sama_ufr/login_page.dart';
+import 'package:sama_ufr/Accueil/accueilPrincipal.dart';
 import 'package:sama_ufr/service/auth.dart';
 
 class Article extends StatefulWidget {
@@ -44,6 +45,7 @@ class _ArticleState extends State<Article> {
   StreamSubscription? _eventsSubscription;
   StreamSubscription? _schedulesSubscription;
   StreamSubscription? _documentsSubscription;
+  StreamSubscription? _resultsSubscription;
 
   @override
   void initState() {
@@ -57,6 +59,7 @@ class _ArticleState extends State<Article> {
     _eventsSubscription?.cancel();
     _schedulesSubscription?.cancel();
     _documentsSubscription?.cancel();
+    _resultsSubscription?.cancel();
     super.dispose();
   }
 
@@ -128,32 +131,27 @@ class _ArticleState extends State<Article> {
       },
     );
 
-    // Charger les résultats avec timeout pour éviter les blocages
-    print('Chargement des résultats...');
-    widget.studentService
-        .getStudentResults()
-        .timeout(
-          const Duration(seconds: 10),
-          onTimeout: () {
-            print('Timeout résultats');
-            return [];
+    // Charger les résultats en temps réel via Stream
+    print('Chargement des résultats en flux...');
+    _resultsSubscription = widget.studentService
+        .getStudentResultsStream()
+        .listen(
+          (results) {
+            if (mounted) {
+              print('Résultats reçus (Stream): ${results.length}');
+              setState(() {
+                _results = results;
+                _isLoading = false;
+              });
+            }
           },
-        )
-        .then((results) {
-          if (mounted) {
-            print('Résultats reçus: ${results.length}');
-            setState(() {
-              _results = results;
-              _isLoading = false;
-            });
-          }
-        })
-        .catchError((error) {
-          print('Erreur résultats: $error');
-          if (mounted) {
-            setState(() => _isLoading = false);
-          }
-        });
+          onError: (error) {
+            print('Erreur flux résultats: $error');
+            if (mounted) {
+              setState(() => _isLoading = false);
+            }
+          },
+        );
   }
 
   void _onCategoryChanged(String category) {
@@ -317,7 +315,7 @@ class _ArticleState extends State<Article> {
                 Auth().signOut();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  MaterialPageRoute(builder: (context) => Accueilprincipal()),
                 );
               },
             ),

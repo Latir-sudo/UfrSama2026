@@ -2,8 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 /// Script d'initialisation complète de Firestore
-/// Crée toutes les collections nécessaires et peuple avec des données de test
-/// À exécuter une seule fois lors du première déploiement
+
 class FirestoreInitializer {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -15,11 +14,17 @@ class FirestoreInitializer {
     try {
       print('$TAG: Démarrage de l\'initialisation des collections...');
 
+      // Création forcée d'un admin par défaut pour la connexion si besoin
+      await _createDefaultAdmin();
+
       // Créer les utilisateurs de base
       await _initializeUsers();
 
       // Créer les enseignants de base
       await _initializeTeachers();
+
+      // Créer les départements
+      await _initializeDepartments();
 
       // Créer les formations
       await _initializeCourses();
@@ -50,7 +55,7 @@ class FirestoreInitializer {
 
       // Créer les notifications
       await _initializeNotifications();
-      
+
       // Ajouter des favoris par défaut pour l'utilisateur actuel
       await _initializeFavorites();
 
@@ -60,6 +65,137 @@ class FirestoreInitializer {
       print('$TAG: ✅ Initialisation complète réussie!');
     } catch (e) {
       print('$TAG: ❌ Erreur lors de l\'initialisation: $e');
+    }
+  }
+
+  Future<void> _createDefaultAdmin() async {
+    try {
+      final String adminEmail = 'admin_user@uadb.edu.sn';
+      final String adminPass = 'AdminPass123';
+
+      // Vérifier si l'admin existe déjà dans Firestore
+      final adminSnapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: adminEmail)
+          .limit(1)
+          .get();
+
+      if (adminSnapshot.docs.isEmpty) {
+        print('$TAG: Création de l\'admin par défaut dans Firebase Auth...');
+        try {
+          // Tenter de créer l'utilisateur dans Firebase Auth
+          UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+            email: adminEmail,
+            password: adminPass,
+          );
+
+          if (userCredential.user != null) {
+            // Créer le profil dans Firestore
+            await _firestore.collection('users').doc(userCredential.user!.uid).set({
+              'name': 'Admin User',
+              'email': adminEmail,
+              'role': 'admin',
+              'status': 'Active',
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+            print('$TAG: ✅ Admin créé avec succès!');
+          }
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'email-already-in-use') {
+            print('$TAG: ⏭️ L\'email admin est déjà utilisé dans Auth');
+            // Si l'utilisateur existe dans Auth mais pas dans Firestore (cas rare), on pourrait le recréer dans Firestore ici
+          } else {
+            print('$TAG: ❌ Erreur Auth lors de la création de l\'admin: ${e.message}');
+          }
+        }
+      } else {
+        print('$TAG: ⏭️ L\'admin par défaut existe déjà dans Firestore');
+      }
+    } catch (e) {
+      print('$TAG: ❌ Erreur lors de la création de l\'admin par défaut: $e');
+    }
+  }
+
+  /// Initialiser la collection des départements
+  Future<void> _initializeDepartments() async {
+    try {
+      print('$TAG: Initialisation des départements...');
+      final batch = _firestore.batch();
+      final departmentsRef = _firestore.collection('departements');
+
+      // Vérifier si les départements existent déjà
+      final existing = await departmentsRef.limit(1).get();
+      if (existing.docs.isNotEmpty) {
+        print('$TAG: ⏭️  Les départements existent déjà');
+        return;
+      }
+
+      // Créer les départements de base
+      List<Map<String, dynamic>> departments = [
+        {
+          'name': 'Informatique',
+          'code': 'INFO',
+          'description':
+              'Département d\'Informatique et de Science des Données',
+          'responsable': 'Pr. Maissa Mbaye',
+          'email': 'informatique@uadb.edu.sn',
+          'telephone': '+221 33 864 99 99',
+          'logo': 'assets/images/info.png',
+          'etudiants': 450,
+          'enseignants': 25,
+          'status': 'Active',
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+        {
+          'name': 'Mathématiques',
+          'code': 'MATH',
+          'description': 'Département de Mathématiques et Physique',
+          'responsable': 'Pr. Moussa Diallo',
+          'email': 'mathematiques@uadb.edu.sn',
+          'telephone': '+221 33 864 99 98',
+          'logo': 'assets/images/math.png',
+          'etudiants': 380,
+          'enseignants': 20,
+          'status': 'Active',
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+        {
+          'name': 'Sciences de la Vie',
+          'code': 'SVT',
+          'description': 'Département de Biologie et de Sciences de la Vie',
+          'responsable': 'Dr. Aïta Sow',
+          'email': 'biologie@uadb.edu.sn',
+          'telephone': '+221 33 864 99 97',
+          'logo': 'assets/images/svt.png',
+          'etudiants': 320,
+          'enseignants': 18,
+          'status': 'Active',
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+        {
+          'name': 'Chimie',
+          'code': 'CHIM',
+          'description': 'Département de Chimie et de Génie Chimique',
+          'responsable': 'Pr. Samba Ba',
+          'email': 'chimie@uadb.edu.sn',
+          'telephone': '+221 33 864 99 96',
+          'logo': 'assets/images/chimie.png',
+          'etudiants': 280,
+          'enseignants': 15,
+          'status': 'Active',
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+      ];
+
+      for (var department in departments) {
+        final docRef = departmentsRef.doc();
+        batch.set(docRef, department);
+      }
+
+      await batch.commit();
+      print('$TAG: ✅ ${departments.length} départements créés');
+    } catch (e) {
+      print('$TAG: ❌ Erreur initialisation départements: $e');
     }
   }
 
@@ -136,7 +272,10 @@ class FirestoreInitializer {
       final usersRef = _firestore.collection('users');
 
       // On vérifie s'il y a déjà des enseignants
-      final existingTeachers = await usersRef.where('role', isEqualTo: 'enseignant').limit(1).get();
+      final existingTeachers = await usersRef
+          .where('role', isEqualTo: 'enseignant')
+          .limit(1)
+          .get();
       if (existingTeachers.docs.isNotEmpty) {
         print('$TAG: ⏭️ Des enseignants existent déjà');
         return;
@@ -175,7 +314,9 @@ class FirestoreInitializer {
       }
 
       await batch.commit();
-      print('$TAG: ✅ ${teachers.length} enseignants créés (Mot de passe par défaut: Passer123)');
+      print(
+        '$TAG: ✅ ${teachers.length} enseignants créés (Mot de passe par défaut: Passer123)',
+      );
     } catch (e) {
       print('$TAG: ❌ Erreur initialisation enseignants: $e');
     }
@@ -821,10 +962,10 @@ class FirestoreInitializer {
       if (userId == null) return;
 
       print('$TAG: Initialisation des favoris pour $userId...');
-      
+
       final userRef = _firestore.collection('users').doc(userId);
       final userDoc = await userRef.get();
-      
+
       if (userDoc.exists) {
         final data = userDoc.data() as Map<String, dynamic>;
         if (data['favorites'] == null || (data['favorites'] as List).isEmpty) {
@@ -832,8 +973,8 @@ class FirestoreInitializer {
             'favorites': [
               'Introduction à Flutter',
               'Programmation Dart',
-              'Firebase pour Mobile'
-            ]
+              'Firebase pour Mobile',
+            ],
           });
           print('$TAG: ✅ Favoris mis à jour pour $userId');
         }
@@ -849,7 +990,9 @@ class FirestoreInitializer {
       print('$TAG: Initialisation des données enseignant...');
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
-        print('$TAG: ⚠️ Pas d\'utilisateur connecté pour les données enseignant');
+        print(
+          '$TAG: ⚠️ Pas d\'utilisateur connecté pour les données enseignant',
+        );
         return;
       }
 
@@ -871,7 +1014,10 @@ class FirestoreInitializer {
 
       // 2. Créer des cours assignés à cet enseignant
       final coursesRef = _firestore.collection('courses');
-      final existingTeacherCourses = await coursesRef.where('teacherId', isEqualTo: userId).limit(1).get();
+      final existingTeacherCourses = await coursesRef
+          .where('teacherId', isEqualTo: userId)
+          .limit(1)
+          .get();
 
       if (existingTeacherCourses.docs.isEmpty) {
         List<Map<String, dynamic>> teacherCourses = [
@@ -884,7 +1030,19 @@ class FirestoreInitializer {
             'schedule': 'Lundi 08:00 - 12:00',
             'time': '08:00',
             'date': 'Aujourd\'hui',
-            'room': 'Salle 101',
+            'room': 'Salle fs02',
+            'createdAt': FieldValue.serverTimestamp(),
+          },
+          {
+            'name': 'Génie logiciel',
+            'code': 'INF311',
+            'teacherId': userId,
+            'level': 'L3 Informatique',
+            'studentCount': 45,
+            'schedule': 'Lundi 15:00 - 18:00',
+            'time': '15:00',
+            'date': 'Aujourd\'hui',
+            'room': 'Salle fs02',
             'createdAt': FieldValue.serverTimestamp(),
           },
           {
@@ -904,14 +1062,17 @@ class FirestoreInitializer {
         for (var course in teacherCourses) {
           final docRef = coursesRef.doc();
           batch.set(docRef, course);
-          
+
           // 3. Ajouter quelques notes pour ce cours
           final resultsRef = _firestore.collection('results');
           batch.set(resultsRef.doc(), {
             'courseId': docRef.id,
             'courseName': course['name'],
             'studentName': 'Mama Seck',
+            'studentId': 'student_mama_seck_001',
             'grade': 15.5,
+            'assignmentGrade': 14.0,
+            'examGrade': 16.0,
             'status': 'Validé',
             'createdAt': FieldValue.serverTimestamp(),
           });
@@ -919,7 +1080,21 @@ class FirestoreInitializer {
             'courseId': docRef.id,
             'courseName': course['name'],
             'studentName': 'Fatou Sarr',
+            'studentId': 'student_fatou_sarr_001',
             'grade': 14.0,
+            'assignmentGrade': 12.5,
+            'examGrade': 15.0,
+            'status': 'Validé',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+          batch.set(resultsRef.doc(), {
+            'courseId': docRef.id,
+            'courseName': course['name'],
+            'studentName': 'Yacine Diop',
+            'studentId': 'student_yacine_diop_001',
+            'grade': 16.5,
+            'assignmentGrade': 17.0,
+            'examGrade': 16.0,
             'status': 'Validé',
             'createdAt': FieldValue.serverTimestamp(),
           });
@@ -928,7 +1103,10 @@ class FirestoreInitializer {
 
       // 4. Créer des documents pédagogiques
       final docsRef = _firestore.collection('documents');
-      final existingDocs = await docsRef.where('uploadedBy', isEqualTo: userId).limit(1).get();
+      final existingDocs = await docsRef
+          .where('uploadedBy', isEqualTo: userId)
+          .limit(1)
+          .get();
       if (existingDocs.docs.isEmpty) {
         batch.set(docsRef.doc(), {
           'title': 'Support de cours Flutter - Introduction',
@@ -942,7 +1120,10 @@ class FirestoreInitializer {
 
       // 5. Créer des requêtes assignées à l'enseignant
       final requestsRef = _firestore.collection('requests');
-      final existingRequests = await requestsRef.where('assignedTo', isEqualTo: userId).limit(1).get();
+      final existingRequests = await requestsRef
+          .where('assignedTo', isEqualTo: userId)
+          .limit(1)
+          .get();
       if (existingRequests.docs.isEmpty) {
         batch.set(requestsRef.doc(), {
           'studentName': 'Karim Ndiaye',
