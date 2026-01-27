@@ -2165,6 +2165,112 @@ class CourseModel {
   });
 }
 
+class ResourcesPage extends StatelessWidget {
+  final StudentService studentService;
+
+  const ResourcesPage({super.key, required this.studentService});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('Ressources'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: AppColors.gradientBlueGreen,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        elevation: 0,
+      ),
+      body: StreamBuilder(
+        stream: studentService.getArticlesStream(category: 'Tous'),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('Aucune ressource disponible'));
+          }
+
+          final articles = snapshot.data!;
+          return ListView.builder(
+            itemCount: articles.length,
+            padding: EdgeInsets.all(16),
+            itemBuilder: (context, index) {
+              final article = articles[index];
+
+              return Card(
+                margin: EdgeInsets.only(bottom: 12),
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        article.title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        article.author,
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      ),
+                      SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Chip(
+                            label: Text(article.category),
+                            backgroundColor: Color(0xFF3498DB),
+                            labelStyle: TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            '⭐ ${article.rating}',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Téléchargement de "${article.title}"...',
+                                ),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF3498DB),
+                          ),
+                          child: Text('Télécharger (${article.downloads})'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
 /// Widget réutilisable pour les informations
 class _InfoRow extends StatelessWidget {
   final IconData icon;
