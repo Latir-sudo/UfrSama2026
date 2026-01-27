@@ -183,11 +183,14 @@ class TeacherService {
   }
 
   // Update student grade
-  Future<void> updateStudentGrade(String resultId, double? grade, {String? type}) async {
+  Future<void> updateStudentGrade(
+    String resultId,
+    double? grade, {
+    String? type,
+  }) async {
     try {
       Map<String, dynamic> updates = {
         'updatedAt': FieldValue.serverTimestamp(),
-<<<<<<< HEAD
       };
 
       if (type == 'assignment') {
@@ -203,10 +206,6 @@ class TeacherService {
 
       await _firestore.collection('results').doc(resultId).update(updates);
       print('✅ Note mise à jour ($type): $resultId -> $grade');
-=======
-      });
-      print(' Note mise à jour: $resultId -> $newGrade');
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
     } catch (e) {
       print(' Erreur mise à jour note: $e');
       rethrow;
@@ -214,7 +213,12 @@ class TeacherService {
   }
 
   // Enroll a student to a course (create a result record)
-  Future<void> enrollStudent(String courseId, String courseName, String studentId, String studentName) async {
+  Future<void> enrollStudent(
+    String courseId,
+    String courseName,
+    String studentId,
+    String studentName,
+  ) async {
     try {
       // Check if already enrolled
       final existing = await _firestore
@@ -233,16 +237,16 @@ class TeacherService {
           'status': 'En cours',
           'createdAt': FieldValue.serverTimestamp(),
         });
-        
+
         // Update studentCount in course
         await _firestore.collection('courses').doc(courseId).update({
           'studentCount': FieldValue.increment(1),
         });
-        
-        print('✅ Étudiant $studentName inscrit au cours $courseName');
+
+        print('Étudiant $studentName inscrit au cours $courseName');
       }
     } catch (e) {
-      print('❌ Erreur inscription étudiant: $e');
+      print('Erreur inscription étudiant: $e');
       rethrow;
     }
   }
@@ -280,7 +284,6 @@ class TeacherService {
     }
   }
 
-<<<<<<< HEAD
   // Stream of teaching resources (real-time)
   Stream<List<Map<String, dynamic>>> getTeachingResourcesStream() {
     final userId = currentUserId;
@@ -307,7 +310,7 @@ class TeacherService {
               .toList(),
         )
         .handleError((e) {
-          print('❌ Erreur flux ressources: $e');
+          print('Erreur flux ressources: $e');
           return [];
         });
   }
@@ -329,11 +332,13 @@ class TeacherService {
         'uploadedBy': userId,
         'uploadDate': FieldValue.serverTimestamp(),
       });
-      print('✅ Ressource ajoutée: $title');
+      print('Ressource ajoutée: $title');
     } catch (e) {
-      print('❌ Erreur ajout ressource: $e');
+      print('Erreur ajout ressource: $e');
       rethrow;
-=======
+    }
+  }
+
   // Get available documents from Firestore (official documents)
   Future<List<Map<String, dynamic>>> getAvailableDocuments() async {
     try {
@@ -361,7 +366,6 @@ class TeacherService {
     } catch (e) {
       print(' Erreur récupération documents disponibles: $e');
       return [];
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
     }
   }
 
@@ -379,9 +383,7 @@ class TeacherService {
         String lastName = data['lastName'] ?? '';
 
         // Si firstName et lastName sont vides, on essaie de parser 'name'
-        if (firstName.isEmpty &&
-            lastName.isEmpty &&
-            data.containsKey('name')) {
+        if (firstName.isEmpty && lastName.isEmpty && data.containsKey('name')) {
           String name = data['name'] ?? '';
           if (name.isNotEmpty) {
             List<String> parts = name.split(' ');
@@ -440,9 +442,11 @@ class TeacherService {
             final data = doc.data() as Map<String, dynamic>;
             String firstName = data['firstName'] ?? '';
             String lastName = data['lastName'] ?? '';
-            
+
             // Si firstName et lastName sont vides, on essaie de parser 'name'
-            if (firstName.isEmpty && lastName.isEmpty && data.containsKey('name')) {
+            if (firstName.isEmpty &&
+                lastName.isEmpty &&
+                data.containsKey('name')) {
               String name = data['name'] ?? '';
               if (name.isNotEmpty) {
                 List<String> parts = name.split(' ');
@@ -454,7 +458,7 @@ class TeacherService {
                 }
               }
             }
-            
+
             if (firstName.isEmpty) firstName = 'Enseignant';
 
             return {

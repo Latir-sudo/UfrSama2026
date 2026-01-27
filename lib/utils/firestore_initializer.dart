@@ -84,20 +84,24 @@ class FirestoreInitializer {
         print('$TAG: Création de l\'admin par défaut dans Firebase Auth...');
         try {
           // Tenter de créer l'utilisateur dans Firebase Auth
-          UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-            email: adminEmail,
-            password: adminPass,
-          );
+          UserCredential userCredential = await _auth
+              .createUserWithEmailAndPassword(
+                email: adminEmail,
+                password: adminPass,
+              );
 
           if (userCredential.user != null) {
             // Créer le profil dans Firestore
-            await _firestore.collection('users').doc(userCredential.user!.uid).set({
-              'name': 'Admin User',
-              'email': adminEmail,
-              'role': 'admin',
-              'status': 'Active',
-              'createdAt': FieldValue.serverTimestamp(),
-            });
+            await _firestore
+                .collection('users')
+                .doc(userCredential.user!.uid)
+                .set({
+                  'name': 'Admin User',
+                  'email': adminEmail,
+                  'role': 'admin',
+                  'status': 'Active',
+                  'createdAt': FieldValue.serverTimestamp(),
+                });
             print('$TAG: ✅ Admin créé avec succès!');
           }
         } on FirebaseAuthException catch (e) {
@@ -105,7 +109,9 @@ class FirestoreInitializer {
             print('$TAG: ⏭️ L\'email admin est déjà utilisé dans Auth');
             // Si l'utilisateur existe dans Auth mais pas dans Firestore (cas rare), on pourrait le recréer dans Firestore ici
           } else {
-            print('$TAG: ❌ Erreur Auth lors de la création de l\'admin: ${e.message}');
+            print(
+              '$TAG: ❌ Erreur Auth lors de la création de l\'admin: ${e.message}',
+            );
           }
         }
       } else {
@@ -323,11 +329,7 @@ class FirestoreInitializer {
 
       await batch.commit();
       print(
-<<<<<<< HEAD
-        '$TAG: ✅ ${teachers.length} enseignants créés (Mot de passe par défaut: Passer123)',
-=======
         '$TAG:  ${teachers.length} enseignants créés (Mot de passe par défaut: Passer123)',
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
       );
     } catch (e) {
       print('$TAG:  Erreur initialisation enseignants: $e');
@@ -606,9 +608,7 @@ class FirestoreInitializer {
       print('$TAG: Initialisation de l\'emploi du temps...');
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
-        print(
-          '$TAG:   Pas d\'utilisateur connecté, emploi du temps non créé',
-        );
+        print('$TAG:   Pas d\'utilisateur connecté, emploi du temps non créé');
         return;
       }
 
@@ -917,9 +917,7 @@ class FirestoreInitializer {
       print('$TAG: Initialisation des notifications...');
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
-        print(
-          '$TAG:   Pas d\'utilisateur connecté, notifications non créées',
-        );
+        print('$TAG:   Pas d\'utilisateur connecté, notifications non créées');
         return;
       }
 
@@ -1002,13 +1000,7 @@ class FirestoreInitializer {
       print('$TAG: Initialisation des données enseignant...');
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
-        print(
-<<<<<<< HEAD
-          '$TAG: ⚠️ Pas d\'utilisateur connecté pour les données enseignant',
-=======
-          '$TAG:  Pas d\'utilisateur connecté pour les données enseignant',
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
-        );
+        print('$TAG:  Pas d\'utilisateur connecté pour les données enseignant');
         return;
       }
 
@@ -1154,6 +1146,169 @@ class FirestoreInitializer {
       print('$TAG:  Données enseignant initialisées pour $userId');
     } catch (e) {
       print('$TAG:  Erreur initialisation données enseignant: $e');
+    }
+  }
+
+  /// Initialiser la collection des réclamations
+  /// Initialiser la collection des réclamations
+  Future<void> _initializeReclamations() async {
+    try {
+      print('$TAG: Initialisation des réclamations...');
+      final batch = _firestore.batch();
+      final reclamationsRef = _firestore.collection('reclamations');
+
+      final existing = await reclamationsRef.limit(1).get();
+      if (existing.docs.isNotEmpty) {
+        print('$TAG: ⏭️ Les réclamations existent déjà');
+        return;
+      }
+
+      List<Map<String, dynamic>> reclamations = [
+        {
+          'studentId': 'student_mama_seck_001',
+          'studentEmail': 'mama.seck@uadb.edu.sn',
+          'studentName': 'Mama Seck',
+          'courseId': 'INF301',
+          'courseName': 'Développement Mobile Flutter',
+          'type': 'exam',
+          'title': 'Réclamation sur l\'examen final',
+          'description':
+              'Je conteste la note de la question 3 qui a été notée 0/4 alors que j\'ai suivi la méthodologie enseignée en cours.',
+          'initialGrade': 12.0,
+          'requestedGrade': 14.0,
+          'status': 'pending',
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+          'attachments': [],
+          'professorResponse': null,
+          'finalGrade': null,
+        },
+        {
+          'studentId': 'student_fatou_sarr_001',
+          'studentEmail': 'fatou.sarr@uadb.edu.sn',
+          'studentName': 'Fatou Sarr',
+          'courseId': 'INF311',
+          'courseName': 'Génie logiciel',
+          'type': 'homework',
+          'title': 'Devoir maison non corrigé',
+          'description':
+              'La question 2.b n\'a pas été corrigée. Il manque la notation sur cette partie.',
+          'initialGrade': 8.0,
+          'requestedGrade': 9.5,
+          'status': 'in_progress',
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+          'attachments': ['correction.pdf'],
+          'professorResponse':
+              'Réclamation en cours d\'examen par le professeur.',
+          'finalGrade': null,
+        },
+        {
+          'studentId': 'student_karim_ndiaye_001',
+          'studentEmail': 'karim.ndiaye@uadb.edu.sn',
+          'studentName': 'Karim Ndiaye',
+          'courseId': 'INF302',
+          'courseName': 'Architecture des Systèmes',
+          'type': 'project',
+          'title': 'Note du projet trop sévère',
+          'description':
+              'La note de la partie "Optimisation du code" me semble trop sévère.',
+          'initialGrade': 14.0,
+          'requestedGrade': 16.0,
+          'status': 'resolved',
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+          'attachments': ['projet_code.zip', 'explication.pdf'],
+          'professorResponse': 'Note révisée à 15.5/20 après réexamen.',
+          'finalGrade': 15.5,
+        },
+      ];
+
+      for (var reclamation in reclamations) {
+        final docRef = reclamationsRef.doc();
+        batch.set(docRef, reclamation);
+      }
+
+      await batch.commit();
+      print('$TAG: ✅ ${reclamations.length} réclamations créées');
+    } catch (e) {
+      print('$TAG: ❌ Erreur initialisation réclamations: $e');
+    }
+  }
+
+  /// Initialiser la collection des demandes de documents
+  Future<void> _initializeDocumentRequests() async {
+    try {
+      print('$TAG: Initialisation des demandes de documents...');
+      final batch = _firestore.batch();
+      final docRequestsRef = _firestore.collection('document_requests');
+
+      final existing = await docRequestsRef.limit(1).get();
+      if (existing.docs.isNotEmpty) {
+        print('$TAG: ⏭️ Les demandes de documents existent déjà');
+        return;
+      }
+
+      List<Map<String, dynamic>> documentRequests = [
+        {
+          'studentId': 'student_mama_seck_001',
+          'studentEmail': 'mama.seck@uadb.edu.sn',
+          'studentName': 'Mama Seck',
+          'documentType': 'attestation_scolarite',
+          'documentTitle': 'Attestation de scolarité',
+          'academicYear': '2022-2023',
+          'semester': 'S2',
+          'reason': 'Demande de bourse',
+          'status': 'ready',
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+          'downloadUrl': 'https://example.com/attestation.pdf',
+          'expiryDate': DateTime.now().add(Duration(days: 90)),
+          'additionalInfo': 'À récupérer au secrétariat',
+        },
+        {
+          'studentId': 'student_fatou_sarr_001',
+          'studentEmail': 'fatou.sarr@uadb.edu.sn',
+          'studentName': 'Fatou Sarr',
+          'documentType': 'certificat_reussite',
+          'documentTitle': 'Certificat de réussite',
+          'academicYear': '2022-2023',
+          'semester': 'Année complète',
+          'reason': 'Candidature à une formation',
+          'status': 'in_progress',
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+          'downloadUrl': null,
+          'expiryDate': null,
+          'additionalInfo': 'Pour le master en data science',
+        },
+        {
+          'studentId': 'student_karim_ndiaye_001',
+          'studentEmail': 'karim.ndiaye@uadb.edu.sn',
+          'studentName': 'Karim Ndiaye',
+          'documentType': 'releve_notes',
+          'documentTitle': 'Relevé de notes',
+          'academicYear': '2022-2023',
+          'semester': 'S1',
+          'reason': 'Démarche administrative',
+          'status': 'pending',
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+          'downloadUrl': null,
+          'expiryDate': null,
+          'additionalInfo': null,
+        },
+      ];
+
+      for (var request in documentRequests) {
+        final docRef = docRequestsRef.doc();
+        batch.set(docRef, request);
+      }
+
+      await batch.commit();
+      print('$TAG: ✅ ${documentRequests.length} demandes de documents créées');
+    } catch (e) {
+      print('$TAG: ❌ Erreur initialisation demandes de documents: $e');
     }
   }
 }

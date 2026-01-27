@@ -5,8 +5,7 @@ import 'package:sama_ufr/service/student_service.dart';
 import 'package:sama_ufr/EtuPage/detail_pages.dart';
 import 'package:sama_ufr/EtuPage/more_detail_pages.dart';
 import 'package:sama_ufr/utils/app_colors.dart';
-import 'package:sama_ufr/login_page.dart';
-import 'package:sama_ufr/Accueil/accueilPrincipal.dart';
+import 'package:sama_ufr/Accueil/accueilprincipale.dart';
 import 'package:sama_ufr/service/auth.dart';
 
 class Article extends StatefulWidget {
@@ -2074,7 +2073,7 @@ class _ArticleState extends State<Article> {
     String contenu,
   ) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.70,
+      width: MediaQuery.of(context).size.width * 0.75,
 
       margin: EdgeInsets.only(right: 15, bottom: 15),
       padding: EdgeInsets.only(bottom: 20),
@@ -2094,8 +2093,9 @@ class _ArticleState extends State<Article> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
+            height: 110,
             width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 19),
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 19),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(12),
@@ -2146,11 +2146,11 @@ class _ArticleState extends State<Article> {
                 ),
                 iconText("Organisé par: Club des Maths", Icons.people),
                 SizedBox(
-                  height: 80,
                   child: Padding(
                     padding: EdgeInsets.only(bottom: 3),
                     child: Text(
                       contenu,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,

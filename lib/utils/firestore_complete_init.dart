@@ -294,7 +294,7 @@ class FirestoreCompleteInit {
 
   /// 5. COLLECTION 'documents' - Documents étudiants
   static Future<void> _initDocuments(String userId) async {
-    print('\ Initialisation des DOCUMENTS...');
+    print(' Initialisation des DOCUMENTS...');
     final documents = [
       {
         'studentId': userId,

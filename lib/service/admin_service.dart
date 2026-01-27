@@ -31,24 +31,7 @@ class AdminService {
   Future<List<Map<String, dynamic>>> getFormations() async {
     try {
       final snapshot = await _firestore.collection('courses').limit(20).get();
-<<<<<<< HEAD
-      print('✅ Formations reçues: ${snapshot.docs.length}');
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return {
-          'id': doc.id,
-          'name': data['name'] ?? data['title'] ?? 'Sans nom',
-          'ufr':
-              data['ufr'] ??
-              data['faculty'] ??
-              data['department'] ??
-              'Sans UFR',
-          'level': data['level'] ?? data['niveau'] ?? 'N/A',
-          'studentCount': data['studentCount'] ?? data['studentNumber'] ?? 0,
-          'status': data['status'] ?? 'Active',
-        };
-      }).toList();
-=======
+
       print(' Formations reçues: ${snapshot.docs.length}');
       return snapshot.docs
           .map(
@@ -62,7 +45,6 @@ class AdminService {
             },
           )
           .toList();
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
     } catch (e) {
       print(' Erreur récupération formations: $e');
       return [];
@@ -73,25 +55,6 @@ class AdminService {
   Future<List<Map<String, dynamic>>> getUsersList() async {
     try {
       final snapshot = await _firestore.collection('users').limit(50).get();
-<<<<<<< HEAD
-      print('✅ Utilisateurs reçus: ${snapshot.docs.length}');
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        final firstName = data['firstName'] ?? '';
-        final lastName = data['lastName'] ?? '';
-        final fullName = '$firstName $lastName'.trim();
-
-        return {
-          'id': doc.id,
-          'firstName': firstName,
-          'lastName': lastName,
-          'fullName': fullName.isNotEmpty ? fullName : 'Sans nom',
-          'email': data['email'] ?? 'Sans email',
-          'role': data['role'] ?? 'etudiant',
-          'status': data['status'] ?? 'Active',
-        };
-      }).toList();
-=======
       print(' Utilisateurs reçus: ${snapshot.docs.length}');
       return snapshot.docs
           .map(
@@ -104,7 +67,6 @@ class AdminService {
             },
           )
           .toList();
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
     } catch (e) {
       print(' Erreur récupération utilisateurs: $e');
       return [];
@@ -115,19 +77,6 @@ class AdminService {
   Future<List<Map<String, dynamic>>> getOfficialDocuments() async {
     try {
       final snapshot = await _firestore.collection('documents').limit(30).get();
-<<<<<<< HEAD
-      print('✅ Documents officiels reçus: ${snapshot.docs.length}');
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return {
-          'id': doc.id,
-          'title': data['title'] ?? 'Sans titre',
-          'type': data['type'] ?? data['documentType'] ?? 'PDF',
-          'uploadDate': data['uploadDate']?.toString() ?? '',
-          'size': data['size'] ?? 0,
-        };
-      }).toList();
-=======
       print(' Documents officiels reçus: ${snapshot.docs.length}');
       return snapshot.docs
           .map(
@@ -140,7 +89,6 @@ class AdminService {
             },
           )
           .toList();
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
     } catch (e) {
       print(' Erreur récupération documents: $e');
       return [];

@@ -4,8 +4,7 @@ import 'cours.dart';
 import 'notes.dart';
 import "ressources.dart";
 import 'accueil_page.dart';
-import 'package:sama_ufr/login_page.dart';
-import 'package:sama_ufr/Accueil/accueilPrincipal.dart';
+import 'package:sama_ufr/Accueil/accueilprincipale.dart';
 import 'package:sama_ufr/service/auth.dart';
 
 class EspaceEnseignantPage extends StatefulWidget {

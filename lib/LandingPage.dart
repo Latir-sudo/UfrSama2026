@@ -1,8 +1,7 @@
 // Landingpage.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sama_ufr/Accueil/accueilPrincipal.dart';
-import 'package:sama_ufr/InscriptionPage.dart';
+import 'package:sama_ufr/Accueil/accueilprincipale.dart';
 import 'package:sama_ufr/service/firestore_service.dart';
 import 'package:sama_ufr/EtuPage/EtuPage.dart';
 import 'package:sama_ufr/EnsPage/accueil.dart';

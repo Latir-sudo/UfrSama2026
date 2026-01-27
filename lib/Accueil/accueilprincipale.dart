@@ -1,40 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sama_ufr/InscriptionPage.dart';
+import 'package:sama_ufr/login_page.dart';
 import 'package:sama_ufr/utils/app_colors.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Accueilprincipal extends StatefulWidget {
+  const Accueilprincipal({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Portail Étudiant SAMA UFR',
-      theme: ThemeData(
-        primaryColor: AppColors.primary,
-        fontFamily: GoogleFonts.poppins().fontFamily,
-        appBarTheme: AppBarTheme(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-        ),
-      ),
-      home: HomePage(),
-    );
-  }
+  _AccueilprincipalState createState() => _AccueilprincipalState();
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+class _AccueilprincipalState extends State<Accueilprincipal>
+    with TickerProviderStateMixin {
   late AnimationController _heroAnimationController;
   late Animation<double> _heroFadeAnimation;
   late Animation<double> _heroScaleAnimation;
@@ -73,49 +51,99 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         title: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.school,
+                            color: Colors.blue,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'SAMA UFR',
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            Text(
+                              'Univ Gaston Berger',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    child: Row(
+                      children: [
+                        // je veux une disposition flex pour le logo et les icons d'authentification
+                        InkWell(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginPage(),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Icon(
+                              Icons.login,
+                              color: AppColors.primary,
+                              size: 28,
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => InscriptionPage(),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Icon(
+                              Icons.logout,
+                              color: AppColors.primary,
+                              size: 28,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              child: const Icon(Icons.school, color: Colors.white, size: 24),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'SAMA UFR',
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  'Université de Saint-Louis',
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Colors.white.withOpacity(0.8),
-                  ),
-                ),
-              ],
             ),
           ],
         ),
-        actions: [
-          _buildAuthButton('Se connecter', true),
-          const SizedBox(width: 8),
-          _buildAuthButton('S\'inscrire', false),
-          const SizedBox(width: 16),
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -166,7 +194,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       height: 400,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: AppColors.gradientBlueGreen,
+          colors: [const Color.fromARGB(255, 43, 41, 41), Colors.black],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -176,7 +204,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           // Pattern de fond
           Positioned.fill(
             child: Opacity(
-              opacity: 0.1,
+              opacity: 0.4,
               child: Container(
                 decoration: const BoxDecoration(
                   image: DecorationImage(
@@ -196,27 +224,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Logo/Icon principal
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.3),
-                          width: 2,
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.school,
-                        size: 64,
-                        color: Colors.white,
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
+                    // laisser un peu d'espace pour l'aération
+                    const SizedBox(height: 90),
 
                     // Titre principal
                     Text(
@@ -233,7 +245,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           ),
                         ],
                       ),
-                      textAlign: TextAlign.center,
                     ),
 
                     const SizedBox(height: 16),
@@ -246,7 +257,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         color: Colors.white.withOpacity(0.9),
                         fontWeight: FontWeight.w300,
                       ),
-                      textAlign: TextAlign.center,
                     ),
 
                     const SizedBox(height: 32),
@@ -256,7 +266,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ElevatedButton.icon(
-                          onPressed: () {},
+                          onPressed: () => _showAuthDialog('Connexion'),
                           icon: const Icon(Icons.login),
                           label: Text(
                             'Se connecter',
@@ -279,10 +289,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         ),
                         const SizedBox(width: 16),
                         OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () => _showAuthDialog('Inscription'),
                           icon: const Icon(Icons.person_add),
                           label: Text(
-                            'S\'inscrire',
+                            'Commencer',
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.w600,
                             ),
@@ -316,7 +326,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildAlertSection() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -351,22 +361,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFFEBEE), Color(0xFFFFCDD2)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.red.withOpacity(0.2), width: 1),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.red.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
+            color: Colors.white,
+
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -418,7 +414,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () => _showInfoDialog('Informations Santé', [
+                      '🏥 Consultez un médecin en cas de symptômes',
+                      '💊 Respectez les traitements prescrits',
+                      '📞 Contactez les urgences si nécessaire',
+                      '🧴 Utilisez des produits désinfectants',
+                      '😷 Portez un masque en cas de contagion',
+                    ]),
                     icon: const Icon(Icons.info_outline),
                     label: Text(
                       'Plus d\'informations',
@@ -677,7 +679,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => _showInfoDialog('Participation', [
+                    '✅ Votre participation a été enregistrée avec succès!',
+                  ]),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: color,
                     foregroundColor: Colors.white,
@@ -756,24 +760,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 'Accès aux ressources',
                 Icons.library_books,
                 AppColors.primary,
+                () => _showServiceDialog('Bibliothèque'),
               ),
               _buildServiceCard(
                 'Résultats',
                 'Consulter vos notes',
                 Icons.grade,
                 AppColors.secondary,
+                () => _showServiceDialog('Résultats'),
               ),
               _buildServiceCard(
                 'Emploi du temps',
                 'Voir vos cours',
                 Icons.schedule,
                 AppColors.accent,
+                () => _showServiceDialog('Emploi du temps'),
               ),
               _buildServiceCard(
                 'Messagerie',
                 'Contacter l\'admin',
                 Icons.message,
                 Colors.orange,
+                () => _showServiceDialog('Messagerie'),
               ),
             ],
           ),
@@ -787,50 +795,172 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     String subtitle,
     IconData icon,
     Color color,
+    VoidCallback onTap,
   ) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
-            child: Icon(icon, color: color, size: 32),
-          ),
-          const SizedBox(height: 12),
-          Text(
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 32),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showServiceDialog(String service) {
+    List<String> items = [];
+    String title = '';
+    switch (service) {
+      case 'Bibliothèque':
+        title = 'Ressources de Bibliothèque';
+        items = [
+          '📚 Introduction à l\'Algorithmique - Auteur: Dupont',
+          '📖 Bases de Données - Auteur: Martin',
+          '📕 Programmation Orientée Objet - Auteur: Durand',
+          '📗 Réseaux Informatiques - Auteur: Leroy',
+          '📙 Intelligence Artificielle - Auteur: Moreau',
+        ];
+        break;
+      case 'Résultats':
+        title = 'Vos Résultats Académiques';
+        items = [
+          '📊 Mathématiques: 18/20',
+          '📈 Physique: 16/20',
+          '📉 Chimie: 15/20',
+          '📊 Informatique: 19/20',
+          '📈 Anglais: 17/20',
+        ];
+        break;
+      case 'Emploi du temps':
+        title = 'Emploi du Temps de la Semaine';
+        items = [
+          '🕐 Lundi: Mathématiques 8h-10h',
+          '🕑 Mardi: Physique 10h-12h',
+          '🕒 Mercredi: Chimie 14h-16h',
+          '🕓 Jeudi: Informatique 8h-10h',
+          '🕔 Vendredi: Anglais 10h-12h',
+        ];
+        break;
+      case 'Messagerie':
+        title = 'Messages Récents';
+        items = [
+          '👨‍🏫 Prof. Dupont: Devoir à rendre lundi',
+          '👩‍💼 Admin: Rappel inscription stage',
+          '👨‍🎓 Étudiant: Question sur le cours',
+          '👩‍🏫 Prof. Martin: Correction disponible',
+          '👨‍💼 Admin: Changement horaire',
+        ];
+        break;
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
             title,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: const Icon(Icons.circle, size: 8),
+                  title: Text(
+                    items[index],
+                    style: GoogleFonts.poppins(fontSize: 14),
+                  ),
+                );
+              },
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[600]),
-            textAlign: TextAlign.center,
-            maxLines: 2,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Fermer', style: GoogleFonts.poppins()),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showInfoDialog(String title, List<String> items) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            title,
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
           ),
-        ],
-      ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: const Icon(Icons.circle, size: 8),
+                  title: Text(
+                    items[index],
+                    style: GoogleFonts.poppins(fontSize: 14),
+                  ),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Fermer', style: GoogleFonts.poppins()),
+            ),
+          ],
+        );
+      },
     );
   }
 

@@ -12,199 +12,19 @@ class ResourcesPage extends StatefulWidget {
 
 class _ResourcesPageState extends State<ResourcesPage> {
   late final TeacherService _teacherService;
-<<<<<<< HEAD
-  late Stream<List<Map<String, dynamic>>> _resourcesStream;
-
-  final _titleController = TextEditingController();
-  String? _selectedCourseId;
-  String _selectedType = 'PDF';
-  bool _isUploading = false;
-
-  final List<String> _resourceTypes = [
-    'PDF',
-    'Vidéo',
-    'Lien',
-    'Exercice',
-    'Cours',
-  ];
-=======
   late Future<List<Map<String, dynamic>>> _resourcesFuture;
   late Future<List<Map<String, dynamic>>> _availableDocumentsFuture;
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
 
   @override
   void initState() {
     super.initState();
     _teacherService = TeacherService();
-<<<<<<< HEAD
-    _resourcesStream = _teacherService.getTeachingResourcesStream();
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _uploadResource() async {
-    if (_titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Veuillez saisir un titre')));
-      return;
-    }
-    if (_selectedCourseId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Veuillez sélectionner un cours')),
-      );
-      return;
-    }
-
-    setState(() => _isUploading = true);
-
-    try {
-      await _teacherService.addTeachingResource(
-        title: _titleController.text.trim(),
-        type: _selectedType,
-        courseId: _selectedCourseId!,
-      );
-
-      _titleController.clear();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Ressource déposée avec succès !'),
-            backgroundColor: Colors.blue,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : $e'), backgroundColor: Colors.red),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isUploading = false);
-    }
-  }
-
-  Widget _Resources() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Ajouter une ressource',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
-            ),
-          ),
-          const SizedBox(height: 20),
-          TextField(
-            controller: _titleController,
-            decoration: InputDecoration(
-              labelText: 'Titre de la ressource',
-              prefixIcon: const Icon(Icons.title),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Sélection du cours
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: _teacherService.getTeacherCourses(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              }
-              final courses = snapshot.data ?? [];
-              return DropdownButtonFormField<String>(
-                initialValue: _selectedCourseId,
-                hint: const Text('Sélectionner un cours'),
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.book),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                items: courses.map((course) {
-                  return DropdownMenuItem<String>(
-                    value: course['id'],
-                    child: Text(course['name']),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() => _selectedCourseId = value);
-                },
-              );
-            },
-          ),
-          const SizedBox(height: 16),
-          // Type de ressource
-          DropdownButtonFormField<String>(
-            initialValue: _selectedType,
-            decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.category),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            items: _resourceTypes.map((type) {
-              return DropdownMenuItem<String>(value: type, child: Text(type));
-            }).toList(),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() => _selectedType = value);
-              }
-            },
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: _isUploading ? null : _uploadResource,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: _isUploading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(
-                      'Déposer la ressource',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-            ),
-          ),
-        ],
-      ),
-    );
-=======
     _loadResources();
     _loadAvailableDocuments();
   }
 
   void _loadResources() {
     _resourcesFuture = _teacherService.getTeachingResources();
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
   }
 
   void _loadAvailableDocuments() {
@@ -290,29 +110,6 @@ class _ResourcesPageState extends State<ResourcesPage> {
               ),
             ),
           ),
-<<<<<<< HEAD
-          const SizedBox(height: 16),
-          // Affichage dynamique des ressources
-          StreamBuilder<List<Map<String, dynamic>>>(
-            stream: _resourcesStream,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return _listesResourcesVide();
-              }
-
-              return _listesResources(resources: snapshot.data!);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-=======
         );
       },
     );
@@ -484,7 +281,6 @@ class _ResourcesPageState extends State<ResourcesPage> {
     );
   }
 
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
   Widget _listesResources({required List<Map<String, dynamic>> resources}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -687,9 +483,6 @@ class _ResourcesPageState extends State<ResourcesPage> {
         return Colors.purple;
     }
   }
-<<<<<<< HEAD
-} // Fin de la classe _ResourcesPageState
-=======
 
   Widget _documentsDisponiblesVide() {
     return Container(
@@ -889,4 +682,3 @@ class _ResourcesPageState extends State<ResourcesPage> {
     );
   }
 }
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c

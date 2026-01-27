@@ -31,17 +31,25 @@ class ArticleDetailPage extends StatelessWidget {
           children: [
             // Header avec gradient
             Container(
-              height: 220,
+              height: 250,
               width: double.infinity,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: AppColors.gradientBlueGreen,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                image: DecorationImage(
+                  image: AssetImage('assets/images/livre.jpg'),
+                  fit: BoxFit.cover,
                 ),
               ),
-              child: Center(
-                child: Icon(Icons.article, size: 80, color: Colors.white),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withOpacity(0.3),
+                      Colors.black.withOpacity(0.1),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
               ),
             ),
 
@@ -889,7 +897,7 @@ class _NewsPageState extends State<NewsPage> with TickerProviderStateMixin {
               const SizedBox(height: 16),
 
               // Liste des actualités
-              ..._news.map((news) => _buildNewsCard(news)).toList(),
+              ..._news.map((news) => _buildNewsCard(news)),
             ],
           ),
         ),

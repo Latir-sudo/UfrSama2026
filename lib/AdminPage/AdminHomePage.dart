@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sama_ufr/AdminPage/admin.dart';
 import 'package:sama_ufr/login_page.dart';
 import 'package:sama_ufr/service/auth.dart';
-<<<<<<< HEAD
-import 'package:sama_ufr/Accueil/accueilPrincipal.dart';
-=======
 import 'package:google_fonts/google_fonts.dart';
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({super.key});
@@ -34,11 +30,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
               Auth().signOut();
               Navigator.push(
                 context,
-<<<<<<< HEAD
-                MaterialPageRoute(builder: (context) => Accueilprincipal()),
-=======
                 MaterialPageRoute(builder: (context) => const LoginPage()),
->>>>>>> c8fe6792b9ca757d37ccf66a58fc1a405a9fd84c
               );
             },
           ),
