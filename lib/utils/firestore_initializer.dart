@@ -1151,6 +1151,7 @@ class FirestoreInitializer {
 
   /// Initialiser la collection des réclamations
   /// Initialiser la collection des réclamations
+  /// Initialiser la collection des réclamations
   Future<void> _initializeReclamations() async {
     try {
       print('$TAG: Initialisation des réclamations...');

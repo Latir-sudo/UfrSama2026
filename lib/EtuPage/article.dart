@@ -185,7 +185,8 @@ class _ArticleState extends State<Article> {
       case "Document":
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => DocumentsPage(documents: _documents),
+            builder: (context) =>
+                DocumentsPage(studentService: widget.studentService),
           ),
         );
         break;

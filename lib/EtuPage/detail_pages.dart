@@ -688,12 +688,16 @@ class SchedulePage extends StatelessWidget {
   }
 }
 
-/// Page pour les documents
 /// Page pour les réclamations et demandes de documents
 class DocumentsPage extends StatefulWidget {
   final StudentService studentService;
+  final List<Map<String, dynamic>>? documents;
 
-  const DocumentsPage({super.key, required this.studentService});
+  const DocumentsPage({
+    super.key,
+    required this.studentService,
+    this.documents,
+  });
 
   @override
   State<DocumentsPage> createState() => _DocumentsPageState();
@@ -2159,4 +2163,67 @@ class CourseModel {
     required this.status,
     required this.description,
   });
+}
+
+/// Widget réutilisable pour les informations
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.color = const Color(0xFF3498DB),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        border: Border.all(color: color.withOpacity(0.2)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(icon, size: 18, color: Colors.white),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.lightText,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.darkText,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
