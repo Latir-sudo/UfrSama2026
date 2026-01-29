@@ -1406,6 +1406,7 @@ class _DocumentsPageState extends State<DocumentsPage>
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(
                 'Nouvelle réclamation',
                 style: GoogleFonts.poppins(
@@ -1428,7 +1429,10 @@ class _DocumentsPageState extends State<DocumentsPage>
                       items: _courses.map((course) {
                         return DropdownMenuItem(
                           value: course.id,
-                          child: Text(course.name),
+                          child: Text(
+                            course.name,
+                            style: TextStyle(fontSize: 12),
+                          ),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -1524,7 +1528,10 @@ class _DocumentsPageState extends State<DocumentsPage>
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('Annuler'),
+                  child: Text(
+                    'Annuler',
+                    style: TextStyle(color: AppColors.primary),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -1559,6 +1566,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
                   ),
                   child: Text('Soumettre'),
                 ),
@@ -1583,6 +1591,7 @@ class _DocumentsPageState extends State<DocumentsPage>
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(
                 'Nouvelle demande de document',
                 style: GoogleFonts.poppins(
@@ -1715,7 +1724,10 @@ class _DocumentsPageState extends State<DocumentsPage>
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('Annuler'),
+                  child: Text(
+                    'Annuler',
+                    style: TextStyle(color: AppColors.primary),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -1756,7 +1768,10 @@ class _DocumentsPageState extends State<DocumentsPage>
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                   ),
-                  child: Text('Soumettre'),
+                  child: Text(
+                    'Soumettre',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             );
@@ -2234,7 +2249,7 @@ class ResourcesPage extends StatelessWidget {
                             labelStyle: TextStyle(color: Colors.white),
                           ),
                           Text(
-                            '⭐ ${article.rating}',
+                            '${article.rating}',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
