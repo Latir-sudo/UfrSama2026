@@ -32,18 +32,18 @@ class _EspaceEnseignantPageState extends State<EspaceEnseignantPage> {
           });
         },
       ),
-      const CoursPage(),
-      const NotesPage(),
-      const ResourcesPage(),
+      CoursPage(),
+      NotesPage(),
+      ResourcesPage(),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(90),
+        preferredSize: const Size.fromHeight(100),
         child: AppBar(
           backgroundColor: Colors.transparent,
           centerTitle: true,
@@ -59,21 +59,12 @@ class _EspaceEnseignantPageState extends State<EspaceEnseignantPage> {
                 lastName = profile['lastName'] ?? '';
               }
 
-              return entete(
-                titre: 'Espace Enseignant',
-                sousTitre:
+              return _buildHeader(
+                title: 'Espace Enseignant',
+                subtitle:
                     'Bienvenue $firstName${lastName.isNotEmpty ? ' $lastName' : ''}',
-                couleurs: [
-                  const Color.fromARGB(255, 132, 69, 150),
-                  const Color.fromARGB(255, 53, 120, 186),
-                ],
-                icon: Icons.logout,
-                onIconPressed: () {
-                  Auth().signOut();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Accueilprincipal()),
-                  );
+                onLogoutPressed: () {
+                  _showLogoutConfirmationDialog(context);
                 },
               );
             },
@@ -82,164 +73,238 @@ class _EspaceEnseignantPageState extends State<EspaceEnseignantPage> {
       ),
       body: Column(
         children: [
-          // Menu de navigation
-          menu(
-            currentIndex: _currentIndex,
-            onItemSelected: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            items: [
-              {'icon': Icons.home, 'label': 'Accueil'},
-              {'icon': Icons.book, 'label': 'Cours'},
-              {'icon': Icons.edit, 'label': 'Notes'},
-              {'icon': Icons.folder, 'label': 'Ressources'},
-            ],
-            iconColor: const Color.fromARGB(255, 82, 87, 96),
-            textColor: const Color.fromARGB(221, 12, 11, 11),
-            selectedColor: Colors.blue,
-          ),
+          // Menu de navigation en haut
+          _buildTopNavigation(),
           Expanded(child: _pages[_currentIndex]),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Cours'),
-          BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Notes'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.folder),
-            label: 'Ressources',
+    );
+  }
+
+  Widget _buildHeader({
+    required String title,
+    required String subtitle,
+    required VoidCallback onLogoutPressed,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFF2E3192),
+            const Color(0xFF1BFFFF),
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          Positioned(
+            right: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.logout, color: Colors.white, size: 24),
+                onPressed: onLogoutPressed,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
-}
 
-Widget menu({
-  required List<Map<String, dynamic>> items,
-  int currentIndex = 0,
-  Color iconColor = Colors.blueAccent,
-  Color textColor = Colors.black87,
-  Color selectedColor = Colors.blue,
-  Function(int)? onItemSelected,
-}) {
-  return Container(
-    padding: const EdgeInsets.symmetric(vertical: 10),
-    color: Colors.white,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: List.generate(items.length, (index) {
-        final item = items[index];
-        final isSelected = index == currentIndex;
-
-        return InkWell(
-          onTap: () {
-            if (onItemSelected != null) {
-              onItemSelected(index);
-            }
-            print(item['label']);
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                item['icon'],
-                color: isSelected ? selectedColor : iconColor,
-                size: 26,
-              ),
-              const SizedBox(height: 4),
-              Stack(
-                children: [
-                  Text(
-                    item['label'],
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isSelected ? selectedColor : textColor,
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                    ),
-                  ),
-                  if (isSelected)
-                    Positioned(
-                      bottom: -6,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        height: 2,
-                        decoration: BoxDecoration(
-                          color: selectedColor,
-                          borderRadius: BorderRadius.circular(1),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ],
+  Widget _buildTopNavigation() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 4),
           ),
-        );
-      }),
-    ),
-  );
-}
-
-Widget entete({
-  required String titre,
-  required String sousTitre,
-  required List<Color> couleurs,
-  required IconData icon,
-  VoidCallback? onIconPressed,
-}) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: couleurs,
+        ],
       ),
-    ),
-    child: Stack(
-      alignment: Alignment.center,
-      children: [
-        Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildNavItem(Icons.home_outlined, 'Accueil', 0),
+          _buildNavItem(Icons.menu_book_outlined, 'Cours', 1),
+          _buildNavItem(Icons.edit_note_outlined, 'Notes', 2),
+          _buildNavItem(Icons.folder_open_outlined, 'Ressources', 3),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, int index) {
+    final isSelected = _currentIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF2E3192).withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: isSelected
+              ? Border.all(color: const Color(0xFF2E3192).withOpacity(0.3), width: 1)
+              : null,
+        ),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              titre,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white.withOpacity(0.9),
-              ),
+            Icon(
+              icon,
+              color: isSelected ? const Color(0xFF2E3192) : Colors.grey.shade600,
+              size: 24,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
-              sousTitre,
+              label,
               style: TextStyle(
-                fontSize: 16,
-                color: Colors.white.withOpacity(0.8),
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected ? const Color(0xFF2E3192) : Colors.grey.shade700,
               ),
             ),
           ],
         ),
-        Positioned(
-          right: 0,
-          child: IconButton(
-            icon: Icon(icon, color: Colors.white, size: 24),
-            onPressed: onIconPressed,
+      ),
+    );
+  }
+
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2E3192).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.logout,
+                  color: Color(0xFF2E3192),
+                  size: 30,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Déconnexion',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2E3192),
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Êtes-vous sûr de vouloir vous déconnecter ?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.grey,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        side: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      child: const Text('Annuler'),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Auth().signOut();
+                        Navigator.pop(context);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Accueilprincipal(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2E3192),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text('Déconnecter'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-      ],
-    ),
-  );
+      ),
+    );
+  }
 }
