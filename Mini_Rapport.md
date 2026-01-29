@@ -136,18 +136,18 @@ lib/
 -Git: Contrôle de version
 
                     Rôles des Membres de l'Équipe
-Francois et Fatou :
--Responsabilités :
+Francois:
+  -Implementation de l'interface etudiant,administrateur et incscription
+  -faire la video
+
+Fatou:  
+  -Implementation de l'interface nseignant , accueil principal et page de connexion
+  -Rédaction de la documentation technique (ce mini rapport)
+
+Pour la parie firebase on la fait tous les deux:
   -Développement de l'architecture générale de l'application
   -Implémentation de l'authentification Firebase
-  -Conception et développement des interfaces utilisateur
   -Intégration de Firestore pour la gestion des données
-  -Tests et débogage de l'application
-  -Rédaction de la documentation technique
-
-- **Contributions Spécifiques :**
   -Création des services Firestore (firestore_service.dart)
-  -Développement des pages principales (LandingPage, InscriptionPage)
-  -Implémentation de la logique de redirection par rôle
   -Configuration Firebase et initialisation des données
   -Organisation modulaire du code source
