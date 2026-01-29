@@ -57,7 +57,7 @@ class _AccueilprincipalState extends State<Accueilprincipal>
         title: Row(
           children: [
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
+              width: MediaQuery.of(context).size.width * 0.7,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
