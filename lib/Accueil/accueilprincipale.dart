@@ -57,7 +57,7 @@ class _AccueilprincipalState extends State<Accueilprincipal>
         title: Row(
           children: [
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
+              width: MediaQuery.of(context).size.width * 0.7,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -266,7 +266,12 @@ class _AccueilprincipalState extends State<Accueilprincipal>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ElevatedButton.icon(
-                          onPressed: () => _showAuthDialog('Connexion'),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginPage(),
+                            ),
+                          ),
                           icon: const Icon(Icons.login),
                           label: Text(
                             'Se connecter',
@@ -289,7 +294,12 @@ class _AccueilprincipalState extends State<Accueilprincipal>
                         ),
                         const SizedBox(width: 16),
                         OutlinedButton.icon(
-                          onPressed: () => _showAuthDialog('Inscription'),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => InscriptionPage(),
+                            ),
+                          ),
                           icon: const Icon(Icons.person_add),
                           label: Text(
                             'Commencer',
