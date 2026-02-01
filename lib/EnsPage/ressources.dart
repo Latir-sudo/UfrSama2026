@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sama_ufr/service/teacher_service.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'resource_detail.dart';
+import 'package:sama_ufr/EnsPage/resource_detail.dart';
 import 'package:file_picker/file_picker.dart';
 
 class ResourcesPage extends StatefulWidget {
