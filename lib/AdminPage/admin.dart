@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:sama_ufr/AdminPage/carte.dart';
 import 'package:sama_ufr/AdminPage/resultat.dart';
-import 'package:sama_ufr/service/admin_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // AJOUTER CET IMPORT
+import 'package:sama_ufr/service/firestore_service.dart';
+import 'package:sama_ufr/AdminPage/document_validation_form.dart';
+import 'package:sama_ufr/AdminPage/add_formation_form.dart';
+import 'package:sama_ufr/AdminPage/create_event_form.dart';
+import 'package:file_picker/file_picker.dart';
 
 class Admin extends StatefulWidget {
   const Admin({super.key});
@@ -12,995 +15,131 @@ class Admin extends StatefulWidget {
 }
 
 class _AdminState extends State<Admin> {
-  final AdminService _adminService = AdminService();
+  int _selectedIndex = 0;
+  final FirestoreService firestoreService = FirestoreService();
 
-  Map<String, dynamic> _stats = {
-    'totalUsers': '...',
-    'teachers': '...',
-    'students': '...',
-    'documentsPerMonth': '...',
-    'attestationsPerMonth': '...',
-    'diplomasPerMonth': '...',
-    'satisfactionRate': '...',
-    'averageDelay': '...',
-  };
+  final List<Carte> accesRapide = [
+    Carte(
+      titre: "Gérer utilisateurs",
+      couleur: Color(0xFF3498DB),
+      taille: 0.3,
+      icon: Icons.group_add,
+    ),
+    Carte(
+      titre: "Formations",
+      couleur: Color(0xFF3498DB),
+      taille: 0.3,
+      icon: Icons.house,
+    ),
+    Carte(
+      titre: "Calendrier académique",
+      couleur: Color(0xFF3498DB),
+      taille: 0.3,
+      icon: Icons.calendar_month,
+    ),
+    Carte(
+      titre: "Document officiels",
+      couleur: Color(0xFF3498DB),
+      taille: 0.3,
+      icon: Icons.edit_document,
+    ),
+    Carte(
+      titre: "Statistique",
+      couleur: Color(0xFF3498DB),
+      taille: 0.3,
+      icon: Icons.monitor_rounded,
+    ),
+    Carte(
+      titre: "Paramètre",
+      couleur: Color(0xFf3498DB),
+      taille: 0.3,
+      icon: Icons.settings,
+    ),
+  ];
 
-  int _currentMenuIndex = 0;
+  final List<Carte> stat = [
+    Carte(
+      titre: "1245",
+      couleur: Colors.black,
+      taille: 0.46,
+      contenu: "Etudiants",
+    ),
+    Carte(
+      titre: "87",
+      couleur: Colors.black,
+      taille: 0.46,
+      contenu: "Enseignants",
+    ),
+    Carte(
+      titre: "24",
+      couleur: Colors.black,
+      taille: 0.46,
+      contenu: "Formations",
+    ),
+    Carte(
+      couleur: Colors.black,
+      titre: "342",
+      taille: 0.46,
+      contenu: "Documents/mois",
+    ),
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-    _loadStats();
-  }
-
-  Future<void> _loadStats() async {
-    try {
-      final userStats = await _adminService.getUsersStatistics();
-      final activityStats = await _adminService.getActivityStatistics();
-      final formations = await _adminService.getFormations();
-
-      if (mounted) {
-        setState(() {
-          _stats = {
-            'totalUsers': userStats['totalUsers'].toString(),
-            'teachers': userStats['teachers'].toString(),
-            'students': userStats['students'].toString(),
-            'documentsPerMonth': activityStats['documentsPerMonth'].toString(),
-            'attestationsPerMonth': activityStats['attestationsPerMonth']
-                .toString(),
-            'diplomasPerMonth': activityStats['diplomasPerMonth'].toString(),
-            'satisfactionRate': activityStats['satisfactionRate'],
-            'averageDelay': activityStats['averageDelay'],
-            'totalCourses': formations.length.toString(),
-          };
-        });
-      }
-    } catch (e) {
-      print('Erreur chargement stats admin: $e');
-    }
-  }
-
-  // AJOUTER CETTE MÉTHODE POUR FORMATER LES DATES
-  String _formatDate(dynamic date) {
-    if (date == null) return 'Date non spécifiée';
-
-    try {
-      if (date is Timestamp) {
-        return _formatDateTime(date.toDate());
-      } else if (date is String) {
-        return date;
-      } else if (date is DateTime) {
-        return _formatDateTime(date);
-      } else {
-        return date.toString();
-      }
-    } catch (e) {
-      return 'Date invalide';
-    }
-  }
-
-  // AJOUTER CETTE MÉTHODE POUR FORMATER DateTime
-  String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-  }
+  final List<Carte> stat2 = [
+    Carte(
+      titre: "156",
+      couleur: Colors.black,
+      taille: 0.46,
+      contenu: "Attestations/mois",
+    ),
+    Carte(
+      titre: "45",
+      couleur: Colors.black,
+      taille: 0.46,
+      contenu: "Diplomes/mois",
+    ),
+    Carte(
+      titre: "89%",
+      couleur: Colors.black,
+      taille: 0.46,
+      contenu: "Taux de satisfaction",
+    ),
+    Carte(
+      couleur: Colors.black,
+      titre: "2.3j",
+      taille: 0.46,
+      contenu: "Délai moyen",
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final accesRapide = [
-      Carte(
-        titre: "Gérer utilisateurs",
-        couleur: Color(0xFF3498DB),
-        taille: 0.3,
-        icon: Icons.group_add,
-      ),
-      Carte(
-        titre: "Formations",
-        couleur: Color(0xFF3498DB),
-        taille: 0.3,
-        icon: Icons.house,
-      ),
-      Carte(
-        titre: "Calendrier académique",
-        couleur: Color(0xFF3498DB),
-        taille: 0.3,
-        icon: Icons.calendar_month,
-      ),
-      Carte(
-        titre: "Document officiels",
-        couleur: Color(0xFF3498DB),
-        taille: 0.3,
-        icon: Icons.edit_document,
-      ),
-      Carte(
-        titre: "Statistique",
-        couleur: Color(0xFF3498DB),
-        taille: 0.3,
-        icon: Icons.monitor_rounded,
-      ),
-      Carte(
-        titre: "Paramètre",
-        couleur: Color(0xFf3498DB),
-        taille: 0.3,
-        icon: Icons.settings,
-      ),
-    ];
-
-    final stat = [
-      Carte(
-        titre: _stats['students'],
-        couleur: Colors.black,
-        taille: 0.46,
-        contenu: "Etudiants",
-      ),
-      Carte(
-        titre: _stats['teachers'],
-        couleur: Colors.black,
-        taille: 0.46,
-        contenu: "Enseignants",
-      ),
-      Carte(
-        titre: _stats['totalCourses'] ?? '...',
-        couleur: Colors.black,
-        taille: 0.46,
-        contenu: "Formations",
-      ),
-      Carte(
-        couleur: Colors.black,
-        titre: _stats['documentsPerMonth'],
-        taille: 0.46,
-        contenu: "Documents/mois",
-      ),
-    ];
-
-    final stat2 = [
-      Carte(
-        titre: _stats['attestationsPerMonth'],
-        couleur: Colors.black,
-        taille: 0.46,
-        contenu: "Attestations/mois",
-      ),
-      Carte(
-        titre: _stats['diplomasPerMonth'],
-        couleur: Colors.black,
-        taille: 0.46,
-        contenu: "Diplomes/mois",
-      ),
-      Carte(
-        titre: _stats['satisfactionRate'],
-        couleur: Colors.black,
-        taille: 0.46,
-        contenu: "Taux de satisfaction",
-      ),
-      Carte(
-        couleur: Colors.black,
-        titre: _stats['averageDelay'],
-        taille: 0.46,
-        contenu: "Délai moyen",
-      ),
-    ];
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
+          menu(
+            items: [
+              {"icon": Icons.home, "label": "Accueil"},
+              {"icon": Icons.school, "label": "Utilisateurs"},
+              {"icon": Icons.book, "label": "Formations"},
+              {"icon": Icons.messenger, "label": "Documents"},
+            ],
+            currentIndex: _selectedIndex,
+            iconColor: Color(0xFF7F8C8D),
+            selectedColor: Color(0xFF3498DB),
+            onItemSelected: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+          ),
           Expanded(
-            child: ListView(
+            child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              children: [
-                Container(
-                  color: Color(0xFFFFFFFF),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      menu(
-                        items: [
-                          {"icon": Icons.home, "label": "Accueil"},
-                          {"icon": Icons.school, "label": "Utilisateurs"},
-                          {"icon": Icons.book, "label": "Formations"},
-                          {"icon": Icons.messenger, "label": "Documents"},
-                        ],
-                        currentIndex: _currentMenuIndex,
-                        onItemSelected: (index) {
-                          setState(() {
-                            _currentMenuIndex = index;
-                          });
-                        },
-                        iconColor: const Color.fromARGB(255, 82, 87, 96),
-                        textColor: const Color.fromARGB(221, 12, 11, 11),
-                        selectedColor: Colors.blue,
-                      ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Text(
-                          "Tableau de bord administratif",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2C3E50),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      GridView.builder(
-                        itemCount: accesRapide.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                        ),
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () {},
-                            child: carte(
-                              accesRapide[index].titre,
-                              accesRapide[index].couleur,
-                              accesRapide[index].taille,
-                              icon: accesRapide[index].icon,
-                            ),
-                          );
-                        },
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          "Statistiques générales",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2C3E50),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        child: GridView.builder(
-                          itemCount: stat.length,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: 8,
-                                crossAxisSpacing: 8,
-                                mainAxisExtent: 125,
-                              ),
-                          itemBuilder: (context, index) {
-                            return carte(
-                              stat[index].titre,
-                              stat[index].couleur,
-                              stat[index].taille,
-                              contenu: stat[index].contenu,
-                            );
-                          },
-                        ),
-                      ),
-
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Text(
-                          "Alertes système",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2C3E50),
-                          ),
-                        ),
-                      ),
-
-                      StreamBuilder<List<Map<String, dynamic>>>(
-                        stream: _adminService.getSystemAlerts(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-
-                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Card(
-                              elevation: 2,
-                              color: Colors.white,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 20,
-                                ),
-                                child: Column(
-                                  children: [
-                                    iconColorText(
-                                      "Aucune alerte",
-                                      Colors.grey,
-                                      Icons.notifications_off,
-                                    ),
-                                    SizedBox(height: 2),
-                                    Container(
-                                      alignment: Alignment.topLeft,
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 6,
-                                      ),
-                                      child: Text(
-                                        "Aucune alerte système en ce moment",
-                                        style: TextStyle(
-                                          fontSize: 13.6,
-                                          color: Color(0xFF7F8C8D),
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-
-                          final alerts = snapshot.data!.take(1).toList();
-                          return Column(
-                            children: alerts.map((alert) {
-                              return Card(
-                                elevation: 2,
-                                color: Colors.white,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 20,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      iconColorText(
-                                        alert['title'] ?? 'Alerte système',
-                                        Color(0xFFF39C12),
-                                        Icons.document_scanner,
-                                      ),
-                                      SizedBox(height: 2),
-                                      Container(
-                                        alignment: Alignment.topLeft,
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 6,
-                                        ),
-                                        child: Text(
-                                          alert['message'] ?? 'Aucun message',
-                                          style: TextStyle(
-                                            fontSize: 13.6,
-                                            color: Color(0xFF7F8C8D),
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          );
-                        },
-                      ),
-                      SizedBox(height: 8),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          "Gestion des utilisateurs",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2C3E50),
-                          ),
-                        ),
-                      ),
-                      StreamBuilder<List<Map<String, dynamic>>>(
-                        stream: _adminService.getUsersStream(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-
-                          final users = snapshot.data ?? [];
-                          final List<Resultat> res = users.map((u) {
-                            final firstName = u['firstName'] ?? '';
-                            final lastName = u['lastName'] ?? '';
-                            final fullName = '$firstName $lastName'.trim();
-
-                            return Resultat(
-                              nom: fullName.isNotEmpty
-                                  ? fullName
-                                  : 'Nom non défini',
-                              email: u['email'] ?? 'Email non défini',
-                              type: u['role'] ?? 'Non défini',
-                            );
-                          }).toList();
-
-                          return gestionUser(
-                            res,
-                            "Liste des utilisateurs",
-                            "ajouter un utilisateur",
-                          );
-                        },
-                      ),
-                      SizedBox(height: 8),
-
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          "Demandes d'inscription",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2C3E50),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      StreamBuilder<List<Map<String, dynamic>>>(
-                        stream: _adminService.getPendingRegistrationRequests(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-
-                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Card(
-                              color: Colors.white,
-                              elevation: 2,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 8,
-                                  horizontal: 8,
-                                ),
-                                child: Column(
-                                  children: [
-                                    iconColorText(
-                                      "Aucune demande en attente",
-                                      Colors.grey,
-                                      Icons.person,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      "Toutes les demandes ont été traitées",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-
-                          final requests = snapshot.data!.take(3).toList();
-                          return Column(
-                            children: requests.map((request) {
-                              return Card(
-                                color: Colors.white,
-                                elevation: 2,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 8,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      iconColorText(
-                                        "En attente de validation",
-                                        Color(0xFFF39C12),
-                                        Icons.person,
-                                      ),
-                                      Container(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                vertical: 6,
-                                              ),
-                                              child: Text(
-                                                request['studentName'] ??
-                                                    'Sans nom',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    height: 30,
-                                                    margin: EdgeInsets.only(
-                                                      right: 10,
-                                                    ),
-                                                    child: ElevatedButton(
-                                                      style:
-                                                          ElevatedButton.styleFrom(
-                                                            backgroundColor:
-                                                                Color(
-                                                                  0xFF3498DB,
-                                                                ),
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                  left: 20,
-                                                                  right: 40,
-                                                                  top: 3,
-                                                                  bottom: 3,
-                                                                ),
-                                                          ),
-                                                      onPressed: () async {
-                                                        try {
-                                                          await _adminService
-                                                              .approveRegistrationRequest(
-                                                                request['id'],
-                                                              );
-                                                          ScaffoldMessenger.of(
-                                                            context,
-                                                          ).showSnackBar(
-                                                            SnackBar(
-                                                              content: Text(
-                                                                'Demande approuvée',
-                                                              ),
-                                                            ),
-                                                          );
-                                                        } catch (e) {
-                                                          ScaffoldMessenger.of(
-                                                            context,
-                                                          ).showSnackBar(
-                                                            SnackBar(
-                                                              content: Text(
-                                                                'Erreur: $e',
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }
-                                                      },
-                                                      child: Text(
-                                                        "valider",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          color: Colors.white,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 30,
-                                                    child: ElevatedButton(
-                                                      style:
-                                                          ElevatedButton.styleFrom(
-                                                            backgroundColor:
-                                                                Colors.white,
-                                                          ),
-                                                      onPressed: () async {
-                                                        try {
-                                                          await _adminService
-                                                              .rejectRegistrationRequest(
-                                                                request['id'],
-                                                              );
-                                                          ScaffoldMessenger.of(
-                                                            context,
-                                                          ).showSnackBar(
-                                                            SnackBar(
-                                                              content: Text(
-                                                                'Demande rejetée',
-                                                              ),
-                                                            ),
-                                                          );
-                                                        } catch (e) {
-                                                          ScaffoldMessenger.of(
-                                                            context,
-                                                          ).showSnackBar(
-                                                            SnackBar(
-                                                              content: Text(
-                                                                'Erreur: $e',
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }
-                                                      },
-                                                      child: Text(
-                                                        "Refuser",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          color: Colors.blue,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(height: 8),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 8,
-                                        ),
-                                        child: Text(
-                                          "Nouvelle inscription ${request['formation'] ?? 'N/A'} En attente depuis ${request['daysPending'] ?? 0} jour(s)",
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: const Color.fromARGB(
-                                              255,
-                                              111,
-                                              109,
-                                              109,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          );
-                        },
-                      ),
-                      SizedBox(height: 8),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          "Gestion des formations",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2C3E50),
-                          ),
-                        ),
-                      ),
-                      StreamBuilder<List<Map<String, dynamic>>>(
-                        stream: _adminService.getFormationsStream(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-
-                          final formations = snapshot.data ?? [];
-                          final List<Formation> formation = formations.map((f) {
-                            return Formation(
-                              etudiant:
-                                  (f['studentCount'] ?? f['studentNumber'] ?? 0)
-                                      .toDouble(),
-                              formation:
-                                  f['name'] ??
-                                  f['title'] ??
-                                  'Formation sans nom',
-                              ufr:
-                                  f['ufr'] ??
-                                  f['faculty'] ??
-                                  f['department'] ??
-                                  'UFR non spécifiée',
-                              niveau: f['level'] ?? f['niveau'] ?? 'N/A',
-                              statut: f['status'] ?? 'Active',
-                            );
-                          }).toList();
-
-                          return gestionFormation(
-                            formation,
-                            "Formations disponibles",
-                            "Nouvelle formation",
-                          );
-                        },
-                      ),
-                      SizedBox(height: 8),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          "Calendrier académique",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2C3E50),
-                          ),
-                        ),
-                      ),
-
-                      StreamBuilder<List<Map<String, dynamic>>>(
-                        stream: _adminService.getAcademicCalendar(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-
-                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Card(
-                              elevation: 2,
-                              color: Colors.white,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 10,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    iconColorText(
-                                      "Aucun événement",
-                                      Colors.grey,
-                                      Icons.calendar_view_week_sharp,
-                                    ),
-                                    SizedBox(height: 10),
-                                    Text(
-                                      "Aucun événement programmé",
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-
-                          final events = snapshot.data!.take(3).toList();
-                          return Column(
-                            children: events.map((event) {
-                              return Card(
-                                elevation: 2,
-                                color: Colors.white,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 10,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      iconColorText(
-                                        event['title'] ?? 'Événement',
-                                        Color(0xFF2C3E50),
-                                        Icons.calendar_view_week_sharp,
-                                      ),
-                                      SizedBox(height: 10),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 3,
-                                        ),
-                                        child: Text(
-                                          event['title'] ?? 'Événement',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 4,
-                                        ),
-                                        child: Text(
-                                          _formatDate(
-                                            event['date'],
-                                          ), // CORRECTION ICI
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: Color.fromARGB(
-                                              193,
-                                              43,
-                                              42,
-                                              42,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      if (event['description'] != null &&
-                                          event['description']
-                                              .toString()
-                                              .isNotEmpty)
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 4,
-                                          ),
-                                          child: Text(
-                                            event['description'],
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Color.fromARGB(
-                                                193,
-                                                43,
-                                                42,
-                                                42,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      Divider(
-                                        color: const Color.fromARGB(
-                                          64,
-                                          158,
-                                          158,
-                                          158,
-                                        ),
-                                        thickness: 1,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          );
-                        },
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Text(
-                          "Gestion des documents",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2C3E50),
-                          ),
-                        ),
-                      ),
-                      StreamBuilder<List<Map<String, dynamic>>>(
-                        stream: _adminService.getPendingDocuments(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-
-                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Card(
-                              elevation: 2,
-                              color: Colors.white,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 10,
-                                  horizontal: 10,
-                                ),
-                                child: Column(
-                                  children: [
-                                    iconColorText(
-                                      "Aucun document en attente",
-                                      Colors.grey,
-                                      Icons.edit_document,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      "Tous les documents ont été validés",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-
-                          final documents = snapshot.data!.take(5).toList();
-                          return Card(
-                            elevation: 2,
-                            color: Colors.white,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 10,
-                              ),
-                              child: Column(
-                                children: [
-                                  iconColorText(
-                                    "Documents à valider",
-                                    Color(0xFFF39C12),
-                                    Icons.edit_document,
-                                  ),
-                                  SizedBox(height: 8),
-                                  ...documents.map((doc) {
-                                    final docType =
-                                        doc['type'] ??
-                                        doc['documentType'] ??
-                                        'PDF';
-                                    final icon =
-                                        docType.toLowerCase().contains(
-                                          'diplome',
-                                        )
-                                        ? Icons.backpack
-                                        : Icons.document_scanner_rounded;
-                                    final color =
-                                        docType.toLowerCase().contains(
-                                          'diplome',
-                                        )
-                                        ? Color(0xFF3498DB)
-                                        : Color(0xFF2ECC71);
-
-                                    return favoris(
-                                      "${doc['title'] ?? 'Document'} - ${doc['studentName'] ?? 'Étudiant'}",
-                                      "${doc['formation'] ?? 'N/A'}. En attente depuis ${doc['daysPending'] ?? 0} jour(s)",
-                                      icon,
-                                      color,
-                                      "Valider",
-                                      onPressed: () async {
-                                        try {
-                                          await _adminService.approveDocument(
-                                            doc['id'],
-                                          );
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                'Document approuvé',
-                                              ),
-                                            ),
-                                          );
-                                        } catch (e) {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text('Erreur: $e'),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                    );
-                                  }),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Text(
-                          "Statistiques des documents",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2C3E50),
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(
-                        child: GridView.builder(
-                          itemCount: stat.length,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: 8,
-                                crossAxisSpacing: 8,
-                                mainAxisExtent: 125,
-                              ),
-                          itemBuilder: (context, index) {
-                            return carte(
-                              stat2[index].titre,
-                              stat2[index].couleur,
-                              stat2[index].taille,
-                              contenu: stat2[index].contenu,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              child: Container(
+                color: Color(0xFFFFFFFF),
+                child: _getPage(_selectedIndex),
+              ),
             ),
           ),
         ],
@@ -1008,6 +147,738 @@ class _AdminState extends State<Admin> {
     );
   }
 
+  Future<List<Resultat>> _fetchUsers() async {
+    final usersData = await firestoreService.getAllUsers();
+    return usersData
+        .map(
+          (data) => Resultat(
+            nom: '${data['firstName'] ?? ''} ${data['lastName'] ?? ''}'.trim(),
+            email: data['email'] ?? '',
+            type: data['role'] ?? 'user',
+          ),
+        )
+        .toList();
+  }
+
+  Future<List<Formation>> _fetchFormations() async {
+    final formationsData = await firestoreService.getAllFormations();
+    return formationsData
+        .map(
+          (data) => Formation(
+            etudiant: data['etudiant'] ?? 0,
+            formation: data['formation'] ?? '',
+            ufr: data['ufr'] ?? '',
+            niveau: data['niveau'] ?? '',
+            statut: data['statut'] ?? 'Inactive',
+          ),
+        )
+        .toList();
+  }
+
+  Future<List<Carte>> _getDynamicStats() async {
+    final usersCount = await firestoreService.getUsersCount();
+    final formationsCount = await firestoreService.getFormationsCount();
+    final documentsCount = (await firestoreService.getAllDocuments()).length;
+    return [
+      Carte(
+        titre: usersCount.toString(),
+        couleur: Colors.black,
+        taille: 0.46,
+        contenu: "Utilisateurs",
+      ),
+      Carte(
+        titre: formationsCount.toString(),
+        couleur: Colors.black,
+        taille: 0.46,
+        contenu: "Formations",
+      ),
+      Carte(couleur: Colors.black, titre: "24", taille: 0.46, contenu: "Cours"),
+      Carte(
+        couleur: Colors.black,
+        titre: documentsCount.toString(),
+        taille: 0.46,
+        contenu: "Documents",
+      ),
+    ];
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchDocuments() async {
+    try {
+      return await firestoreService.getPendingDocuments();
+    } catch (e) {
+      print('Erreur chargement documents: $e');
+      return [];
+    }
+  }
+
+  Widget _getPage(int index) {
+    switch (index) {
+      case 0:
+        return _buildAccueilContent();
+      case 1:
+        return _buildUtilisateursContent();
+      case 2:
+        return _buildFormationsContent();
+      case 3:
+        return _buildDocumentsContent();
+      default:
+        return _buildAccueilContent();
+    }
+  }
+
+  Widget _buildAccueilContent() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              "Tableau de bord administratif",
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF2C3E50),
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+          GridView.builder(
+            itemCount: accesRapide.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 0.9,
+            ),
+            itemBuilder: (context, index) {
+              return InkWell(
+                onTap: () {
+                  setState(() {
+                    _selectedIndex = index == 0
+                        ? 1
+                        : index == 1
+                        ? 2
+                        : index == 3
+                        ? 3
+                        : 0;
+                  });
+                },
+                child: carte(
+                  accesRapide[index].titre,
+                  accesRapide[index].couleur,
+                  accesRapide[index].taille,
+                  icon: accesRapide[index].icon,
+                ),
+              );
+            },
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              "Statistiques générales",
+              style: TextStyle(fontSize: 19, color: Color(0xFF2C3E50)),
+            ),
+          ),
+          FutureBuilder<List<Carte>>(
+            future: _getDynamicStats(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text("Erreur de chargement des statistiques"),
+                );
+              }
+              final dynamicStat = snapshot.data ?? stat;
+              return SizedBox(
+                child: GridView.builder(
+                  itemCount: dynamicStat.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    childAspectRatio: 1.2,
+                  ),
+                  itemBuilder: (context, index) {
+                    return carte(
+                      dynamicStat[index].titre,
+                      dynamicStat[index].couleur,
+                      dynamicStat[index].taille,
+                      contenu: dynamicStat[index].contenu,
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              "Alertes système",
+              style: TextStyle(
+                fontSize: 19,
+                color: Color(0xFF2C3E50),
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          Card(
+            elevation: 2,
+            color: Colors.white,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                children: [
+                  iconColorText(
+                    "Maintenance programmé",
+                    Color(0xFFF39C12),
+                    Icons.document_scanner,
+                  ),
+                  SizedBox(height: 2),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    padding: EdgeInsets.symmetric(vertical: 6),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          child: Text(
+                            "Une maintenance du systeme est prévue le 15 décembre de 22h à 02h.L'application sera temporairement indisponible",
+                            style: TextStyle(
+                              fontSize: 13.6,
+                              color: Color(0xFF7F8C8D),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUtilisateursContent() {
+    return FutureBuilder<List<Resultat>>(
+      future: _fetchUsers(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text("Erreur de chargement des utilisateurs"));
+        }
+        final users = snapshot.data ?? [];
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  "Gestion des utilisateurs",
+                  style: TextStyle(
+                    fontSize: 19,
+                    color: Color(0xFF2C3E50),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              gestionUser(
+                users,
+                "Liste des utilisateurs",
+                "ajouter un utilisateur",
+              ),
+              SizedBox(height: 8),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  "Demandes d'inscription",
+                  style: TextStyle(
+                    fontSize: 19,
+                    color: Color(0xFF2C3E50),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              SizedBox(height: 6),
+              Card(
+                color: Colors.white,
+                elevation: 2,
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  child: Column(
+                    children: [
+                      iconColorText(
+                        "En attente de validation",
+                        Color(0xFFF39C12),
+                        Icons.person,
+                      ),
+                      Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 6),
+                                child: Text(
+                                  "Mariama Sow",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Row(
+                                children: [
+                                  Container(
+                                    height: 30,
+                                    margin: EdgeInsets.only(right: 10),
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color(0xFF3498DB),
+                                        padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 40,
+                                          top: 3,
+                                          bottom: 3,
+                                        ),
+                                      ),
+                                      onPressed: () {},
+                                      child: Text(
+                                        "valider",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 30,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                      ),
+                                      onPressed: () {},
+                                      child: Text(
+                                        "Refuser",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          "Nouvelle inscription  Licence informatique En attente depuis 3jours",
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: const Color.fromARGB(255, 111, 109, 109),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFormationsContent() {
+    return FutureBuilder<List<Formation>>(
+      future: _fetchFormations(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text("Erreur de chargement des formations"));
+        }
+        final formations = snapshot.data ?? [];
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  "Gestion des formations",
+                  style: TextStyle(
+                    fontSize: 19,
+                    color: Color(0xFF2C3E50),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              gestionFormation(
+                formations,
+                "Formations disponibles",
+                "Nouvelle formation",
+              ),
+              SizedBox(height: 8),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  "Calendrier académique",
+                  style: TextStyle(
+                    fontSize: 19,
+                    color: Color(0xFF2C3E50),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Card(
+                elevation: 2,
+                color: Colors.white,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      iconColorText(
+                        "Année 2023-2024",
+                        Color(0xFF2C3E50),
+                        Icons.calendar_view_week_sharp,
+                      ),
+                      SizedBox(height: 10),
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 3),
+                        child: Text(
+                          "Rentrée universitaires",
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 4),
+                        child: Text(
+                          "15 octobre 2023",
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Color.fromARGB(193, 43, 42, 42),
+                          ),
+                        ),
+                      ),
+                      Divider(
+                        color: const Color.fromARGB(64, 158, 158, 158),
+                        thickness: 1,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDocumentsContent() {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _fetchDocuments(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text("Erreur de chargement des documents"));
+        }
+        final documents = snapshot.data ?? [];
+
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  "Gestion des documents",
+                  style: TextStyle(
+                    fontSize: 19,
+                    color: Color(0xFF2C3E50),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+
+              // Section Documents à valider
+              Card(
+                elevation: 2,
+                color: Colors.white,
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.edit_document, color: Color(0xFFF39C12)),
+                          SizedBox(width: 8),
+                          Text(
+                            "Documents à valider",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF2C3E50),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8),
+
+                      if (documents.isEmpty)
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: Center(
+                            child: Text(
+                              "Aucun document à valider",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        )
+                      else
+                        ...documents.map(
+                          (doc) => Container(
+                            margin: EdgeInsets.only(bottom: 8),
+                            child: Card(
+                              elevation: 1,
+                              child: Padding(
+                                padding: EdgeInsets.all(12),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            doc['title'] ?? 'Document',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            doc['description'] ?? '',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            'Demandé par: ${doc['studentName'] ?? 'Étudiant'}',
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              color: Colors.blueGrey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        _showDocumentValidationForm(
+                                          context,
+                                          doc['id'] ?? '',
+                                          doc['title'] ?? 'Document',
+                                          doc['studentEmail'] ?? '',
+                                          doc['type'] ?? 'Document',
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color(0xFF3498DB),
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 8,
+                                        ),
+                                      ),
+                                      child: Text('Valider'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 20),
+
+              // Section Créer un événement
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  "Créer un événement",
+                  style: TextStyle(
+                    fontSize: 19,
+                    color: Color(0xFF2C3E50),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+
+              Card(
+                elevation: 2,
+                color: Colors.white,
+                child: Container(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.event_note,
+                        size: 50,
+                        color: Color(0xFF3498DB),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        "Organiser un nouvel événement académique ou culturel",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            _showCreateEventForm(context);
+                          },
+                          icon: Icon(Icons.add),
+                          label: Text("Créer un événement"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF3498DB),
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 20),
+
+              // Section Statistiques
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  "Statistiques des documents",
+                  style: TextStyle(
+                    fontSize: 19,
+                    color: Color(0xFF2C3E50),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+
+              GridView.builder(
+                itemCount: stat2.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  childAspectRatio: 1.2,
+                ),
+                itemBuilder: (context, index) {
+                  return carte(
+                    stat2[index].titre,
+                    stat2[index].couleur,
+                    stat2[index].taille,
+                    contenu: stat2[index].contenu,
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // NOUVELLES MÉTHODES POUR LES FORMULAIRES
+  void _showDocumentValidationForm(
+    BuildContext context,
+    String documentId,
+    String documentTitle,
+    String studentEmail,
+    String documentType,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => DocumentValidationForm(
+        documentId: documentId,
+        documentTitle: documentTitle,
+        studentEmail: studentEmail,
+        documentType: documentType,
+      ),
+    ).then((success) {
+      if (success == true) {
+        setState(() {});
+      }
+    });
+  }
+
+  void _showAddFormationForm(BuildContext context) {
+    showDialog(context: context, builder: (context) => AddFormationForm()).then(
+      (success) {
+        if (success == true) {
+          setState(() {});
+        }
+      },
+    );
+  }
+
+  void _showCreateEventForm(BuildContext context) {
+    showDialog(context: context, builder: (context) => CreateEventForm()).then((
+      success,
+    ) {
+      if (success == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Événement créé avec succès'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    });
+  }
+
+  // widget pour menu d'en haut
   Widget menu({
     required List<Map<String, dynamic>> items,
     int currentIndex = 0,
@@ -1075,6 +946,7 @@ class _AdminState extends State<Admin> {
     );
   }
 
+  // gestion utilisateur
   Widget gestionUser(final res, String labelText, String labelButton) {
     return Card(
       color: Colors.white,
@@ -1129,36 +1001,34 @@ class _AdminState extends State<Admin> {
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Column(
           children: [
-            iconColorText(
-              labelText,
-              Color(0xFF2ECC71),
-              Icons.account_circle_rounded,
-            ),
+            iconColorText(labelText, Color(0xFF2ECC71), Icons.school),
             SizedBox(height: 8),
-            tableauFormation(res),
-            Container(
-              padding: EdgeInsets.only(top: 8),
-              alignment: Alignment.bottomRight,
-              child: Container(
-                width: 180,
-                height: 40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFE74C3C), Color(0xFFF39C12)],
-                  ),
+
+            if (res.isNotEmpty)
+              tableauFormation(res)
+            else
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  "Aucune formation disponible",
+                  style: TextStyle(color: Colors.grey),
                 ),
-                alignment: Alignment.center,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    backgroundColor: Colors.transparent,
-                  ),
-                  onPressed: () {},
-                  child: Text(
-                    labelButton,
-                    style: TextStyle(fontSize: 14, color: Colors.white),
-                  ),
+              ),
+
+            SizedBox(height: 16),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  _showAddFormationForm(context);
+                },
+                icon: Icon(Icons.add_circle_outline),
+                label: Text(labelButton),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF3498DB),
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 12),
                 ),
               ),
             ),
@@ -1168,6 +1038,7 @@ class _AdminState extends State<Admin> {
     );
   }
 
+  // fonction pour le box article
   Widget livreBox(
     String titre,
     String auteur,
@@ -1243,7 +1114,6 @@ class _AdminState extends State<Admin> {
                 SizedBox(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                     children: [
                       Column(
                         children: [
@@ -1279,7 +1149,6 @@ class _AdminState extends State<Admin> {
                           ),
                         ],
                       ),
-
                       Column(
                         children: [
                           Icon(
@@ -1332,6 +1201,7 @@ class _AdminState extends State<Admin> {
     );
   }
 
+  // pour les articles
   Widget articleRecent(
     String nomArticle,
     String contenu,
@@ -1340,7 +1210,6 @@ class _AdminState extends State<Admin> {
   ) {
     return Container(
       width: MediaQuery.of(context).size.width * 1,
-
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1373,7 +1242,6 @@ class _AdminState extends State<Admin> {
                     child: Icon(icon, color: Colors.white, size: 20),
                   ),
                 ),
-
                 Container(
                   width: 300,
                   padding: EdgeInsets.only(left: 2),
@@ -1447,6 +1315,7 @@ class _AdminState extends State<Admin> {
     );
   }
 
+  // card
   Widget carte(
     String titre,
     Color couleur,
@@ -1514,14 +1383,14 @@ class _AdminState extends State<Admin> {
     );
   }
 
+  // favoris
   Widget favoris(
     String titre,
     String referencement,
     IconData icon,
     Color couleur,
-    String labelButton, {
-    VoidCallback? onPressed,
-  }) {
+    String labelButton,
+  ) {
     return Container(
       width: MediaQuery.of(context).size.width * 1,
       color: Colors.white,
@@ -1535,7 +1404,7 @@ class _AdminState extends State<Admin> {
             child: SizedBox(
               height: 38,
               child: ElevatedButton(
-                onPressed: onPressed ?? () {},
+                onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   side: BorderSide(width: 1, color: Colors.blueAccent),
                   backgroundColor: Color(0xFF3498DB),
@@ -1557,6 +1426,7 @@ class _AdminState extends State<Admin> {
     );
   }
 
+  // iconColorText
   Widget iconColorText(
     String titre,
     Color couleur,
@@ -1593,7 +1463,6 @@ class _AdminState extends State<Admin> {
                   ),
                 ),
               ),
-
               contenu != ""
                   ? Padding(
                       padding: EdgeInsets.only(bottom: 2),
@@ -1614,6 +1483,7 @@ class _AdminState extends State<Admin> {
     );
   }
 
+  // boxCard
   Widget boxCard(String titre) {
     return ElevatedButton(
       onPressed: () {},
@@ -1628,7 +1498,6 @@ class _AdminState extends State<Admin> {
               }
               return Color(0xFFF8F9FA);
             }),
-
             foregroundColor: WidgetStateProperty.resolveWith<Color?>((states) {
               if (states.contains(WidgetState.hovered)) {
                 return Colors.white;
@@ -1647,6 +1516,7 @@ class _AdminState extends State<Admin> {
     );
   }
 
+  //rechercher
   Widget recherche() {
     return SizedBox(
       width: double.infinity,
@@ -1675,7 +1545,6 @@ class _AdminState extends State<Admin> {
                     vertical: 7,
                     horizontal: 20,
                   ),
-
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.blueAccent),
                     borderRadius: BorderRadius.circular(12),
@@ -1713,6 +1582,7 @@ class _AdminState extends State<Admin> {
     );
   }
 
+  // la fonction pour le box evenement
   Widget event(
     String date,
     String duree,
@@ -1724,7 +1594,6 @@ class _AdminState extends State<Admin> {
   ) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.70,
-
       margin: EdgeInsets.only(right: 15, bottom: 15),
       padding: EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
@@ -1811,10 +1680,8 @@ class _AdminState extends State<Admin> {
                 SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
-
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                     children: [
                       SizedBox(
                         height: 25,
@@ -1927,353 +1794,379 @@ class _AdminState extends State<Admin> {
     );
   }
 
+  // tableau
   Widget tableau(final result) {
-    return Table(
-      border: TableBorder(
-        horizontalInside: BorderSide(color: Color(0xFFEEEEEE), width: 1),
-        top: BorderSide(color: Color(0xFFEEEEEE)),
-        bottom: BorderSide(color: Color(0xFFEEEEEE)),
-      ),
-      columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth(1)},
-      children: [
-        TableRow(
-          decoration: BoxDecoration(color: Color(0xFFEEEEEE)),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Container(
+        constraints: BoxConstraints(
+          minWidth: MediaQuery.of(context).size.width,
+        ),
+        child: Table(
+          border: TableBorder(
+            horizontalInside: BorderSide(color: Color(0xFFEEEEEE), width: 1),
+            top: BorderSide(color: Color(0xFFEEEEEE)),
+            bottom: BorderSide(color: Color(0xFFEEEEEE)),
+          ),
+          columnWidths: const {
+            0: FlexColumnWidth(1.5),
+            1: FlexColumnWidth(2),
+            2: FlexColumnWidth(1),
+          },
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-              child: Text(
-                "Nom",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+            TableRow(
+              decoration: BoxDecoration(color: Color(0xFFEEEEEE)),
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                  child: Text(
+                    "Nom",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-              child: Text(
-                "Email",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                  child: Text(
+                    "Email",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-              child: Text(
-                "Type",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                  child: Text(
+                    "Type",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
+            for (final r in result)
+              TableRow(
+                decoration: BoxDecoration(color: Colors.white),
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                    child: Text(
+                      r.nom,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    child: Text(
+                      r.email.toString(),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    child: Text(
+                      r.type,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
-        for (final r in result)
-          TableRow(
-            decoration: BoxDecoration(color: Colors.white),
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-                child: Text(
-                  r.nom,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                child: Text(
-                  r.email.toString(),
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                child: Text(
-                  r.type,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-            ],
-          ),
-      ],
+      ),
     );
   }
 
   Widget tableauFormation(final result) {
-    // Dé-dupliquer par nom de formation
-    final uniqueResults = <Formation>[];
-    final seenNames = <String>{};
-
-    for (final r in result) {
-      if (!seenNames.contains(r.formation)) {
-        seenNames.add(r.formation);
-        uniqueResults.add(r);
-      }
-    }
-
-    // Trier par nom
-    uniqueResults.sort((a, b) => a.formation.compareTo(b.formation));
-
-    return Table(
-      border: TableBorder(
-        horizontalInside: BorderSide(color: Color(0xFFEEEEEE), width: 1),
-        top: BorderSide(color: Color(0xFFEEEEEE)),
-        bottom: BorderSide(color: Color(0xFFEEEEEE)),
-      ),
-      columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth(1)},
-      children: [
-        TableRow(
-          decoration: BoxDecoration(color: Color(0xFFEEEEEE)),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Container(
+        constraints: BoxConstraints(
+          minWidth: MediaQuery.of(context).size.width,
+        ),
+        child: Table(
+          border: TableBorder(
+            horizontalInside: BorderSide(color: Color(0xFFEEEEEE), width: 1),
+            top: BorderSide(color: Color(0xFFEEEEEE)),
+            bottom: BorderSide(color: Color(0xFFEEEEEE)),
+          ),
+          columnWidths: const {
+            0: FlexColumnWidth(2),
+            1: FlexColumnWidth(1.5),
+            2: FlexColumnWidth(1),
+            3: FlexColumnWidth(1),
+            4: FlexColumnWidth(1),
+          },
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-              child: Text(
-                "Formation",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+            TableRow(
+              decoration: BoxDecoration(color: Color(0xFFEEEEEE)),
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                  child: Text(
+                    "Formation",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-              child: Text(
-                "UFR",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                  child: Text(
+                    "UFR",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-              child: Text(
-                "Niveau",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                  child: Text(
+                    "Niveau",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-              child: Text(
-                "Etudiants",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                  child: Text(
+                    "Etudiants",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-              child: Text(
-                "Statut",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                  child: Text(
+                    "Statut",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
+            for (final r in result)
+              TableRow(
+                decoration: BoxDecoration(color: Colors.white),
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+                    child: Text(
+                      r.formation,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                    child: Text(
+                      r.ufr,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                    child: Text(
+                      r.niveau,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                    child: Text(
+                      r.etudiant.toString(),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                    child: Text(
+                      r.statut,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
-        for (final r in uniqueResults.take(10)) // Limiter à 10 résultats
-          TableRow(
-            decoration: BoxDecoration(color: Colors.white),
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
-                child: Text(
-                  r.formation,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                child: Text(
-                  r.ufr,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                child: Text(
-                  r.niveau,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                child: Text(
-                  r.etudiant.toString(),
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                child: Text(
-                  r.statut,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-            ],
-          ),
-      ],
+      ),
     );
   }
 
   Widget emploiTemps(final shedule) {
-    return Table(
-      border: TableBorder(
-        horizontalInside: BorderSide(color: Color(0xFFEEEEEE), width: 1),
-        top: BorderSide(color: Color(0xFFEEEEEE)),
-        bottom: BorderSide(color: Color(0xFFEEEEEE)),
-      ),
-      columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth(1)},
-      children: [
-        TableRow(
-          decoration: BoxDecoration(color: Color(0xFFEEEEEE)),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Container(
+        constraints: BoxConstraints(
+          minWidth: MediaQuery.of(context).size.width,
+        ),
+        child: Table(
+          border: TableBorder(
+            horizontalInside: BorderSide(color: Color(0xFFEEEEEE), width: 1),
+            top: BorderSide(color: Color(0xFFEEEEEE)),
+            bottom: BorderSide(color: Color(0xFFEEEEEE)),
+          ),
+          columnWidths: const {
+            0: FlexColumnWidth(1.2),
+            1: FlexColumnWidth(2),
+            2: FlexColumnWidth(1),
+            3: FlexColumnWidth(1),
+          },
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 4),
-              child: Text(
-                "Jour",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+            TableRow(
+              decoration: BoxDecoration(color: Color(0xFFEEEEEE)),
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 4),
+                  child: Text(
+                    "Jour",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 4),
-              child: Text(
-                "Matiére",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 4),
+                  child: Text(
+                    "Matiére",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 4),
-              child: Text(
-                "Heure",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 4),
+                  child: Text(
+                    "Heure",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 4),
-              child: Text(
-                "Salle",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 4),
+                  child: Text(
+                    "Salle",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
+            for (final r in shedule)
+              TableRow(
+                decoration: BoxDecoration(color: Colors.white),
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                    child: Text(
+                      r.jour,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    child: Text(
+                      r.matiere,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    child: Text(
+                      r.heure,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    child: Text(
+                      r.salle,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
-        for (final r in shedule)
-          TableRow(
-            decoration: BoxDecoration(color: Colors.white),
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-                child: Text(
-                  r.jour,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                child: Text(
-                  r.matiere,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                child: Text(
-                  r.heure,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                child: Text(
-                  r.salle,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF7F8C8D),
-                  ),
-                ),
-              ),
-            ],
-          ),
-      ],
+      ),
     );
   }
 }
