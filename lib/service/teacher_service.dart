@@ -205,7 +205,7 @@ class TeacherService {
       // Pour l'instant on garde la logique simple demandée par l'utilisateur
 
       await _firestore.collection('results').doc(resultId).update(updates);
-      print('✅ Note mise à jour ($type): $resultId -> $grade');
+      print('Note mise à jour ($type): $resultId -> $grade');
     } catch (e) {
       print(' Erreur mise à jour note: $e');
       rethrow;

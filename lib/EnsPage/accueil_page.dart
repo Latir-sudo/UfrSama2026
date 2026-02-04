@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sama_ufr/service/teacher_service.dart';
-import 'package:sama_ufr/EnsPage/course_students_page.dart';
 
 class AccueilPage extends StatefulWidget {
   final TeacherService teacherService;

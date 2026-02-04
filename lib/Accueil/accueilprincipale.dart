@@ -72,7 +72,7 @@ class _AccueilprincipalState extends State<Accueilprincipal>
                           ),
                           child: const Icon(
                             Icons.school,
-                            color: Colors.blue,
+                            color: Color(0xFF238dd5),
                             size: 24,
                           ),
                         ),
@@ -85,14 +85,14 @@ class _AccueilprincipalState extends State<Accueilprincipal>
                               style: GoogleFonts.poppins(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
+                                color: Color(0xFF238dd5),
                               ),
                             ),
                             Text(
                               'Univ Gaston Berger',
                               style: GoogleFonts.poppins(
                                 fontSize: 12,
-                                color: AppColors.primary,
+                                color: Color(0xFF174521),
                               ),
                             ),
                           ],
@@ -115,7 +115,7 @@ class _AccueilprincipalState extends State<Accueilprincipal>
                             padding: EdgeInsets.only(left: 10),
                             child: Icon(
                               Icons.login,
-                              color: AppColors.primary,
+                              color: Color(0xFF174521),
                               size: 28,
                             ),
                           ),
@@ -130,8 +130,8 @@ class _AccueilprincipalState extends State<Accueilprincipal>
                           child: Padding(
                             padding: EdgeInsets.only(left: 10),
                             child: Icon(
-                              Icons.logout,
-                              color: AppColors.primary,
+                              Icons.person_add,
+                              color: Color(0xFF174521),
                               size: 28,
                             ),
                           ),
@@ -204,11 +204,11 @@ class _AccueilprincipalState extends State<Accueilprincipal>
           // Pattern de fond
           Positioned.fill(
             child: Opacity(
-              opacity: 0.4,
+              opacity: 0.6,
               child: Container(
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('assets/images/livre.jpg'),
+                    image: AssetImage('assets/images/image.jpg'),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -228,13 +228,13 @@ class _AccueilprincipalState extends State<Accueilprincipal>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // laisser un peu d'espace pour l'aération
-                    const SizedBox(height: 90),
+                    const SizedBox(height: 200),
 
                     // Titre principal
                     Text(
                       'Bienvenue à SAMA UFR',
                       style: GoogleFonts.poppins(
-                        fontSize: 32,
+                        fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         shadows: [
@@ -253,7 +253,7 @@ class _AccueilprincipalState extends State<Accueilprincipal>
                     Text(
                       'Votre portail étudiant moderne et intuitif',
                       style: GoogleFonts.poppins(
-                        fontSize: 18,
+                        fontSize: 16,
                         color: Colors.white.withOpacity(0.9),
                         fontWeight: FontWeight.w300,
                       ),
@@ -262,68 +262,6 @@ class _AccueilprincipalState extends State<Accueilprincipal>
                     const SizedBox(height: 32),
 
                     // Boutons d'action principaux
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginPage(),
-                            ),
-                          ),
-                          icon: const Icon(Icons.login),
-                          label: Text(
-                            'Se connecter',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: AppColors.primary,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            elevation: 4,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        OutlinedButton.icon(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => InscriptionPage(),
-                            ),
-                          ),
-                          icon: const Icon(Icons.person_add),
-                          label: Text(
-                            'Commencer',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            side: const BorderSide(
-                              color: Colors.white,
-                              width: 2,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -907,6 +845,7 @@ class _AccueilprincipalState extends State<Accueilprincipal>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: Text(
             title,
             style: GoogleFonts.poppins(fontWeight: FontWeight.bold),

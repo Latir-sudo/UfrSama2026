@@ -3,6 +3,8 @@ import 'package:sama_ufr/service/teacher_service.dart';
 import 'package:sama_ufr/EnsPage/course_students_page.dart';
 
 class CoursPage extends StatefulWidget {
+  const CoursPage({super.key});
+
   @override
   State<CoursPage> createState() => _CoursPageState();
 }
@@ -762,7 +764,7 @@ class _CoursPageState extends State<CoursPage> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
                 children: [
-                  Container(
+                  SizedBox(
                     width: 70,
                     child: Text(
                       item['time']!,

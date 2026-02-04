@@ -861,6 +861,7 @@ class FirestoreInitializer {
   }
 
   /// Initialiser les actualités
+  /// Initialiser la collection des actualités
   Future<void> _initializeNews() async {
     try {
       print('$TAG: Initialisation des actualités...');
@@ -869,45 +870,62 @@ class FirestoreInitializer {
 
       final existing = await newsRef.limit(1).get();
       if (existing.docs.isNotEmpty) {
-        print('$TAG:   Les actualités existent déjà');
+        print('$TAG: ⏭️ Les actualités existent déjà');
         return;
       }
 
       List<Map<String, dynamic>> news = [
         {
-          'title': 'Nouvelle plateforme de gestion des notes',
+          'title': 'Nouveau programme de bourses d\'études',
           'content':
-              'La plateforme de gestion des notes a été entièrement rénovée',
-          'date': DateTime.now(),
-          'priority': 'high',
-          'createdAt': FieldValue.serverTimestamp(),
+              'L\'UADB lance un nouveau programme de bourses pour les étudiants méritants. Les candidatures sont ouvertes jusqu\'au 30 janvier 2024.',
+          'category': 'Bourses',
+          'imageUrl': 'https://example.com/bourse.jpg',
+          'publishDate': DateTime.now().subtract(Duration(days: 2)),
+          'author': 'admin@uadb.edu.sn',
+          'views': 124,
+          'isPublished': true,
+          'tags': ['bourse', 'financement', 'étude'],
         },
         {
-          'title': 'Augmentation des bourses étudiantes',
+          'title': 'Journée portes ouvertes - Samedi 25 Janvier',
           'content':
-              'Les taux de bourses ont été augmentés pour cette année académique',
-          'date': DateTime.now().subtract(Duration(days: 1)),
-          'priority': 'medium',
-          'createdAt': FieldValue.serverTimestamp(),
+              'Venez découvrir nos installations et rencontrer nos enseignants. Des visites guidées seront organisées toute la journée.',
+          'category': 'Événements',
+          'imageUrl': 'https://example.com/portes-ouvertes.jpg',
+          'publishDate': DateTime.now().subtract(Duration(days: 5)),
+          'author': 'admin@uadb.edu.sn',
+          'views': 89,
+          'isPublished': true,
+          'tags': ['événement', 'visite', 'orientation'],
         },
         {
-          'title': 'Reprise des activités sportives',
-          'content': 'Les associations sportives reprennent leurs activités',
-          'date': DateTime.now().subtract(Duration(days: 3)),
-          'priority': 'low',
-          'createdAt': FieldValue.serverTimestamp(),
+          'title': 'Résultats du concours d\'innovation 2025',
+          'content':
+              'Félicitations aux lauréats du concours annuel d\'innovation. La remise des prix aura lieu le 15 février 2024.',
+          'category': 'Concours',
+          'imageUrl': 'https://example.com/concours.jpg',
+          'publishDate': DateTime.now().subtract(Duration(days: 7)),
+          'author': 'admin@uadb.edu.sn',
+          'views': 67,
+          'isPublished': true,
+          'tags': ['concours', 'innovation', 'prix'],
         },
       ];
 
       for (var newsItem in news) {
         final docRef = newsRef.doc();
-        batch.set(docRef, newsItem);
+        batch.set(docRef, {
+          ...newsItem,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
       }
 
       await batch.commit();
-      print('$TAG:  ${news.length} actualités créées');
+      print('$TAG: ✅ ${news.length} actualités créées');
     } catch (e) {
-      print('$TAG:  Erreur initialisation actualités: $e');
+      print('$TAG: ❌ Erreur initialisation actualités: $e');
     }
   }
 
@@ -1312,4 +1330,6 @@ class FirestoreInitializer {
       print('$TAG: ❌ Erreur initialisation demandes de documents: $e');
     }
   }
+
+  // pour les actualités
 }

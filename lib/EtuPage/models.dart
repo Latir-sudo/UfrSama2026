@@ -175,3 +175,63 @@ class StudentStats {
     );
   }
 }
+
+/// Modèle pour les actualités
+class NewsModel {
+  final String id;
+  final String title;
+  final String content;
+  final String category;
+  final String? imageUrl;
+  final DateTime publishDate;
+  final String author;
+  final int views;
+  final bool isPublished;
+  final List<String> tags;
+
+  NewsModel({
+    required this.id,
+    required this.title,
+    required this.content,
+    required this.category,
+    this.imageUrl,
+    required this.publishDate,
+    required this.author,
+    this.views = 0,
+    this.isPublished = true,
+    this.tags = const [],
+  });
+
+  factory NewsModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return NewsModel(
+      id: doc.id,
+      title: data['title'] ?? '',
+      content: data['content'] ?? '',
+      category: data['category'] ?? 'Général',
+      imageUrl: data['imageUrl'],
+      publishDate:
+          (data['publishDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      author: data['author'] ?? 'Administration',
+      views: data['views'] ?? 0,
+      isPublished: data['isPublished'] ?? true,
+      tags: List<String>.from(data['tags'] ?? []),
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'title': title,
+      'content': content,
+      'category': category,
+      'imageUrl': imageUrl,
+      'publishDate': publishDate,
+      'author': author,
+      'views': views,
+      'isPublished': isPublished,
+      'tags': tags,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    };
+  }
+}

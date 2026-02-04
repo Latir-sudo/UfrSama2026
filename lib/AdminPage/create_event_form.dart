@@ -128,6 +128,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.white,
       title: Text('Créer un nouvel événement'),
       content: SingleChildScrollView(
         child: Form(

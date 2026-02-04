@@ -36,7 +36,6 @@ class StudentService {
         .collection('events')
         .where('date', isGreaterThanOrEqualTo: Timestamp.now())
         .orderBy('date')
-        .limit(5) // Limiter les événements affichés
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {
@@ -53,7 +52,7 @@ class StudentService {
   Stream<List<CourseResult>> getStudentResultsStream() {
     final user = _auth.currentUser;
     if (user == null) {
-      print('⚠️ Utilisateur non authentifié pour résultats');
+      print('Utilisateur non authentifié pour résultats');
       return Stream.value([]);
     }
 
@@ -62,13 +61,15 @@ class StudentService {
         .where('studentId', isEqualTo: user.uid)
         .snapshots()
         .map((snapshot) {
-          print('📊 Nombre de résultats trouvés (Stream): ${snapshot.docs.length}');
+          print(
+            'Nombre de résultats trouvés (Stream): ${snapshot.docs.length}',
+          );
           return snapshot.docs.map((doc) {
             return CourseResult.fromFirestore(doc);
           }).toList();
         })
         .handleError((error) {
-          print('❌ Erreur flux résultats: $error');
+          print('Erreur flux résultats: $error');
           return <CourseResult>[];
         });
   }
@@ -82,7 +83,7 @@ class StudentService {
     }
 
     try {
-      print('🔍 Recherche résultats pour UID: ${user.uid}');
+      print('Recherche résultats pour UID: ${user.uid}');
       final query = await _firestore
           .collection('results')
           .where('studentId', isEqualTo: user.uid)
@@ -107,20 +108,18 @@ class StudentService {
   Stream<List<Schedule>> getScheduleStream(String weekStart) {
     final user = _auth.currentUser;
     if (user == null) {
-      print(' Utilisateur non authentifié pour schedules');
+      print('Utilisateur non authentifié pour schedules');
       return Stream.value([]);
     }
 
-    print('🔍 Recherche schedules: UID=${user.uid}, weekStart=$weekStart');
+    print('Recherche schedules: UID=${user.uid}, weekStart=$weekStart');
     return _firestore
         .collection('schedules')
         .where('studentId', isEqualTo: user.uid)
         .where('weekStart', isEqualTo: weekStart)
         .snapshots()
         .map((snapshot) {
-          print(
-            ' Schedules snapshot reçu: ${snapshot.docs.length} documents',
-          );
+          print(' Schedules snapshot reçu: ${snapshot.docs.length} documents');
           for (var doc in snapshot.docs) {
             print(' Schedule: ${doc.data()}');
           }
@@ -129,7 +128,7 @@ class StudentService {
           }).toList();
         })
         .handleError((error) {
-          print(' Erreur emploi du temps: $error');
+          print('Erreur emploi du temps: $error');
           return <Schedule>[];
         });
   }

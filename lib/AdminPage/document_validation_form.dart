@@ -88,6 +88,7 @@ class _DocumentValidationFormState extends State<DocumentValidationForm> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.white,
       title: Text('Valider et Envoyer le Document'),
       content: SingleChildScrollView(
         child: Column(

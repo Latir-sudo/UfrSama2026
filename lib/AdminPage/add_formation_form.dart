@@ -102,6 +102,7 @@ class _AddFormationFormState extends State<AddFormationForm> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.white,
       title: Text('Ajouter une nouvelle formation'),
       content: _isLoading
           ? Center(child: CircularProgressIndicator())

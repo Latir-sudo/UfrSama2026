@@ -1425,7 +1425,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      value: selectedCourseId,
+                      initialValue: selectedCourseId,
                       items: _courses.map((course) {
                         return DropdownMenuItem(
                           value: course.id,
@@ -1452,7 +1452,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      value: selectedType,
+                      initialValue: selectedType,
                       items: [
                         DropdownMenuItem(value: 'exam', child: Text('Examen')),
                         DropdownMenuItem(
@@ -1610,7 +1610,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      value: selectedDocumentType,
+                      initialValue: selectedDocumentType,
                       items: [
                         DropdownMenuItem(
                           value: 'attestation_scolarite',
@@ -1647,7 +1647,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      value: selectedAcademicYear,
+                      initialValue: selectedAcademicYear,
                       items: [
                         DropdownMenuItem(
                           value: '2022-2023',
@@ -1676,7 +1676,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      value: selectedSemester,
+                      initialValue: selectedSemester,
                       items: [
                         DropdownMenuItem(
                           value: 'S1',
@@ -2221,6 +2221,7 @@ class ResourcesPage extends StatelessWidget {
               final article = articles[index];
 
               return Card(
+                color: Colors.white,
                 margin: EdgeInsets.only(bottom: 12),
                 child: Padding(
                   padding: EdgeInsets.all(16),
@@ -2271,7 +2272,10 @@ class ResourcesPage extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF3498DB),
                           ),
-                          child: Text('Télécharger (${article.downloads})'),
+                          child: Text(
+                            'Télécharger (${article.downloads})',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ],
@@ -2305,7 +2309,7 @@ class _InfoRow extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: Colors.white,
         border: Border.all(color: color.withOpacity(0.2)),
         borderRadius: BorderRadius.circular(8),
       ),

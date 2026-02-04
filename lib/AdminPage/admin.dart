@@ -5,7 +5,8 @@ import 'package:sama_ufr/service/firestore_service.dart';
 import 'package:sama_ufr/AdminPage/document_validation_form.dart';
 import 'package:sama_ufr/AdminPage/add_formation_form.dart';
 import 'package:sama_ufr/AdminPage/create_event_form.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:sama_ufr/AdminPage/admin_news_page.dart';
+import 'package:sama_ufr/utils/app_colors.dart';
 
 class Admin extends StatefulWidget {
   const Admin({super.key});
@@ -123,6 +124,7 @@ class _AdminState extends State<Admin> {
               {"icon": Icons.school, "label": "Utilisateurs"},
               {"icon": Icons.book, "label": "Formations"},
               {"icon": Icons.messenger, "label": "Documents"},
+              {"icon": Icons.info, "label": "Actualités"},
             ],
             currentIndex: _selectedIndex,
             iconColor: Color(0xFF7F8C8D),
@@ -221,6 +223,17 @@ class _AdminState extends State<Admin> {
         return _buildFormationsContent();
       case 3:
         return _buildDocumentsContent();
+      case 4:
+        return ListTile(
+          leading: Icon(Icons.newspaper, color: AppColors.primary),
+          title: Text('Gestion des actualités'),
+          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+          onTap: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => AdminNewsPage()));
+          },
+        );
       default:
         return _buildAccueilContent();
     }
