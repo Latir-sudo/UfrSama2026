@@ -80,7 +80,7 @@ class _AddFormationFormState extends State<AddFormationForm> {
         _isLoading = false;
       });
 
-      if (success) {
+      if (success != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Formation ajoutée avec succès'),

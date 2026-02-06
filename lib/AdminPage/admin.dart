@@ -168,10 +168,10 @@ class _AdminState extends State<Admin> {
         .map(
           (data) => Formation(
             etudiant: data['etudiant'] ?? 0,
-            formation: data['formation'] ?? '',
+            formation: data['name'] ?? '',
             ufr: data['ufr'] ?? '',
-            niveau: data['niveau'] ?? '',
-            statut: data['statut'] ?? 'Inactive',
+            niveau: data['level'] ?? '',
+            statut: data['status'] ?? 'Inactive',
           ),
         )
         .toList();
@@ -679,8 +679,8 @@ class _AdminState extends State<Admin> {
                         ...documents.map(
                           (doc) => Container(
                             margin: EdgeInsets.only(bottom: 8),
-                            child: Card(
-                              elevation: 1,
+                            child: Container(
+                              color: Colors.white,
                               child: Padding(
                                 padding: EdgeInsets.all(12),
                                 child: Row(

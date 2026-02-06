@@ -949,8 +949,11 @@ class _AdminNewsPageState extends State<AdminNewsPage>
           : FloatingActionButton.extended(
               onPressed: () => _showCreateNewsDialog(),
               backgroundColor: AppColors.primary,
-              icon: const Icon(Icons.add),
-              label: const Text('Nouvelle actualité'),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text(
+                'Nouvelle actualité',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
     );
   }

@@ -353,6 +353,7 @@ class _InscriptionPageState extends State<InscriptionPage> {
                             style: TextStyle(
                               color: Color(0xFF3498DB),
                               fontWeight: FontWeight.bold,
+                              fontSize: 14,
                             ),
                           ),
                         ),

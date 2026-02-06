@@ -208,7 +208,7 @@ class _AccueilprincipalState extends State<Accueilprincipal>
               child: Container(
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('assets/images/image.jpg'),
+                    image: AssetImage('assets/images/livre.jpg'),
                     fit: BoxFit.cover,
                   ),
                 ),

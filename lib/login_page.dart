@@ -185,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text(
                     "Sama UFR",
                     style: TextStyle(
-                      fontSize: 50,
+                      fontSize: 45,
                       fontWeight: FontWeight.w300,
                       color: Colors.white,
                     ),

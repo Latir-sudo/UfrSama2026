@@ -2,11 +2,142 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:sama_ufr/EtuPage/models.dart';
 import 'dart:io';
+
+// pour les actualités
+
+// Méthodes pour la gestion des actualités (News)
+class NewsService {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Référence à la collection news
+  CollectionReference get newsRef => _firestore.collection('news');
+
+  /// Récupérer toutes les actualités publiées (pour étudiants)
+  Future<List<NewsModel>> getPublishedNews() async {
+    try {
+      final querySnapshot = await newsRef
+          .where('isPublished', isEqualTo: true)
+          .orderBy('publishDate', descending: true)
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        return NewsModel.fromFirestore(doc);
+      }).toList();
+    } catch (e) {
+      print('Erreur récupération actualités publiées: $e');
+      return [];
+    }
+  }
+
+  /// Stream des actualités publiées (pour mise à jour en temps réel)
+  Stream<List<NewsModel>> getPublishedNewsStream() {
+    return newsRef
+        .where('isPublished', isEqualTo: true)
+        .orderBy('publishDate', descending: true)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs.map((doc) {
+            return NewsModel.fromFirestore(doc);
+          }).toList();
+        });
+  }
+
+  /// Incrémenter le compteur de vues d'une actualité
+  Future<void> incrementViews(String newsId) async {
+    try {
+      await newsRef.doc(newsId).update({
+        'views': FieldValue.increment(1),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Erreur incrément vues: $e');
+    }
+  }
+
+  /// Rechercher des actualités par mot-clé
+  Future<List<NewsModel>> searchNews(String query) async {
+    try {
+      // Note: Firestore ne supporte pas les recherches textuelles natives
+      // Pour des fonctionnalités avancées, envisagez Algolia ou ElasticSearch
+      final allNews = await getPublishedNews();
+      return allNews.where((news) {
+        final titleMatch = news.title.toLowerCase().contains(
+          query.toLowerCase(),
+        );
+        final contentMatch = news.content.toLowerCase().contains(
+          query.toLowerCase(),
+        );
+        final categoryMatch = news.category.toLowerCase().contains(
+          query.toLowerCase(),
+        );
+        final tagsMatch = news.tags.any(
+          (tag) => tag.toLowerCase().contains(query.toLowerCase()),
+        );
+
+        return titleMatch || contentMatch || categoryMatch || tagsMatch;
+      }).toList();
+    } catch (e) {
+      print('Erreur recherche actualités: $e');
+      return [];
+    }
+  }
+
+  /// Récupérer les actualités par catégorie
+  Future<List<NewsModel>> getNewsByCategory(String category) async {
+    try {
+      final querySnapshot = await newsRef
+          .where('isPublished', isEqualTo: true)
+          .where('category', isEqualTo: category)
+          .orderBy('publishDate', descending: true)
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        return NewsModel.fromFirestore(doc);
+      }).toList();
+    } catch (e) {
+      print('Erreur récupération par catégorie: $e');
+      return [];
+    }
+  }
+
+  /// Récupérer les actualités les plus populaires (plus de vues)
+  Future<List<NewsModel>> getPopularNews({int limit = 5}) async {
+    try {
+      final querySnapshot = await newsRef
+          .where('isPublished', isEqualTo: true)
+          .orderBy('views', descending: true)
+          .limit(limit)
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        return NewsModel.fromFirestore(doc);
+      }).toList();
+    } catch (e) {
+      print('Erreur récupération actualités populaires: $e');
+      return [];
+    }
+  }
+
+  /// Récupérer les catégories uniques des actualités
+  Future<List<String>> getNewsCategories() async {
+    try {
+      final news = await getPublishedNews();
+      final categories = news.map((n) => n.category).toSet().toList();
+      categories.sort();
+      return categories;
+    } catch (e) {
+      print('Erreur récupération catégories: $e');
+      return ['Général', 'Événements', 'Bourses', 'Concours', 'Administratif'];
+    }
+  }
+}
 
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  NewsService newsService = NewsService();
 
   // Références aux collections
   CollectionReference get usersRef => _firestore.collection('users');
@@ -237,7 +368,7 @@ class FirestoreService {
   // MÉTHODES POUR LA GESTION DES FORMATIONS
 
   /// Ajouter une nouvelle formation
-  Future<bool> addFormation({
+  Future<String?> addFormation({
     required String name,
     required String code,
     required String ufr,
@@ -246,7 +377,7 @@ class FirestoreService {
     required String department,
   }) async {
     try {
-      await _firestore.collection('formations').add({
+      DocumentReference docRef = await _firestore.collection('formations').add({
         'name': name,
         'code': code,
         'ufr': ufr,
@@ -257,10 +388,10 @@ class FirestoreService {
         'status': 'Active',
         'createdAt': FieldValue.serverTimestamp(),
       });
-      return true;
+      return docRef.id;
     } catch (e) {
       print('Erreur ajout formation: $e');
-      return false;
+      return null;
     }
   }
 
@@ -395,7 +526,7 @@ class FirestoreService {
   /// Récupérer tous les départements
   Future<List<String>> getDepartments() async {
     try {
-      final querySnapshot = await _firestore.collection('departments').get();
+      final querySnapshot = await _firestore.collection('departements').get();
       return querySnapshot.docs.map((doc) => doc['name'] as String).toList();
     } catch (e) {
       // Valeurs par défaut
@@ -408,4 +539,6 @@ class FirestoreService {
       ];
     }
   }
+
+  // pour les actualités
 }

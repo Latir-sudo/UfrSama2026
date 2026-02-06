@@ -40,6 +40,7 @@ dependencies:
   provider: ^6.1.5+1
   file_picker: ^10.3.10
   firebase_storage: ^13.0.6
+  timeago: ^3.7.1
 
 dev_dependencies:
   flutter_test:
@@ -66,8 +67,12 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/image.jpg
-    - assets/images/livre.jpg
+    - assets/images/accueil.jpg
     - assets/images/accueil2.jpg
+    - assets/images/livre.jpg
+    - assets/images/tuto.jpg
+    - assets/images/bourse1.jpg
+  
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

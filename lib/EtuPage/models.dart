@@ -182,24 +182,30 @@ class NewsModel {
   final String title;
   final String content;
   final String category;
-  final String? imageUrl;
-  final DateTime publishDate;
+  final List<String> tags;
   final String author;
+  final DateTime publishDate;
   final int views;
   final bool isPublished;
-  final List<String> tags;
+  final String? imageUrl;
+  final String? pdfUrl;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   NewsModel({
     required this.id,
     required this.title,
     required this.content,
     required this.category,
-    this.imageUrl,
-    required this.publishDate,
+    required this.tags,
     required this.author,
-    this.views = 0,
-    this.isPublished = true,
-    this.tags = const [],
+    required this.publishDate,
+    required this.views,
+    required this.isPublished,
+    this.imageUrl,
+    this.pdfUrl,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory NewsModel.fromFirestore(DocumentSnapshot doc) {
@@ -209,29 +215,32 @@ class NewsModel {
       title: data['title'] ?? '',
       content: data['content'] ?? '',
       category: data['category'] ?? 'Général',
-      imageUrl: data['imageUrl'],
-      publishDate:
-          (data['publishDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      author: data['author'] ?? 'Administration',
-      views: data['views'] ?? 0,
-      isPublished: data['isPublished'] ?? true,
       tags: List<String>.from(data['tags'] ?? []),
+      author: data['author'] ?? 'Administration',
+      publishDate: (data['publishDate'] as Timestamp).toDate(),
+      views: data['views'] ?? 0,
+      isPublished: data['isPublished'] ?? false,
+      imageUrl: data['imageUrl'],
+      pdfUrl: data['pdfUrl'],
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
       'title': title,
       'content': content,
       'category': category,
-      'imageUrl': imageUrl,
-      'publishDate': publishDate,
+      'tags': tags,
       'author': author,
+      'publishDate': Timestamp.fromDate(publishDate),
       'views': views,
       'isPublished': isPublished,
-      'tags': tags,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
+      'imageUrl': imageUrl,
+      'pdfUrl': pdfUrl,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
     };
   }
 }

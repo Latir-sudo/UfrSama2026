@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'models.dart';
 import 'package:sama_ufr/utils/app_colors.dart';
+import 'package:sama_ufr/service/firestore_service.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sama_ufr/EtuPage/models.dart';
+import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 // Page de détail pour un article
 class ArticleDetailPage extends StatelessWidget {
@@ -767,6 +771,7 @@ class NotificationsPage extends StatelessWidget {
 }
 
 /// Page des Actualités
+/// Page des Actualités pour les étudiants
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
 
@@ -777,49 +782,21 @@ class NewsPage extends StatefulWidget {
 class _NewsPageState extends State<NewsPage> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+  late FirestoreService _firestoreService;
 
-  final List<Map<String, dynamic>> _news = [
-    {
-      'title': 'Nouveau programme de bourses d\'études',
-      'description':
-          'L\'UADB lance un nouveau programme de bourses pour les étudiants méritants...',
-      'date': '2026-01-20',
-      'category': 'Bourses',
-      'image': 'assets/images/image.jpg',
-      'isRead': false,
-    },
-    {
-      'title': 'Journée portes ouvertes - Samedi 25 Janvier',
-      'description':
-          'Venez découvrir nos installations et rencontrer nos enseignants...',
-      'date': '2026-01-18',
-      'category': 'Événements',
-      'image': 'assets/images/livre.jpg',
-      'isRead': true,
-    },
-    {
-      'title': 'Résultats du concours d\'innovation 2025',
-      'description':
-          'Félicitations aux lauréats du concours annuel d\'innovation...',
-      'date': '2026-01-15',
-      'category': 'Concours',
-      'image': 'assets/images/image.jpg',
-      'isRead': false,
-    },
-    {
-      'title': 'Mise à jour du système d\'inscription en ligne',
-      'description':
-          'Le nouveau système d\'inscription est désormais disponible...',
-      'date': '2026-01-10',
-      'category': 'Administratif',
-      'image': 'assets/images/livre.jpg',
-      'isRead': true,
-    },
-  ];
+  List<NewsModel> _news = [];
+  List<NewsModel> _filteredNews = [];
+  List<String> _categories = [];
+  String _selectedCategory = 'Tous';
+  bool _isLoading = true;
+  bool _hasError = false;
+  final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    _firestoreService = FirestoreService();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -827,12 +804,374 @@ class _NewsPageState extends State<NewsPage> with TickerProviderStateMixin {
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
-    _animationController.forward();
+    _loadNews();
+    _setupScrollListener();
+  }
+
+  void _setupScrollListener() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        // Vous pouvez implémenter le chargement infini ici
+      }
+    });
+  }
+
+  Future<void> _loadNews() async {
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
+
+    try {
+      // Charger les catégories
+      _categories = await _firestoreService.newsService.getNewsCategories();
+      _categories.insert(0, 'Tous');
+
+      // Charger les actualités avec stream pour mise à jour en temps réel
+      _firestoreService.newsService.getPublishedNewsStream().listen(
+        (newsList) {
+          if (mounted) {
+            setState(() {
+              _news = newsList;
+              _filteredNews = newsList;
+              _isLoading = false;
+            });
+          }
+        },
+        onError: (error) {
+          if (mounted) {
+            setState(() {
+              _hasError = true;
+              _isLoading = false;
+            });
+          }
+        },
+      );
+
+      _animationController.forward();
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _filterNews() {
+    final searchQuery = _searchController.text.toLowerCase();
+
+    setState(() {
+      _filteredNews = _news.where((news) {
+        // Filtre par catégorie
+        final categoryMatch =
+            _selectedCategory == 'Tous' || news.category == _selectedCategory;
+
+        // Filtre par recherche
+        final searchMatch =
+            searchQuery.isEmpty ||
+            news.title.toLowerCase().contains(searchQuery) ||
+            news.content.toLowerCase().contains(searchQuery) ||
+            news.tags.any((tag) => tag.toLowerCase().contains(searchQuery)) ||
+            news.category.toLowerCase().contains(searchQuery);
+
+        return categoryMatch && searchMatch;
+      }).toList();
+    });
+  }
+
+  void _showNewsDetail(NewsModel news) async {
+    // Incrémenter le compteur de vues
+    await _firestoreService.newsService.incrementViews(news.id);
+
+    // Afficher les détails
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => NewsDetailModal(news: news),
+    );
+  }
+
+  Widget _buildCategoryChip(String category) {
+    final isSelected = _selectedCategory == category;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedCategory = category;
+        });
+        _filterNews();
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : Colors.grey[300]!,
+          ),
+          boxShadow: [
+            if (isSelected)
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.3),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+          ],
+        ),
+        child: Text(
+          category,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            color: isSelected ? Colors.white : AppColors.darkText,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNewsCard(NewsModel news) {
+    final categoryColor = _getCategoryColor(news.category);
+    final timeAgo = _getTimeAgo(news.publishDate);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => _showNewsDetail(news),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // En-tête avec catégorie et date
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: categoryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        news.category,
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: categoryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      timeAgo,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                // Titre
+                Text(
+                  news.title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.darkText,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                const SizedBox(height: 8),
+
+                // Contenu résumé
+                Text(
+                  news.content.length > 150
+                      ? '${news.content.substring(0, 150)}...'
+                      : news.content,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    height: 1.4,
+                  ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                const SizedBox(height: 12),
+
+                // Pied de carte avec infos
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Tags
+                    if (news.tags.isNotEmpty)
+                      Row(
+                        children: news.tags.take(2).map((tag) {
+                          return Container(
+                            margin: const EdgeInsets.only(right: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              tag,
+                              style: GoogleFonts.poppins(
+                                fontSize: 10,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+
+                    // Statistiques
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.remove_red_eye,
+                          size: 14,
+                          color: Colors.grey[500],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${news.views}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Icon(Icons.person, size: 14, color: Colors.grey[500]),
+                        const SizedBox(width: 4),
+                        Text(
+                          news.author.split('@').first,
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.article, size: 80, color: AppColors.lightText),
+          const SizedBox(height: 16),
+          Text(
+            'Aucune actualité disponible',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              color: AppColors.lightText,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Revenez plus tard pour découvrir les dernières actualités',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: AppColors.lightText,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 80, color: AppColors.danger),
+          const SizedBox(height: 16),
+          Text(
+            'Erreur de chargement',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              color: AppColors.danger,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Impossible de charger les actualités. Vérifiez votre connexion.',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: AppColors.lightText,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _loadNews,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(
+              'Réessayer',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -861,427 +1200,335 @@ class _NewsPageState extends State<NewsPage> with TickerProviderStateMixin {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: Colors.white),
-            onPressed: () {
-              // TODO: Implémenter la recherche
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.filter_list, color: Colors.white),
-            onPressed: () {
-              // TODO: Implémenter le filtrage
-            },
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: _loadNews,
           ),
         ],
       ),
       body: FadeTransition(
         opacity: _fadeAnimation,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // En-tête avec statistiques
-              _buildHeaderStats(),
-              const SizedBox(height: 24),
-
-              // Titre de la section
-              Text(
-                'Dernières actualités',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+        child: Column(
+          children: [
+            // Barre de recherche
+            Container(
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Rechercher une actualité...',
+                  hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
+                  prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                ),
+                style: GoogleFonts.poppins(),
+                onChanged: (value) => _filterNews(),
+              ),
+            ),
 
-              // Liste des actualités
-              ..._news.map((news) => _buildNewsCard(news)),
-            ],
-          ),
+            // Catégories (chips)
+            Container(
+              height: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: _categories.map(_buildCategoryChip).toList(),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Liste des actualités
+            Expanded(
+              child: _isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                      ),
+                    )
+                  : _hasError
+                  ? _buildErrorState()
+                  : _filteredNews.isEmpty
+                  ? _buildEmptyState()
+                  : RefreshIndicator(
+                      onRefresh: _loadNews,
+                      color: AppColors.primary,
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: _filteredNews.length,
+                        itemBuilder: (context, index) {
+                          return _buildNewsCard(_filteredNews[index]);
+                        },
+                      ),
+                    ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildHeaderStats() {
-    final unreadCount = _news.where((n) => !n['isRead']).length;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: AppColors.gradientPurpleBlue,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.accent.withOpacity(0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildStatItem('Total', '${_news.length}', Icons.article),
-          Container(height: 40, width: 1, color: Colors.white.withOpacity(0.3)),
-          _buildStatItem('Non lus', '$unreadCount', Icons.mark_email_unread),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value, IconData icon) {
-    return Column(
-      children: [
-        Icon(icon, color: Colors.white, size: 24),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 12,
-            color: Colors.white.withOpacity(0.8),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNewsCard(Map<String, dynamic> news) {
-    final isRead = news['isRead'] as bool;
-    final category = news['category'] as String;
-
-    Color categoryColor;
+  Color _getCategoryColor(String category) {
     switch (category) {
       case 'Bourses':
-        categoryColor = Colors.green;
-        break;
+        return Colors.green;
       case 'Événements':
-        categoryColor = Colors.blue;
-        break;
+        return Colors.blue;
       case 'Concours':
-        categoryColor = Colors.orange;
-        break;
+        return Colors.orange;
       case 'Administratif':
-        categoryColor = Colors.purple;
-        break;
+        return Colors.purple;
+      case 'Académique':
+        return Colors.indigo;
+      case 'Sport':
+        return Colors.red;
+      case 'Culture':
+        return Colors.pink;
       default:
-        categoryColor = Colors.grey;
+        return AppColors.primary;
     }
+  }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+  String _getTimeAgo(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inSeconds < 60) {
+      return 'À l\'instant';
+    } else if (difference.inMinutes < 60) {
+      return 'Il y a ${difference.inMinutes} min';
+    } else if (difference.inHours < 24) {
+      return 'Il y a ${difference.inHours} h';
+    } else if (difference.inDays < 7) {
+      return 'Il y a ${difference.inDays} j';
+    } else if (difference.inDays < 30) {
+      final weeks = (difference.inDays / 7).floor();
+      return 'Il y a $weeks sem';
+    } else if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return 'Il y a $months mois';
+    } else {
+      final years = (difference.inDays / 365).floor();
+      return 'Il y a $years ans';
+    }
+  }
+}
+
+// Modal pour les détails des actualités
+class NewsDetailModal extends StatelessWidget {
+  final NewsModel news;
+
+  const NewsDetailModal({super.key, required this.news});
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.8,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (context, scrollController) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
           ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            setState(() {
-              news['isRead'] = true;
-            });
-            _showNewsDetail(news);
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+        ),
+        child: Column(
+          children: [
+            // Handle
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+
+            Expanded(
+              child: SingleChildScrollView(
+                controller: scrollController,
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Indicateur de statut (lu/non lu)
-                    if (!isRead)
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
-                        ),
-                      )
-                    else
-                      const SizedBox(width: 8),
-
-                    const SizedBox(width: 8),
-
                     // Catégorie
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                        horizontal: 12,
+                        vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: categoryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        color: _getCategoryColor(
+                          news.category,
+                        ).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
-                        category,
+                        news.category,
                         style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          color: categoryColor,
+                          fontSize: 12,
+                          color: _getCategoryColor(news.category),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
 
-                    const Spacer(),
+                    const SizedBox(height: 16),
 
-                    // Date
+                    // Titre
                     Text(
-                      _formatDate(news['date']),
+                      news.title,
                       style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: Colors.grey[500],
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
-                  ],
-                ),
 
-                const SizedBox(height: 12),
+                    const SizedBox(height: 16),
 
-                // Titre
-                Text(
-                  news['title'],
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                    // Métadonnées
+                    Row(
+                      children: [
+                        Icon(Icons.person, size: 14, color: Colors.grey[500]),
+                        const SizedBox(width: 4),
+                        Text(
+                          news.author,
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Icon(
+                          Icons.calendar_today,
+                          size: 14,
+                          color: Colors.grey[500],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          DateFormat(
+                            'dd/MM/yyyy à HH:mm',
+                          ).format(news.publishDate),
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Icon(
+                          Icons.remove_red_eye,
+                          size: 14,
+                          color: Colors.grey[500],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${news.views} vues',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      ],
+                    ),
 
-                const SizedBox(height: 8),
+                    const SizedBox(height: 24),
 
-                // Description
-                Text(
-                  news['description'],
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                    height: 1.4,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-
-                const SizedBox(height: 12),
-
-                // Actions
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
+                    // Contenu
                     Text(
-                      'Lire la suite',
+                      news.content,
                       style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: AppColors.accent,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Colors.grey[700],
+                        height: 1.6,
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 12,
-                      color: AppColors.accent,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
-  void _showNewsDetail(Map<String, dynamic> news) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: Column(
-            children: [
-              // Handle
-              Container(
-                margin: const EdgeInsets.only(top: 8),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Catégorie et date
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _getCategoryColor(
-                                news['category'],
-                              ).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Text(
-                              news['category'],
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: _getCategoryColor(news['category']),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            _formatDate(news['date']),
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Titre
-                      Text(
-                        news['title'],
-                        style: GoogleFonts.poppins(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Image (si disponible)
-                      Container(
-                        height: 200,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(12),
-                          image: DecorationImage(
-                            image: AssetImage(news['image']),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Description complète
-                      Text(
-                        news['description'] +
-                            '\n\n' +
-                            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: Colors.grey[700],
-                          height: 1.6,
-                        ),
-                      ),
-
+                    // Tags
+                    if (news.tags.isNotEmpty) ...[
                       const SizedBox(height: 24),
+                      Wrap(
+                        spacing: 8,
+                        children: news.tags.map((tag) {
+                          return Chip(
+                            label: Text(tag),
+                            backgroundColor: Colors.grey[100],
+                            labelStyle: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
 
-                      // Actions
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: () {
-                                // TODO: Partager
-                              },
-                              icon: const Icon(Icons.share),
-                              label: Text(
-                                'Partager',
-                                style: GoogleFonts.poppins(),
-                              ),
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                                side: BorderSide(color: AppColors.accent),
-                                foregroundColor: AppColors.accent,
-                              ),
+                    const SizedBox(height: 32),
+
+                    // Actions
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              // TODO: Partager l'actualité
+                            },
+                            icon: const Icon(Icons.share),
+                            label: Text(
+                              'Partager',
+                              style: GoogleFonts.poppins(),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              side: BorderSide(color: AppColors.accent),
+                              foregroundColor: AppColors.accent,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                        ),
+                        const SizedBox(width: 12),
+                        if (news.pdfUrl != null)
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () {
-                                Navigator.pop(context);
+                                // TODO: Télécharger le PDF
                               },
-                              icon: const Icon(Icons.close),
+                              icon: const Icon(Icons.download),
                               label: Text(
-                                'Fermer',
+                                'Télécharger',
                                 style: GoogleFonts.poppins(),
                               ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.accent,
+                                backgroundColor: AppColors.primary,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 12,
                                 ),
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1298,27 +1545,7 @@ class _NewsPageState extends State<NewsPage> with TickerProviderStateMixin {
       case 'Administratif':
         return Colors.purple;
       default:
-        return Colors.grey;
-    }
-  }
-
-  String _formatDate(String dateString) {
-    try {
-      final date = DateTime.parse(dateString);
-      final now = DateTime.now();
-      final difference = now.difference(date).inDays;
-
-      if (difference == 0) {
-        return 'Aujourd\'hui';
-      } else if (difference == 1) {
-        return 'Hier';
-      } else if (difference < 7) {
-        return 'Il y a $difference jours';
-      } else {
-        return '${date.day}/${date.month}/${date.year}';
-      }
-    } catch (e) {
-      return dateString;
+        return AppColors.primary;
     }
   }
 }

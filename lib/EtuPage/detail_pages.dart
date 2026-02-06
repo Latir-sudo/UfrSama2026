@@ -40,7 +40,7 @@ class EventDetailPage extends StatelessWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/livre.jpg'),
+                  image: AssetImage('assets/images/tuto.jpg'),
                   fit: BoxFit.cover,
                 ),
               ),

@@ -1727,7 +1727,7 @@ class _ArticleState extends State<Article> {
                   child: Text(
                     nomArticle,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                       color: Colors.black,
                       fontWeight: FontWeight.w500,
                     ),
