@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// =======================
+/// ARTICLE
+/// =======================
 class ArticleModel {
   final String id;
   final String title;
@@ -25,6 +28,7 @@ class ArticleModel {
 
   factory ArticleModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
     return ArticleModel(
       id: doc.id,
       title: data['title'] ?? '',
@@ -33,12 +37,16 @@ class ArticleModel {
       type: data['type'] ?? 'PDF',
       downloads: (data['downloads'] ?? 0).toInt(),
       rating: (data['rating'] ?? 0.0).toDouble(),
-      publishDate: (data['publishDate'] as Timestamp).toDate(),
+      publishDate:
+          (data['publishDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       description: data['description'],
     );
   }
 }
 
+/// =======================
+/// EVENT
+/// =======================
 class EventModel {
   final String id;
   final String title;
@@ -62,11 +70,12 @@ class EventModel {
 
   factory EventModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
     return EventModel(
       id: doc.id,
       title: data['title'] ?? '',
       description: data['description'] ?? '',
-      date: (data['date'] as Timestamp).toDate(),
+      date: (data['date'] as Timestamp?)?.toDate() ?? DateTime.now(),
       duration: data['duration'] ?? '',
       location: data['location'] ?? '',
       organizer: data['organizer'] ?? '',
@@ -75,6 +84,9 @@ class EventModel {
   }
 }
 
+/// =======================
+/// COURSE RESULT
+/// =======================
 class CourseResult {
   final String id;
   final String courseName;
@@ -90,6 +102,7 @@ class CourseResult {
 
   factory CourseResult.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
     return CourseResult(
       id: doc.id,
       courseName: data['courseName'] ?? '',
@@ -99,6 +112,9 @@ class CourseResult {
   }
 }
 
+/// =======================
+/// SCHEDULE
+/// =======================
 class Schedule {
   final String id;
   final String day;
@@ -116,6 +132,7 @@ class Schedule {
 
   factory Schedule.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
     return Schedule(
       id: doc.id,
       day: data['day'] ?? '',
@@ -126,6 +143,9 @@ class Schedule {
   }
 }
 
+/// =======================
+/// USER PROFILE
+/// =======================
 class UserProfile {
   final String uid;
   final String email;
@@ -143,6 +163,7 @@ class UserProfile {
 
   factory UserProfile.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
     return UserProfile(
       uid: doc.id,
       email: data['email'] ?? '',
@@ -153,6 +174,9 @@ class UserProfile {
   }
 }
 
+/// =======================
+/// STUDENT STATS
+/// =======================
 class StudentStats {
   final double averageGrade;
   final int validatedCourses;
@@ -176,7 +200,9 @@ class StudentStats {
   }
 }
 
-/// Modèle pour les actualités
+/// =======================
+/// NEWS
+/// =======================
 class NewsModel {
   final String id;
   final String title;
@@ -210,6 +236,7 @@ class NewsModel {
 
   factory NewsModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
     return NewsModel(
       id: doc.id,
       title: data['title'] ?? '',
@@ -217,13 +244,17 @@ class NewsModel {
       category: data['category'] ?? 'Général',
       tags: List<String>.from(data['tags'] ?? []),
       author: data['author'] ?? 'Administration',
-      publishDate: (data['publishDate'] as Timestamp).toDate(),
-      views: data['views'] ?? 0,
+
+      publishDate:
+          (data['publishDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+
+      views: (data['views'] ?? 0).toInt(),
       isPublished: data['isPublished'] ?? false,
       imageUrl: data['imageUrl'],
       pdfUrl: data['pdfUrl'],
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 

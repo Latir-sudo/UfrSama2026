@@ -107,6 +107,7 @@ class _AdminNewsPageState extends State<AdminNewsPage>
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(
                 isEditing ? 'Modifier l\'actualité' : 'Nouvelle actualité',
                 style: GoogleFonts.poppins(
@@ -241,7 +242,10 @@ class _AdminNewsPageState extends State<AdminNewsPage>
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                   ),
-                  child: Text(isEditing ? 'Mettre à jour' : 'Créer'),
+                  child: Text(
+                    isEditing ? 'Mettre à jour' : 'Créer',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             );
@@ -703,7 +707,7 @@ class _AdminNewsPageState extends State<AdminNewsPage>
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: AppColors.gradientPurpleBlue,
+              colors: AppColors.gradientNavyBlue,
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

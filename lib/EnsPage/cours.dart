@@ -506,7 +506,7 @@ class _CoursPageState extends State<CoursPage> {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.blue.shade600, Colors.blue.shade800],
+                    colors: const [Color(0xFF2E3192), Color(0xFF1BFFFF)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),

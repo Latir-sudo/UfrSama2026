@@ -6,14 +6,14 @@ class AppColors {
 
   // Bleu → Vert (Articles, Livres, Documents)
   static const List<Color> gradientBlueGreen = [
-    Color(0xFF3498DB), // Bleu ciel
+    Color(0xFF2E3192), // Bleu principal
     Color(0xFF2ECC71), // Vert menthe
   ];
 
   // Violet → Bleu (Événements, Actualités)
   static const List<Color> gradientPurpleBlue = [
     Color(0xFF9B59B6), // Violet
-    Color(0xFF3498DB), // Bleu ciel
+    Color(0xFF2E3192), // Bleu principal
   ];
 
   // Orange → Amber (Documents, Examens)
@@ -34,21 +34,21 @@ class AppColors {
     Color(0xFF1ABC9C), // Turquoise
   ];
 
-  // Bleu foncé → Cyan (Emploi du temps, Horaires)
+  // Bleu foncé → Cyan (Emploi du temps, Horaires) - Gradient principal de l'app
   static const List<Color> gradientNavyBlue = [
-    Color(0xFF2C3E50), // Bleu marine foncé
-    Color(0xFF3498DB), // Bleu ciel
+    Color(0xFF2E3192), // Bleu principal
+    Color(0xFF1BFFFF), // Cyan
   ];
 
   // === COULEURS INDIVIDUELLES ===
 
-  static const Color primary = Color(0xFF3498DB); // Bleu principal
+  static const Color primary = Color(0xFF2E3192); // Bleu principal
   static const Color secondary = Color(0xFF2ECC71); // Vert secondaire
   static const Color accent = Color(0xFF9B59B6); // Violet accent
   static const Color danger = Color(0xFFE74C3C); // Rouge danger
   static const Color warning = Color(0xFFF39C12); // Orange warning
   static const Color success = Color(0xFF2ECC71); // Vert succès
-  static const Color info = Color(0xFF3498DB); // Bleu info
+  static const Color info = Color(0xFF2E3192); // Bleu info
 
   // Couleurs neutres
   static const Color darkText = Color(0xFF2C3E50); // Texte foncé

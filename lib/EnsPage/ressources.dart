@@ -3,6 +3,7 @@ import 'package:sama_ufr/service/teacher_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sama_ufr/EnsPage/resource_detail.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:sama_ufr/utils/app_colors.dart';
 
 class ResourcesPage extends StatefulWidget {
   const ResourcesPage({super.key});
@@ -231,10 +232,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      const Color.fromARGB(255, 132, 69, 150),
-                      const Color.fromARGB(255, 53, 120, 186),
-                    ],
+                    colors: AppColors.gradientPurpleBlue,
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),

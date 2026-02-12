@@ -3,9 +3,7 @@ import 'models.dart';
 import 'package:sama_ufr/utils/app_colors.dart';
 import 'package:sama_ufr/service/firestore_service.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sama_ufr/EtuPage/models.dart';
 import 'package:intl/intl.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 // Page de détail pour un article
 class ArticleDetailPage extends StatelessWidget {
@@ -21,7 +19,7 @@ class ArticleDetailPage extends StatelessWidget {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: AppColors.gradientBlueGreen,
+              colors: AppColors.gradientNavyBlue,
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -1452,6 +1450,18 @@ class NewsDetailModal extends StatelessWidget {
 
                     const SizedBox(height: 24),
 
+                    // mettre une image avant le contenu
+                    Container(
+                      width: double.infinity,
+                      height: 350,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/images/image.jpg"),
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                     // Contenu
                     Text(
                       news.content,

@@ -22,37 +22,37 @@ class _AdminState extends State<Admin> {
   final List<Carte> accesRapide = [
     Carte(
       titre: "Gérer utilisateurs",
-      couleur: Color(0xFF3498DB),
+      couleur: Color(0xFF2E3192),
       taille: 0.3,
       icon: Icons.group_add,
     ),
     Carte(
       titre: "Formations",
-      couleur: Color(0xFF3498DB),
+      couleur: Color(0xFF2E3192),
       taille: 0.3,
       icon: Icons.house,
     ),
     Carte(
       titre: "Calendrier académique",
-      couleur: Color(0xFF3498DB),
+      couleur: Color(0xFF2E3192),
       taille: 0.3,
       icon: Icons.calendar_month,
     ),
     Carte(
       titre: "Document officiels",
-      couleur: Color(0xFF3498DB),
+      couleur: Color(0xFF2E3192),
       taille: 0.3,
       icon: Icons.edit_document,
     ),
     Carte(
       titre: "Statistique",
-      couleur: Color(0xFF3498DB),
+      couleur: Color(0xFF2E3192),
       taille: 0.3,
       icon: Icons.monitor_rounded,
     ),
     Carte(
       titre: "Paramètre",
-      couleur: Color(0xFf3498DB),
+      couleur: Color(0xFF2E3192),
       taille: 0.3,
       icon: Icons.settings,
     ),
@@ -128,7 +128,7 @@ class _AdminState extends State<Admin> {
             ],
             currentIndex: _selectedIndex,
             iconColor: Color(0xFF7F8C8D),
-            selectedColor: Color(0xFF3498DB),
+            selectedColor: Color(0xFF2E3192),
             onItemSelected: (index) {
               setState(() {
                 _selectedIndex = index;
@@ -461,7 +461,7 @@ class _AdminState extends State<Admin> {
                                     margin: EdgeInsets.only(right: 10),
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color(0xFF3498DB),
+                                        backgroundColor: Color(0xFF2E3192),
                                         padding: EdgeInsets.only(
                                           left: 20,
                                           right: 40,
@@ -728,7 +728,7 @@ class _AdminState extends State<Admin> {
                                         );
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color(0xFF3498DB),
+                                        backgroundColor: Color(0xFF2E3192),
                                         foregroundColor: Colors.white,
                                         padding: EdgeInsets.symmetric(
                                           horizontal: 16,
@@ -773,7 +773,7 @@ class _AdminState extends State<Admin> {
                       Icon(
                         Icons.event_note,
                         size: 50,
-                        color: Color(0xFF3498DB),
+                        color: Color(0xFF2E3192),
                       ),
                       SizedBox(height: 16),
                       Text(
@@ -791,7 +791,7 @@ class _AdminState extends State<Admin> {
                           icon: Icon(Icons.add),
                           label: Text("Créer un événement"),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF3498DB),
+                            backgroundColor: Color(0xFF2E3192),
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(vertical: 12),
                           ),
@@ -1039,7 +1039,7 @@ class _AdminState extends State<Admin> {
                 icon: Icon(Icons.add_circle_outline),
                 label: Text(labelButton),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF3498DB),
+                  backgroundColor: Color(0xFF2E3192),
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(vertical: 12),
                 ),
@@ -1084,7 +1084,7 @@ class _AdminState extends State<Admin> {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF3498DB), Color(0xFF2ECC71)],
+                colors: AppColors.gradientBlueGreen,
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -1196,7 +1196,7 @@ class _AdminState extends State<Admin> {
                   height: 85,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Color(0xFF3498DB), Color(0xFF2ECC71)],
+                      colors: AppColors.gradientBlueGreen,
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -1303,7 +1303,7 @@ class _AdminState extends State<Admin> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
                     gradient: LinearGradient(
-                      colors: [Color(0xFF3498DB), Color(0xFF2ECC71)],
+                      colors: AppColors.gradientBlueGreen,
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -1420,7 +1420,7 @@ class _AdminState extends State<Admin> {
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   side: BorderSide(width: 1, color: Colors.blueAccent),
-                  backgroundColor: Color(0xFF3498DB),
+                  backgroundColor: Color(0xFF2E3192),
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 ),
                 child: Text(
@@ -1710,7 +1710,7 @@ class _AdminState extends State<Admin> {
                                 ),
                                 backgroundColor: Colors.transparent,
                                 side: BorderSide(
-                                  color: Color(0xFF3498DB),
+                                  color: Color(0xFF2E3192),
                                   width: 1,
                                 ),
                               ).copyWith(
@@ -1758,7 +1758,7 @@ class _AdminState extends State<Admin> {
                               top: 4,
                               bottom: 4,
                             ),
-                            backgroundColor: Color(0xFF3498DB),
+                            backgroundColor: Color(0xFF2E3192),
                           ),
                           child: Text(
                             "+Calendrier",
@@ -1812,6 +1812,7 @@ class _AdminState extends State<Admin> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
+        margin: EdgeInsets.symmetric(vertical: 10),
         constraints: BoxConstraints(
           minWidth: MediaQuery.of(context).size.width,
         ),

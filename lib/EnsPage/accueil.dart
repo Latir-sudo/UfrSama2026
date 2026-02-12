@@ -87,15 +87,12 @@ class _EspaceEnseignantPageState extends State<EspaceEnseignantPage> {
     required VoidCallback onLogoutPressed,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFF2E3192),
-            const Color(0xFF1BFFFF),
-          ],
+          colors: [const Color(0xFF2E3192), const Color(0xFF1BFFFF)],
         ),
         boxShadow: [
           BoxShadow(
@@ -185,10 +182,15 @@ class _EspaceEnseignantPageState extends State<EspaceEnseignantPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2E3192).withOpacity(0.1) : Colors.transparent,
+          color: isSelected
+              ? const Color(0xFF2E3192).withOpacity(0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: isSelected
-              ? Border.all(color: const Color(0xFF2E3192).withOpacity(0.3), width: 1)
+              ? Border.all(
+                  color: const Color(0xFF2E3192).withOpacity(0.3),
+                  width: 1,
+                )
               : null,
         ),
         child: Column(
@@ -196,7 +198,9 @@ class _EspaceEnseignantPageState extends State<EspaceEnseignantPage> {
           children: [
             Icon(
               icon,
-              color: isSelected ? const Color(0xFF2E3192) : Colors.grey.shade600,
+              color: isSelected
+                  ? const Color(0xFF2E3192)
+                  : Colors.grey.shade600,
               size: 24,
             ),
             const SizedBox(height: 6),
@@ -205,7 +209,9 @@ class _EspaceEnseignantPageState extends State<EspaceEnseignantPage> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? const Color(0xFF2E3192) : Colors.grey.shade700,
+                color: isSelected
+                    ? const Color(0xFF2E3192)
+                    : Colors.grey.shade700,
               ),
             ),
           ],
@@ -218,9 +224,7 @@ class _EspaceEnseignantPageState extends State<EspaceEnseignantPage> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -252,10 +256,7 @@ class _EspaceEnseignantPageState extends State<EspaceEnseignantPage> {
               const Text(
                 'Êtes-vous sûr de vouloir vous déconnecter ?',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: 15, color: Colors.grey),
               ),
               const SizedBox(height: 24),
               Row(

@@ -173,7 +173,7 @@ class _NotesPageState extends State<NotesPage> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.green.shade600, Colors.green.shade800],
+                colors: const [Color(0xFF2E3192), Color(0xFF1BFFFF)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),

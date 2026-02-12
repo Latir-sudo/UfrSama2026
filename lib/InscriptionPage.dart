@@ -157,7 +157,7 @@ class _InscriptionPageState extends State<InscriptionPage> {
                       'Créer un compte',
                       style: TextStyle(
                         fontSize: 28,
-                        color: Color(0xFF3498DB),
+                        color: Color(0xFF2E3192),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -300,7 +300,7 @@ class _InscriptionPageState extends State<InscriptionPage> {
                     child: ElevatedButton(
                       onPressed: isLoading ? null : registerUser,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF3498DB),
+                        backgroundColor: Color(0xFF2E3192),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -351,7 +351,7 @@ class _InscriptionPageState extends State<InscriptionPage> {
                           child: Text(
                             "Se connecter",
                             style: TextStyle(
-                              color: Color(0xFF3498DB),
+                              color: Color(0xFF2E3192),
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),

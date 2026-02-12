@@ -24,7 +24,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
           flexibleSpace: entete(
             titre: 'Espace Administrateur',
             sousTitre: 'Bienvenue, Admin',
-            couleurs: [const Color(0xFFE74C3C), const Color(0xFFF39C12)],
+            couleurs: const [], // Pas utilisé, mais gardé pour compatibilité
             icon: Icons.logout,
             onIconPressed: () {
               Auth().signOut();
@@ -50,12 +50,12 @@ class _AdminHomePageState extends State<AdminHomePage> {
     VoidCallback? onIconPressed,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: couleurs,
+          colors: [const Color(0xFF2E3192), const Color(0xFF1BFFFF)],
         ),
       ),
       child: Stack(

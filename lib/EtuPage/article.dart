@@ -38,6 +38,7 @@ class _ArticleState extends State<Article> {
   List<CourseResult> _results = [];
   List<Schedule> _schedules = [];
   List<Map<String, dynamic>> _documents = [];
+  List<Map<String, dynamic>> _examens = [];
 
   bool _isLoading = true;
   StreamSubscription? _articlesSubscription;
@@ -45,6 +46,7 @@ class _ArticleState extends State<Article> {
   StreamSubscription? _schedulesSubscription;
   StreamSubscription? _documentsSubscription;
   StreamSubscription? _resultsSubscription;
+  StreamSubscription? _examensSubscription;
 
   @override
   void initState() {
@@ -59,6 +61,7 @@ class _ArticleState extends State<Article> {
     _schedulesSubscription?.cancel();
     _documentsSubscription?.cancel();
     _resultsSubscription?.cancel();
+    _examensSubscription?.cancel();
     super.dispose();
   }
 
@@ -208,6 +211,12 @@ class _ArticleState extends State<Article> {
           context,
         ).push(MaterialPageRoute(builder: (context) => const MessagingPage()));
         break;
+
+      case "Examens":
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (context) => ExamsPage(exams: [])));
+        break;
       default:
         break;
     }
@@ -278,9 +287,7 @@ class _ArticleState extends State<Article> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: AppColors.gradientBlueGreen
-              .map((c) => Color(c.value))
-              .toList(),
+          colors: AppColors.gradientNavyBlue,
         ),
       ),
       child: Stack(
@@ -844,35 +851,31 @@ class _ArticleState extends State<Article> {
 
   Widget _buildQuickAccessSection() {
     final quickAccess = [
-      {
-        'title': "Résultats",
-        'icon': Icons.access_alarm,
-        'color': Color(0xFF3498DB),
-      },
+      {'title': "Examens", 'icon': Icons.grade, 'color': Color(0xFF2E3192)},
       {
         'title': "Emploi du temps",
         'icon': Icons.schedule,
-        'color': Color(0xFF3498DB),
+        'color': Color(0xFF2E3192),
       },
       {
         'title': "Document",
         'icon': Icons.document_scanner,
-        'color': Color(0xFF3498DB),
+        'color': Color(0xFF2E3192),
       },
       {
         'title': "Ressources",
         'icon': Icons.library_add_check,
-        'color': Color(0xFF3498DB),
+        'color': Color(0xFF2E3192),
       },
       {
         'title': "Actualités",
         'icon': Icons.alarm_rounded,
-        'color': Color(0xFF3498DB),
+        'color': Color(0xFF2E3192),
       },
       {
         'title': "Message",
         'icon': Icons.messenger_sharp,
-        'color': Color(0xFF3498DB),
+        'color': Color(0xFF2E3192),
       },
     ];
 
@@ -1210,7 +1213,6 @@ class _ArticleState extends State<Article> {
         ),
         InkWell(
           onTap: () {
-            // Push exams page (data may come from Firestore in future)
             Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => ExamsPage(exams: [])),
             );
