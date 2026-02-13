@@ -167,12 +167,15 @@ class _CoursPageState extends State<CoursPage> {
               children: [
                 Icon(Icons.assignment, color: Colors.blue.shade700, size: 24),
                 const SizedBox(width: 12),
-                Text(
-                  'Cours assignés (Cliquez pour voir les étudiants)',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue.shade700,
+                Expanded(
+                  child: Text(
+                    'Cours assignés',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue.shade700,
+                    ),
                   ),
                 ),
               ],
@@ -267,6 +270,7 @@ class _CoursPageState extends State<CoursPage> {
                       flex: 2,
                       child: Text(
                         course['name'] ?? 'Sans nom',
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Colors.grey.shade800,
@@ -277,6 +281,7 @@ class _CoursPageState extends State<CoursPage> {
                     Expanded(
                       child: Text(
                         course['code'] ?? 'N/A',
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(color: Colors.grey.shade600),
                       ),
                     ),
@@ -284,6 +289,7 @@ class _CoursPageState extends State<CoursPage> {
                     Expanded(
                       child: Text(
                         '${course['studentCount'] ?? 0}',
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(color: Colors.grey.shade600),
                       ),
                     ),
@@ -291,6 +297,7 @@ class _CoursPageState extends State<CoursPage> {
                     Expanded(
                       child: Text(
                         course['level'] ?? 'N/A',
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(color: Colors.grey.shade600),
                       ),
                     ),
@@ -310,15 +317,21 @@ class _CoursPageState extends State<CoursPage> {
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              'Liste des étudiants - $_selectedCourseName',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue.shade700,
+            Flexible(
+              child: Text(
+                'Liste des étudiants - $_selectedCourseName',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue.shade700,
+                ),
               ),
             ),
+            const SizedBox(width: 12),
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.push(
@@ -391,29 +404,35 @@ class _CoursPageState extends State<CoursPage> {
                     ),
                     title: Text(
                       student['studentName'] ?? 'Étudiant',
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     subtitle: Text(
                       'ID: ${student['studentId'] ?? 'N/A'}',
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade600,
                       ),
                     ),
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Note: ${student['grade'] ?? 'N/A'}',
-                        style: TextStyle(
-                          color: Colors.green.shade700,
-                          fontWeight: FontWeight.bold,
+                    trailing: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'Note: ${student['grade'] ?? 'N/A'}',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.green.shade700,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -628,6 +647,8 @@ class _CoursPageState extends State<CoursPage> {
               children: [
                 Text(
                   course,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -643,11 +664,14 @@ class _CoursPageState extends State<CoursPage> {
                       color: Colors.grey.shade600,
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      location,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
+                    Expanded(
+                      child: Text(
+                        location,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                     ),
                   ],
@@ -655,6 +679,8 @@ class _CoursPageState extends State<CoursPage> {
                 const SizedBox(height: 4),
                 Text(
                   details,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
                 ),
               ],

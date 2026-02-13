@@ -1025,63 +1025,65 @@ class _NewsPageState extends State<NewsPage> with TickerProviderStateMixin {
                 const SizedBox(height: 12),
 
                 // Pied de carte avec infos
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Tags
-                    if (news.tags.isNotEmpty)
-                      Row(
-                        children: news.tags.take(2).map((tag) {
-                          return Container(
-                            margin: const EdgeInsets.only(right: 6),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[100],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              tag,
-                              style: GoogleFonts.poppins(
-                                fontSize: 10,
-                                color: Colors.grey[600],
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Tags
+                      if (news.tags.isNotEmpty)
+                        Row(
+                          children: news.tags.take(1).map((tag) {
+                            return Container(
+                              margin: const EdgeInsets.only(right: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
                               ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                tag,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 10,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
 
-                    // Statistiques
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.remove_red_eye,
-                          size: 14,
-                          color: Colors.grey[500],
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${news.views}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
+                      // Statistiques
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.remove_red_eye,
+                            size: 14,
                             color: Colors.grey[500],
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Icon(Icons.person, size: 14, color: Colors.grey[500]),
-                        const SizedBox(width: 4),
-                        Text(
-                          news.author.split('@').first,
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: Colors.grey[500],
+                          const SizedBox(width: 4),
+                          Text(
+                            '${news.views}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: Colors.grey[500],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: 12),
+                          Icon(Icons.person, size: 14, color: Colors.grey[500]),
+                          const SizedBox(width: 4),
+                          Text(
+                            news.author.split('@').first,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -1406,15 +1408,6 @@ class NewsDetailModal extends StatelessWidget {
                     // Métadonnées
                     Row(
                       children: [
-                        Icon(Icons.person, size: 14, color: Colors.grey[500]),
-                        const SizedBox(width: 4),
-                        Text(
-                          news.author,
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: Colors.grey[500],
-                          ),
-                        ),
                         const SizedBox(width: 16),
                         Icon(
                           Icons.calendar_today,
@@ -1519,10 +1512,13 @@ class NewsDetailModal extends StatelessWidget {
                               onPressed: () {
                                 // TODO: Télécharger le PDF
                               },
-                              icon: const Icon(Icons.download),
+                              icon: const Icon(
+                                Icons.download,
+                                color: Colors.white,
+                              ),
                               label: Text(
                                 'Télécharger',
-                                style: GoogleFonts.poppins(),
+                                style: GoogleFonts.poppins(color: Colors.white),
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,

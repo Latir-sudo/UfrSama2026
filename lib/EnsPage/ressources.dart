@@ -593,7 +593,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
               Text(
                 'Ressources téléchargées (${resources.length})',
                 style: GoogleFonts.poppins(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Colors.blue.shade800,
                 ),

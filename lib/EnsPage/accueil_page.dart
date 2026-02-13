@@ -150,7 +150,7 @@ class _AccueilPageState extends State<AccueilPage> {
                 title,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF333333),
                 ),

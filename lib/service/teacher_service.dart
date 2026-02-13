@@ -166,19 +166,31 @@ class TeacherService {
         .where('courseId', isEqualTo: courseId)
         .snapshots()
         .map(
-          (snapshot) => snapshot.docs
-              .map(
-                (doc) => {
-                  'id': doc.id,
-                  'studentName': doc['studentName'] ?? 'Sans nom',
-                  'studentId': doc['studentId'] ?? '',
-                  'grade': doc['grade'],
-                  'assignmentGrade': doc['assignmentGrade'],
-                  'examGrade': doc['examGrade'],
-                  'status': doc['status'] ?? 'N/A',
-                },
-              )
-              .toList(),
+          (snapshot) => snapshot.docs.map((doc) {
+            try {
+              final data = doc.data();
+              return {
+                'id': doc.id,
+                'studentName': data['studentName'] ?? 'Sans nom',
+                'studentId': data['studentId'] ?? 'N/A',
+                'grade': data['grade'],
+                'assignmentGrade': data['assignmentGrade'],
+                'examGrade': data['examGrade'],
+                'status': data['status'] ?? 'N/A',
+              };
+            } catch (e) {
+              print('Erreur parsing étudiant: $e');
+              return {
+                'id': doc.id,
+                'studentName': 'Erreur',
+                'studentId': 'N/A',
+                'grade': null,
+                'assignmentGrade': null,
+                'examGrade': null,
+                'status': 'N/A',
+              };
+            }
+          }).toList(),
         );
   }
 

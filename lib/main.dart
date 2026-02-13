@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:sama_ufr/LandingPage.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sama_ufr/utils/firestore_initializer.dart'; // Importez votre script 
+import 'package:sama_ufr/utils/firestore_initializer.dart'; // Importez votre script
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
